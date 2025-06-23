@@ -1,0 +1,21 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "io.github.mjk134.titanomach.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "entity.DisplayEntityAccessor",
+    "entity.DisplayEntityAccessor$TextDisplayEntityAccessor",
+    "entity.EntityAccessor",
+    "entity.PlayerEntityMixin",
+    "entity.ServerPlayerEntityMixin",
+    "network.EntityPassengersSetS2CPacketMixin",
+    "network.SerializableTeamMixin",
+    "network.ServerCommonNetworkHandlerMixin",
+    "world.EntityTrackerAccessor",
+    "world.ServerChunkLoadingManagerAccessor"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

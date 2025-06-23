@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "id": "titanomach",
+  "version": "${version}",
+  "name": "titanomach",
+  "description": "",
+  "authors": [],
+  "contact": {},
+  "license": "All-Rights-Reserved",
+  "icon": "assets/titanomach/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "fabric-datagen": [
+      "io.github.mjk134.titanomach.client.TitanomachDataGenerator"
+    ],
+    "client": [
+      "io.github.mjk134.titanomach.client.TitanomachClient"
+    ],
+    "main": [
+      "io.github.mjk134.titanomach.Titanomach"
+    ]
+  },
+  "mixins": [
+    "titanomach.mixins.json",
+    {
+      "config": "titanomach.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}

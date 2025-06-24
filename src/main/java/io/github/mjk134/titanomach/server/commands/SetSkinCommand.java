@@ -19,7 +19,7 @@ public class SetSkinCommand {
         Property skinProperty = TITANOMACH_CONFIG.getSkinProperty(skinId);
         assert player != null;
         TITANOMACH_CONFIG.getPlayerConfig(player.getUuidAsString()).setSkinId(skinId);
-        if (skinProperty == null || player == null) return 1;
+        if (skinProperty == null && player == null) return 1;
         ((ServerTitanomachPlayer) player).titanomach$setSkin(skinProperty, true);
         return 0;
     }

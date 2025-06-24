@@ -21,16 +21,21 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.network.ServerPlayerInteractionManager;
 import net.minecraft.server.world.ServerChunkLoadingManager;
 import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
 import net.minecraft.text.Text;
 import net.minecraft.util.PlayerInput;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.source.BiomeAccess;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -48,6 +53,12 @@ import static io.github.mjk134.titanomach.Titanomach.ModLogger;
 public abstract class ServerPlayerEntityMixin extends PlayerEntity implements FakeTextDisplayHolder, ServerTitanomachPlayer {
     @Shadow
     private PlayerInput playerInput;
+
+    @Shadow
+    public abstract void sendAbilitiesUpdate();
+
+    @Shadow
+    public abstract boolean isDisconnected();
 
     @Shadow
     public abstract ServerWorld getWorld();
@@ -81,6 +92,10 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements Fa
     private String skinSignature;
     @Unique
     private long lastSkinChangeTime = 0;
+
+    @Shadow
+    @Final
+    public ServerPlayerInteractionManager interactionManager;
 
 
 
@@ -177,83 +192,75 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements Fa
 
         ModLogger.info("Reloading skin for player {}", self.getName().getString());
 
-        // Refreshing in tablist for each player
         PlayerManager playerManager = self.getServer().getPlayerManager();
-
-        playerManager.sendToAll(new PlayerRemoveS2CPacket(new ArrayList<>(Collections.singleton(self.getUuid()))));
-        playerManager.sendToAll(PlayerListS2CPacket.entryFromPlayer(Collections.singleton(self)));
-
         ServerWorld serverWorld = getWorld();
-        ServerChunkManager manager = serverWorld.getChunkManager();
-        ServerChunkLoadingManager storage = manager.chunkLoadingManager;
-        EntityTrackerAccessor trackerEntry = ((ServerChunkLoadingManagerAccessor) storage).getEntityTrackers().get(self.getId());
 
+        playerManager.sendToAll(new PlayerRemoveS2CPacket(new ArrayList<>(Collections.singleton(this.getUuid()))));
+        playerManager.sendToAll(PlayerListS2CPacket.entryFromPlayer(Collections.singleton((ServerPlayerEntity) (Object) this)));
 
+        var tracker = ((ServerChunkLoadingManagerAccessor) serverWorld.getChunkManager().chunkLoadingManager)
+                .getEntityTrackers()
+                .get(this.getId());
 
-        trackerEntry.getSeenBy().forEach(tracking -> trackerEntry.getServerEntity().startTracking(tracking.getPlayer()));
-        ModLogger.info("Trackers for the player: " + trackerEntry.getSeenBy().size());
-        trackerEntry.getSeenBy().forEach(tracking ->
-                ModLogger.info("Tracker for player: " + tracking.getPlayer().getName().getString())
+        tracker.getSeenBy().forEach(tracking -> {
+            tracker.getServerEntity().startTracking(tracking.getPlayer());
+        });
+
+        ServerWorld level = this.getWorld();
+
+        this.networkHandler.sendPacket(new PlayerRespawnS2CPacket(
+                new CommonPlayerSpawnInfo(
+                        level.getDimensionEntry(),
+                        level.getRegistryKey(),
+                        BiomeAccess.hashSeed(level.getSeed()),
+                        this.interactionManager.getGameMode(),
+                        this.interactionManager.getPreviousGameMode(),
+                        level.isDebugWorld(),
+                        level.isFlat(),
+                        this.getLastDeathPos(),
+                        this.getPortalCooldown(),
+                        level.getSeaLevel()
+                ), (byte) 3)
         );
 
 
-        // need to change the player entity on the client
-        ModLogger.info("Reloading player skin on player's client.");
-
-        this.networkHandler.sendPacket(
-                new PlayerRespawnS2CPacket(
-                        new CommonPlayerSpawnInfo(
-                                serverWorld.getDimensionEntry(),
-                                serverWorld.getRegistryKey(),
-                                serverWorld.getBiomeAccess().hashCode(),
-                                this.getGameMode(),
-                                this.getGameMode(),
-                                serverWorld.isDebugWorld(),
-                                serverWorld.isFlat(),
-                                this.getLastDeathPos(),
-                                this.getPortalCooldown(),
-                                serverWorld.getSeaLevel()
-                        ),
-                        PlayerRespawnS2CPacket.KEEP_ALL
-                )
-        );
-
-        this.networkHandler.sendPacket(new PlayerPositionLookS2CPacket(0, PlayerPosition.fromEntity(self), Collections.emptySet()));
-        this.networkHandler.sendPacket(new SetCursorItemS2CPacket(this.getInventory().getSelectedStack()));
-        this.networkHandler.sendPacket(new DifficultyS2CPacket(serverWorld.getDifficulty(), serverWorld.getLevelProperties().isDifficultyLocked()));
-
+        this.networkHandler.sendPacket(new PlayerPositionLookS2CPacket(0, net.minecraft.entity.player.PlayerPosition.fromEntity(this), Collections.emptySet()));
+        this.networkHandler.sendPacket(new UpdateSelectedSlotS2CPacket(this.getInventory().getSelectedSlot()));
+        this.networkHandler.sendPacket(new DifficultyS2CPacket(level.getDifficulty(), level.getLevelProperties().isDifficultyLocked()));
         this.networkHandler.sendPacket(new ExperienceBarUpdateS2CPacket(this.experienceProgress, this.totalExperience, this.experienceLevel));
-        playerManager.sendWorldInfo(self, serverWorld);
+
+        playerManager.sendWorldInfo(self, level);
         playerManager.sendCommandTree(self);
 
         this.networkHandler.sendPacket(new HealthUpdateS2CPacket(this.getHealth(), this.getHungerManager().getFoodLevel(), this.getHungerManager().getSaturationLevel()));
 
         for (StatusEffectInstance statusEffect : this.getStatusEffects()) {
-            this.networkHandler.sendPacket(new EntityStatusEffectS2CPacket(self.getId(), statusEffect, false));
+            this.networkHandler.sendPacket(new EntityStatusEffectS2CPacket(this.getId(), statusEffect, false));
         }
 
         var equipmentList = new ArrayList<Pair<EquipmentSlot, ItemStack>>();
         for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
-            ItemStack itemStack = self.getEquippedStack(equipmentSlot);
+            ItemStack itemStack = this.getEquippedStack(equipmentSlot);
             if (!itemStack.isEmpty()) {
-                equipmentList.add(Pair.of(equipmentSlot, itemStack));
+                equipmentList.add(new Pair<>(equipmentSlot, itemStack.copy()));
             }
         }
 
         if (!equipmentList.isEmpty()) {
-            this.networkHandler.sendPacket(new EntityEquipmentUpdateS2CPacket(self.getId(), equipmentList));
+            this.networkHandler.sendPacket(new EntityEquipmentUpdateS2CPacket(this.getId(), equipmentList));
         }
 
-        if (!self.getPassengerList().isEmpty()) {
-            this.networkHandler.sendPacket(new EntityPassengersSetS2CPacket(self));
+        if (!this.getPassengerList().isEmpty()) {
+            this.networkHandler.sendPacket(new EntityPassengersSetS2CPacket(this));
         }
-        if (self.hasVehicle()) {
-            assert self.getVehicle() != null;
-            this.networkHandler.sendPacket(new EntityPassengersSetS2CPacket(self.getVehicle()));
+        if (this.hasVehicle()) {
+            this.networkHandler.sendPacket(new EntityPassengersSetS2CPacket(this.getVehicle()));
         }
 
-        self.sendAbilitiesUpdate();
+        this.sendAbilitiesUpdate();
         playerManager.sendPlayerStatus(self);
+
+        ModLogger.info("Skin reload complete for player {}", self.getName().getString());
     }
 
     @Override
@@ -293,31 +300,49 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements Fa
 
     @Override
     public void titanomach$setSkin(Property skinData, boolean reload) {
-        ModLogger.debug("Setting skin for player " + self.getName().getString());
-        try {
-            ModLogger.debug("Clearing existing skin for player");
-            this.map.removeAll(ServerTitanomachPlayer.PROPERTY_TEXTURES);
-        } catch (Exception ignored) {
-            // Player has no skin data, no worries
-        }
+//        ModLogger.info("Setting skin for player " + self.getName().getString());
+//        try {
+//            ModLogger.info("Clearing existing skin for player");
+//            this.map.removeAll(ServerTitanomachPlayer.PROPERTY_TEXTURES);
+//        } catch (Exception ignored) {
+//            // Player has no skin data, no worries
+//        }
+//
+//        try {
+//            this.map.put(ServerTitanomachPlayer.PROPERTY_TEXTURES, skinData);
+//
+//            // Saving skin data
+//            this.skinValue = skinData.value();
+//            this.skinSignature = skinData.signature();
+//
+//            // Reloading skin
+//            if (reload) {
+//                this.titanomach$reloadSkin();
+//            }
+//
+//            this.lastSkinChangeTime = System.currentTimeMillis();
+//        } catch (Error e) {
+//            // Something went wrong when trying to set the skin
+//            ModLogger.error(e.getMessage());
+//        }
 
-        try {
-            this.map.put(ServerTitanomachPlayer.PROPERTY_TEXTURES, skinData);
 
-            // Saving skin data
-            this.skinValue = skinData.value();
-            this.skinSignature = skinData.signature();
-
-            // Reloading skin
-            if (reload) {
-                this.titanomach$reloadSkin();
+        Objects.requireNonNull(self.getServer()).execute(() -> {
+            ModLogger.info("Skin reload complete for player {}", self.getName().getString());
+            var properties = self.getGameProfile().getProperties();
+            try {
+                properties.removeAll("textures");
+            } catch (Exception ignored) {
             }
 
-            this.lastSkinChangeTime = System.currentTimeMillis();
-        } catch (Error e) {
-            // Something went wrong when trying to set the skin
-            ModLogger.error(e.getMessage());
-        }
+            try {
+                properties.put("textures", skinData);
+            } catch (Error e) {
+
+            }
+
+            this.titanomach$reloadSkin();
+        });
     }
 
     @Override
@@ -352,35 +377,25 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements Fa
         }
     }
 
+    @Inject(method="writeCustomData", at = @At("TAIL"))
+    private void writeCustomDataToNbt(WriteView view, CallbackInfo ci) {
+        if (this.titanomach$getSkinValue().isPresent()) {
+            view.putString("skinTexture", this.titanomach$getSkinValue().get());
+            if (this.titanomach$getSkinSignature().isPresent()) {
+                view.putString("skinSignature", this.titanomach$getSkinSignature().get());
+            }
+        }
+    }
 
-//    @Inject(method = "addAdditionalSaveData", at = @At("TAIL"))
-//    private void writeCustomDataToNbt(CompoundTag tag, CallbackInfo ci) {
-//        if (this.fabrictailor_getSkinValue().isPresent()) {
-//            CompoundTag skinDataTag = new CompoundTag();
-//            skinDataTag.putString("value", this.fabrictailor_getSkinValue().get());
-//            if (this.fabrictailor_getSkinSignature().isPresent()) {
-//                skinDataTag.putString("signature", this.fabrictailor_getSkinSignature().get());
-//            }
-//
-//            tag.put("fabrictailor:skin_data", skinDataTag);
-//        }
-//    }
-//
-//    @Inject(method = "readAdditionalSaveData", at = @At("TAIL"))
-//    private void readCustomDataFromNbt(CompoundTag tag, CallbackInfo ci) {
-//        Optional<CompoundTag> skinDataTagOP = tag.getCompound("fabrictailor:skin_data");
-//        if(skinDataTagOP.isEmpty()) return; // This causes an java.util.NoSuchElementException for new players I believe.
-//        CompoundTag skinDataTag = skinDataTagOP.get();
-//        Optional<String> skinValueOP = skinDataTag.getString("value");
-//        Optional<String> skinSignatureOP = skinDataTag.getString("signature");
-//        // https://fabricmc.net/2025/03/24/1215.html#nbt
-//        if (skinValueOP.isEmpty() || skinSignatureOP.isEmpty()) {
-//            return;
-//        }
-//
-//        this.skinValue = skinValueOP.get();
-//        this.skinSignature = skinSignatureOP.get();
-//        this.fabrictailor_setSkin(this.skinValue, this.skinSignature, false);
-//    }
+    @Inject(method="readCustomData", at = @At("TAIL"))
+    private void readCustomDataFromNbt(ReadView view, CallbackInfo ci) {
+        String skinTexture = view.getString("skinTexture", null);
+        if (skinTexture == null) return;
+        String skinSignature = view.getString("skinSignature", null);
+        if (skinSignature == null) return;
+        this.skinValue = skinTexture;
+        this.skinSignature = skinSignature;
+        this.titanomach$setSkin(skinTexture, skinSignature, false);
+    }
 
 }

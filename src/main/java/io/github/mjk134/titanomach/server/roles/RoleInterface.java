@@ -4,3 +4,4 @@ public interface RoleInterface {
     String RoleName = "";
 
 }
+

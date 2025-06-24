@@ -7,9 +7,6 @@ import io.github.mjk134.titanomach.server.commands.CommandHandler;
 import io.github.mjk134.titanomach.server.config.TitanomachConfig;
 import io.github.mjk134.titanomach.server.entity.ServerTitanomachPlayer;
 import io.github.mjk134.titanomach.server.menu.MenuManager;
-import io.github.mjk134.titanomach.server.tasks.CollectionTask;
-import io.github.mjk134.titanomach.server.tasks.Task;
-import io.github.mjk134.titanomach.utils.RuntimeTypeAdapterFactory;
 import io.github.mjk134.titanomach.utils.Skin;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -72,7 +69,5 @@ public class Titanomach implements ModInitializer {
         MenuManager.createMenus();
     }
 
-    public static final RuntimeTypeAdapterFactory<Task> taskAdapterFactory = RuntimeTypeAdapterFactory
-            .of(Task.class, "type")
-            .registerSubtype(CollectionTask.class, "collection");
+
 }

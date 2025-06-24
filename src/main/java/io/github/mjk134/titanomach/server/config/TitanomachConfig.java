@@ -4,6 +4,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.mojang.authlib.properties.Property;
 import io.github.mjk134.titanomach.server.TitanomachPlayer;
+import io.github.mjk134.titanomach.server.tasks.CollectionTask;
+import io.github.mjk134.titanomach.server.tasks.Task;
+import io.github.mjk134.titanomach.utils.RuntimeTypeAdapterFactory;
 import io.github.mjk134.titanomach.utils.Skin;
 
 import java.io.File;
@@ -14,8 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import static io.github.mjk134.titanomach.Titanomach.MOD_ID;
-import static io.github.mjk134.titanomach.Titanomach.ModLogger;
+import static io.github.mjk134.titanomach.Titanomach.*;
 
 /**
  * This is used to update the data in the server about the player so that state can be fetched when server is brought backup.
@@ -32,16 +34,20 @@ public class TitanomachConfig {
     private HashMap<String, TitanomachPlayer> playerConfigs = new HashMap<String, TitanomachPlayer>();
     // Add skin pool here - make it a map for the skin id
     private HashMap<String, Skin> skinPool = new HashMap<String, Skin>();
+    private static final RuntimeTypeAdapterFactory<Task> taskAdapterFactory = RuntimeTypeAdapterFactory
+            .of(Task.class, "type")
+            .registerSubtype(CollectionTask.class, "collection");
+    public static final Gson GSON = new GsonBuilder()
+            .setPrettyPrinting()
+            .registerTypeAdapterFactory(taskAdapterFactory)
+            .create();
 
     public TitanomachConfig() {}
 
     public void dump() {
         try {
-            Gson gson = new GsonBuilder()
-                .setPrettyPrinting()
-                .create();
             FileWriter writer = new FileWriter(MOD_ID + ".json");
-            String json = gson.toJson(this);
+            String json = GSON.toJson(this);
             writer.write(json);
             writer.close();
         } catch (IOException e) {
@@ -51,7 +57,6 @@ public class TitanomachConfig {
     }
 
     public static TitanomachConfig load() {
-        Gson gson = new Gson();
         // Check if the file exists
         File file = new File(MOD_ID + ".json");
         if (!file.exists()) {
@@ -63,7 +68,7 @@ public class TitanomachConfig {
         // Do try, catch in here to avoid static blocks in the main class
         try {
             FileReader reader = new FileReader(MOD_ID + ".json");
-            TitanomachConfig config = gson.fromJson(reader, TitanomachConfig.class);
+            TitanomachConfig config = GSON.fromJson(reader, TitanomachConfig.class);
             reader.close();
             ModLogger.info("Loaded Titanomach config.");
             return config;

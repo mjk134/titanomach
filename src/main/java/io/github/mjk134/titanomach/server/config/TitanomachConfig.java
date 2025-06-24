@@ -110,7 +110,7 @@ public class TitanomachConfig {
         if (skin == null) {
             return null;
         }
-        return new Property("textures", skin.getTexture(), skin.getTexture());
+        return new Property("textures", skin.getTexture(), skin.getSignature());
     }
 
     public void setEnabled(boolean enabled) {

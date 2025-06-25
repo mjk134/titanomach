@@ -1,7 +1,7 @@
 package io.github.mjk134.titanomach.server.commands;
 
 import com.mojang.brigadier.context.CommandContext;
-import io.github.mjk134.titanomach.server.menu.Menu;
+import io.github.mjk134.titanomach.server.menu.ExampleMenu;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 
@@ -12,8 +12,8 @@ public class MenuTestCommand implements CommandInterface {
             return -1;
         }
 
-        Menu test = new Menu("Test Menu Item");
-        test.display(player);
+        ExampleMenu menu = new ExampleMenu(23);
+        menu.displayTo(player);
         return 0;
     }
 }

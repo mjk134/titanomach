@@ -12,7 +12,7 @@ public class MenuTestCommand implements CommandInterface {
             return -1;
         }
 
-        ExampleMenu menu = new ExampleMenu(23);
+        ExampleMenu menu = new ExampleMenu(context.getSource().getPlayer());
         menu.displayTo(player);
         return 0;
     }

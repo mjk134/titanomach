@@ -25,9 +25,12 @@ public class MenuScreenHandler extends GenericContainerScreenHandler {
         if ((slotIndex >= 54 || slotIndex == -999) && menu.keepDefaultInventoryBehaviour)
             super.onSlotClick(slotIndex, button, actionType, player);
 
-        MenuClickAction action = menu.getAction(slotIndex);
-        if (action != null) {
-            action.onClick(player, slotIndex, this.getSlot(slotIndex).getStack());
+        // if valid action type is performed, call click callback
+        // this check prevents the callback from sometimes being called twice from a PICKUP_ALL action
+        if (actionType == SlotActionType.PICKUP || actionType == SlotActionType.QUICK_MOVE || actionType == SlotActionType.SWAP || actionType == SlotActionType.THROW) {
+            MenuClickAction action = menu.getAction(slotIndex);
+            if (action != null)
+                action.onClick(player, slotIndex, this);
         }
 
         // if offhand swap used, we need to restore the previous item as
@@ -35,6 +38,10 @@ public class MenuScreenHandler extends GenericContainerScreenHandler {
         ItemStack playerOffhandItem = player.getOffHandStack();
         ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity) player;
         serverPlayerEntity.networkHandler.sendPacket(new SetPlayerInventoryS2CPacket(40, playerOffhandItem));
+    }
+
+    public Menu getMenu() {
+        return this.menu;
     }
 
     @Override

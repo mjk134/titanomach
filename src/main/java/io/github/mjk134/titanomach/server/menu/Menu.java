@@ -48,6 +48,19 @@ public class Menu {
         return this.setItem(slot, new ItemStack(Registries.ITEM.get(Identifier.of(itemID))));
     }
 
+    public Menu fillEmptyWith(ItemStack itemStack) {
+        for (int i = 0; i < this.inventory.size(); ++i) {
+            if (this.inventory.getStack(i).isEmpty()) {
+                this.inventory.setStack(i, itemStack);
+            }
+        }
+        return this;
+    }
+
+    public Menu fillEmptyWith(String itemID) {
+        return this.fillEmptyWith(new ItemStack(Registries.ITEM.get(Identifier.of(itemID))));
+    }
+
     public Menu setClickableItem(int slot, ItemStack itemStack, MenuClickAction action) {
         this.setItem(slot, itemStack);
         this.setAction(slot, action);

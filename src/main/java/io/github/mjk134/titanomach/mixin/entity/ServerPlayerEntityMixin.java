@@ -300,49 +300,32 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements Fa
 
     @Override
     public void titanomach$setSkin(Property skinData, boolean reload) {
-//        ModLogger.info("Setting skin for player " + self.getName().getString());
-//        try {
-//            ModLogger.info("Clearing existing skin for player");
-//            this.map.removeAll(ServerTitanomachPlayer.PROPERTY_TEXTURES);
-//        } catch (Exception ignored) {
-//            // Player has no skin data, no worries
-//        }
-//
-//        try {
-//            this.map.put(ServerTitanomachPlayer.PROPERTY_TEXTURES, skinData);
-//
-//            // Saving skin data
-//            this.skinValue = skinData.value();
-//            this.skinSignature = skinData.signature();
-//
-//            // Reloading skin
-//            if (reload) {
-//                this.titanomach$reloadSkin();
-//            }
-//
-//            this.lastSkinChangeTime = System.currentTimeMillis();
-//        } catch (Error e) {
-//            // Something went wrong when trying to set the skin
-//            ModLogger.error(e.getMessage());
-//        }
+        ModLogger.info("Setting skin for player " + self.getName().getString());
+        try {
+            ModLogger.info("Clearing existing skin for player");
+            this.map.removeAll(ServerTitanomachPlayer.PROPERTY_TEXTURES);
+        } catch (Exception ignored) {
+            // Player has no skin data, no worries
+        }
 
+        try {
+            this.map.put(ServerTitanomachPlayer.PROPERTY_TEXTURES, skinData);
 
-        Objects.requireNonNull(self.getServer()).execute(() -> {
-            ModLogger.info("Skin reload complete for player {}", self.getName().getString());
-            var properties = self.getGameProfile().getProperties();
-            try {
-                properties.removeAll("textures");
-            } catch (Exception ignored) {
+            // Saving skin data
+            this.skinValue = skinData.value();
+            this.skinSignature = skinData.signature();
+
+            // Reloading skin
+            if (reload) {
+                this.titanomach$reloadSkin();
             }
 
-            try {
-                properties.put("textures", skinData);
-            } catch (Error e) {
+            this.lastSkinChangeTime = System.currentTimeMillis();
+        } catch (Error e) {
+            // Something went wrong when trying to set the skin
+            ModLogger.error(e.getMessage());
+        }
 
-            }
-
-            this.titanomach$reloadSkin();
-        });
     }
 
     @Override

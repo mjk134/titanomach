@@ -21,6 +21,6 @@ public class PeasantRole extends Role {
 
     @Override
     public void onEffectTick(PlayerEntity player) {
-        player.addStatusEffect(new StatusEffectInstance(Registries.STATUS_EFFECT.getEntry(Identifier.of("minecraft:weakness")).get(), RoleManager.EFFECT_INTERVAL_TICKS));
+        player.addStatusEffect(new StatusEffectInstance(Registries.STATUS_EFFECT.getEntry(Identifier.of("minecraft:weakness")).get(), RoleManager.EFFECT_INTERVAL_TICKS, 0));
     }
 }

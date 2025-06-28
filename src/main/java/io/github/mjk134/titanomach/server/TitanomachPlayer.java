@@ -14,14 +14,11 @@ public class TitanomachPlayer {
     private Boolean hasJoined = false;
     private RandomIdentity randomIdentity;
     private String roleName; // a string reference to role type
-    public Task task;
-    public String taskType;
 
     public TitanomachPlayer(ServerPlayerEntity player) {
         this.playerId = player.getUuid().toString();
         this.randomIdentity = RandomIdentity.getRandomIdentity(player);
         this.roleName = RoleManager.DEFAULT_ROLE_NAME;
-        this.task = new CollectionTask("test", 64, "minecraft:dirt");
     }
 
     public RandomIdentity getRandomIdentity() {

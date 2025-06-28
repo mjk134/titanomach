@@ -5,23 +5,16 @@ import net.minecraft.server.network.ServerPlayerEntity;
 
 public class Task {
     public String name;
-    private int progress;
-    private int maxProgress;
+    public int progress;
+    public int maxProgress;
 
     public Task(String name, int maxProgress) {
         this.name = name;
         this.maxProgress = maxProgress;
     }
 
-    public int getProgress() {
-        return progress;
-    }
+    public void updateProgress(ServerPlayerEntity player) {}
 
-    public void setProgress(int progress) {
-        this.progress = progress;
-    }
+    public boolean submitTask(ServerPlayerEntity player) {return false;}
 
-    public void updateProgress(ServerPlayerEntity player) {
-    }
-    public int getMaxProgress() {return maxProgress;}
 }

@@ -39,11 +39,13 @@ public class TaskManager {
     public void addTask(Task task, String PlayerID) {
         tasks.put(task.name, task);
         playerTaskID.put(PlayerID, task.name);
+        TITANOMACH_CONFIG.dump();
     }
     public void submitTask(String taskID, ServerPlayerEntity player) {
         if (tasks.get(taskID).submitTask(player)) {
             tasks.remove(taskID);
             playerTaskID.remove(player.getName().toString());
-        };
+        }
+        TITANOMACH_CONFIG.dump();
     }
 }

@@ -6,6 +6,7 @@ import io.github.mjk134.titanomach.server.TitanomachPlayer;
 import io.github.mjk134.titanomach.server.commands.CommandHandler;
 import io.github.mjk134.titanomach.server.config.TitanomachConfig;
 import io.github.mjk134.titanomach.server.entity.ServerTitanomachPlayer;
+import io.github.mjk134.titanomach.server.roles.RoleManager;
 import io.github.mjk134.titanomach.utils.Skin;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -61,6 +62,8 @@ public class Titanomach implements ModInitializer {
             ModLogger.info("Command dispatcher has been initialized!");
             CommandHandler.registerCommands(dispatcher);
         });
+
+        RoleManager.initialise();
     }
 
 

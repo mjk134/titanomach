@@ -1,5 +1,8 @@
 package io.github.mjk134.titanomach.server.menu;
 
+import it.unimi.dsi.fastutil.objects.ReferenceSortedSets;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.TooltipDisplayComponent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
@@ -59,6 +62,13 @@ public class Menu {
 
     public Menu fillEmptyWith(String itemID) {
         return this.fillEmptyWith(new ItemStack(Registries.ITEM.get(Identifier.of(itemID))));
+    }
+
+    public Menu fillEmptyWithGlass() {
+        ItemStack fillerGlass = new ItemStack(Registries.ITEM.get(Identifier.of("minecraft:black_stained_glass_pane")));
+        fillerGlass.set(DataComponentTypes.TOOLTIP_DISPLAY, new TooltipDisplayComponent(true, ReferenceSortedSets.emptySet()));
+        this.fillEmptyWith(fillerGlass);
+        return this;
     }
 
     public Menu setClickableItem(int slot, ItemStack itemStack, MenuClickAction action) {

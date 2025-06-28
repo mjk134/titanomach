@@ -28,7 +28,6 @@ public class Titanomach implements ModInitializer {
 
     public static final String MOD_ID = "titanomach";
     public static final Logger MOD_LOGGER = LoggerFactory.getLogger(MOD_ID);
-    public static final TaskManager TASK_MANAGER = new TaskManager();
     public static final TitanomachConfig TITANOMACH_CONFIG = TitanomachConfig.load();
     public static final ExecutorService THREADPOOL = Executors.newCachedThreadPool();
 
@@ -40,11 +39,6 @@ public class Titanomach implements ModInitializer {
             ServerPlayerEntity player = handler.getPlayer();
 
             THREADPOOL.submit(() -> {
-                Optional<String> value = ((ServerTitanomachPlayer) player).titanomach$getSkinValue();
-                Optional<String> signature = ((ServerTitanomachPlayer) player).titanomach$getSkinSignature();
-
-                MOD_LOGGER.info("Test skins {} {}", value, signature);
-
                 Property property = TITANOMACH_CONFIG.getSkinProperty(TITANOMACH_CONFIG.getPlayerConfig(player.getUuidAsString()).getRandomIdentity().getSkinId());
                 ((ServerTitanomachPlayer) player).titanomach$setSkin(property, true);
             });
@@ -58,6 +52,7 @@ public class Titanomach implements ModInitializer {
             if (!isInConfig) {
                 TITANOMACH_CONFIG.addPlayerConfig(player.getUuidAsString(), new TitanomachPlayer(player));
                 PropertyMap propertyMap = player.getGameProfile().getProperties();
+                // Probably always a property IDK
                 Property skinProperty = (Property) propertyMap.get("textures").toArray()[0];
                 if (skinProperty.hasSignature()) TITANOMACH_CONFIG.addToSkinPool(new Skin(skinProperty.value(), skinProperty.signature(), player.getUuidAsString()));
             }
@@ -65,14 +60,15 @@ public class Titanomach implements ModInitializer {
 
         ServerEntityCombatEvents.AFTER_KILLED_OTHER_ENTITY.register((handler, sender, entity) -> {
             if (sender instanceof ServerPlayerEntity player) {
-                if (TASK_MANAGER.tasks.get(TASK_MANAGER.playerTaskID.get(sender.getUuidAsString())) instanceof SlayerTask task) {
+                TaskManager taskManager = TITANOMACH_CONFIG.getTaskManager();
+                if (taskManager.tasks.get(taskManager.playerTaskID.get(sender.getUuidAsString())) instanceof SlayerTask task) {
                     task.updateProgress(player);
                 }
             }
         });
 
         ServerTickEvents.END_SERVER_TICK.register((server) -> {
-            TASK_MANAGER.tick(server);
+            TITANOMACH_CONFIG.getTaskManager().tick(server);
         });
 
         CommandRegistrationCallback.EVENT.register((dispatcher, dedicated, registrationEnvironment) -> {

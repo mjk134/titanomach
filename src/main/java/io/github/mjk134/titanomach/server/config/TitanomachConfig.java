@@ -7,6 +7,7 @@ import io.github.mjk134.titanomach.server.TitanomachPlayer;
 import io.github.mjk134.titanomach.server.tasks.CollectionTask;
 import io.github.mjk134.titanomach.server.tasks.SlayerTask;
 import io.github.mjk134.titanomach.server.tasks.Task;
+import io.github.mjk134.titanomach.server.tasks.TaskManager;
 import io.github.mjk134.titanomach.utils.RuntimeTypeAdapterFactory;
 import io.github.mjk134.titanomach.utils.Skin;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -31,7 +32,7 @@ public class TitanomachConfig {
     /**
      * Stores all the data about the players. UUID, Data
      */
-    private HashMap<String, TitanomachPlayer> playerConfigs = new HashMap<String, TitanomachPlayer>();
+    private HashMap<String, TitanomachPlayer> playerConfigs = new HashMap<>();
     // Add skin pool here - make it a map for the skin id
     private HashMap<String, Skin> skinPool = new HashMap<String, Skin>();
     private static final RuntimeTypeAdapterFactory<Task> taskAdapterFactory = RuntimeTypeAdapterFactory
@@ -42,6 +43,8 @@ public class TitanomachConfig {
             .setPrettyPrinting()
             .registerTypeAdapterFactory(taskAdapterFactory)
             .create();
+
+    private TaskManager taskManager =  new TaskManager();
 
     public TitanomachConfig() {}
 
@@ -172,6 +175,10 @@ public class TitanomachConfig {
             }
         }
         this.dump();
+    }
+
+    public TaskManager getTaskManager() {
+        return taskManager;
     }
 
 }

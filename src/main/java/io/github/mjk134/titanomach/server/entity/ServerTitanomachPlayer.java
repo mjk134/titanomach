@@ -6,6 +6,7 @@ import java.util.Optional;
 
 /**
  * Includes additional methods for skin changes.
+ * Borrowed from fabric tailor
  */
 public interface ServerTitanomachPlayer {
     String PROPERTY_TEXTURES = "textures";

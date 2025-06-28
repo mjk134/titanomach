@@ -12,7 +12,7 @@ import java.util.UUID;
 import static io.github.mjk134.titanomach.Titanomach.TITANOMACH_CONFIG;
 
 public class TaskManager {
-    public HashMap<String, Task> tasks= new HashMap<>();
+    public HashMap<String, Task> tasks = new HashMap<>();
     public HashMap<String, String> playerTaskID = new HashMap<>();
     private static int tickCounter = 0;
 

@@ -1,15 +1,11 @@
 package io.github.mjk134.titanomach.server.commands;
 
-import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
-import io.github.mjk134.titanomach.server.menu.ExampleMenu;
-import io.github.mjk134.titanomach.server.tasks.CollectionTask;
 import io.github.mjk134.titanomach.server.tasks.SlayerTask;
-import io.github.mjk134.titanomach.server.tasks.Task;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 
-import static io.github.mjk134.titanomach.Titanomach.TASK_MANAGER;
+import static io.github.mjk134.titanomach.Titanomach.TITANOMACH_CONFIG;
 
 public class AddTaskCommand {
 public static int run(CommandContext<ServerCommandSource> context) {
@@ -17,7 +13,7 @@ public static int run(CommandContext<ServerCommandSource> context) {
     if (player == null) {
         return -1;
     }
-    TASK_MANAGER.addTask(new SlayerTask("test", 36 * 64, "minecraft:zombie"), player.getUuidAsString());
+    TITANOMACH_CONFIG.getTaskManager().addTask(new SlayerTask("test", 36 * 64, "minecraft:zombie"), player.getUuidAsString());
     return 0;
 }
 }

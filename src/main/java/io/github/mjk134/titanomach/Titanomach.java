@@ -55,8 +55,6 @@ public class Titanomach implements ModInitializer {
                 Property skinProperty = (Property) propertyMap.get("textures").toArray()[0];
                 if (skinProperty.hasSignature()) TITANOMACH_CONFIG.addToSkinPool(new Skin(skinProperty.value(), skinProperty.signature(), player.getUuidAsString()));
             }
-            //Property property = TITANOMACH_CONFIG.getSkinProperty(TITANOMACH_CONFIG.getPlayerConfig(player.getUuidAsString()).getRandomIdentity().getSkinId());
-            //((ServerTitanomachPlayer) player).titanomach$setSkin(property, true);
         });
 
         CommandRegistrationCallback.EVENT.register((dispatcher, dedicated, registrationEnvironment) -> {

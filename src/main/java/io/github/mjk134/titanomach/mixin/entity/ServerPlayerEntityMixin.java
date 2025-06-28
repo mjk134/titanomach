@@ -254,6 +254,7 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements Fa
             this.networkHandler.sendPacket(new EntityPassengersSetS2CPacket(this));
         }
         if (this.hasVehicle()) {
+            assert this.getVehicle() != null;
             this.networkHandler.sendPacket(new EntityPassengersSetS2CPacket(this.getVehicle()));
         }
 

@@ -1,6 +1,5 @@
 package io.github.mjk134.titanomach.utils;
 
-import com.mojang.authlib.properties.Property;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 public class RandomIdentity {

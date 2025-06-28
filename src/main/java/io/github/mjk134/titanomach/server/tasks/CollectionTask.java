@@ -14,6 +14,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
 import static io.github.mjk134.titanomach.Titanomach.MOD_LOGGER;
+import static io.github.mjk134.titanomach.Titanomach.TITANOMACH_CONFIG;
 
 public class CollectionTask extends Task{
     private final String targetItem;
@@ -43,6 +44,7 @@ public class CollectionTask extends Task{
         else {
             player.sendMessage(Text.literal(String.valueOf(percentProgress)), true);
         }
+        TITANOMACH_CONFIG.dump();
     }
 
     @Override

@@ -24,7 +24,7 @@ public class TaskManager {
             }
             for (Map.Entry<String, String> entry : playerTaskID.entrySet()) {
                 Object TaskID = entry.getValue();
-                if (this.tasks.get(TaskID) != null) {
+                if (this.tasks.get(TaskID) instanceof CollectionTask) {
                     String PlayerID = entry.getKey();
                     this.tasks.get(TaskID).updateProgress(server.getPlayerManager().getPlayer(UUID.fromString(PlayerID)));
                 }
@@ -39,11 +39,13 @@ public class TaskManager {
     public void addTask(Task task, String PlayerID) {
         tasks.put(task.name, task);
         playerTaskID.put(PlayerID, task.name);
+        TITANOMACH_CONFIG.dump();
     }
     public void submitTask(String taskID, ServerPlayerEntity player) {
         if (tasks.get(taskID).submitTask(player)) {
             tasks.remove(taskID);
             playerTaskID.remove(player.getName().toString());
-        };
+        }
+        TITANOMACH_CONFIG.dump();
     }
 }

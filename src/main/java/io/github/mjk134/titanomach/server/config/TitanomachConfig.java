@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.mojang.authlib.properties.Property;
 import io.github.mjk134.titanomach.server.TitanomachPlayer;
 import io.github.mjk134.titanomach.server.tasks.CollectionTask;
+import io.github.mjk134.titanomach.server.tasks.SlayerTask;
 import io.github.mjk134.titanomach.server.tasks.Task;
 import io.github.mjk134.titanomach.utils.RuntimeTypeAdapterFactory;
 import io.github.mjk134.titanomach.utils.Skin;
@@ -35,7 +36,8 @@ public class TitanomachConfig {
     private HashMap<String, Skin> skinPool = new HashMap<String, Skin>();
     private static final RuntimeTypeAdapterFactory<Task> taskAdapterFactory = RuntimeTypeAdapterFactory
             .of(Task.class, "type")
-            .registerSubtype(CollectionTask.class, "collection");
+            .registerSubtype(CollectionTask.class, "collection")
+            .registerSubtype(SlayerTask.class, "slayer");
     public static final Gson GSON = new GsonBuilder()
             .setPrettyPrinting()
             .registerTypeAdapterFactory(taskAdapterFactory)

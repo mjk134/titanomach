@@ -7,10 +7,13 @@ import io.github.mjk134.titanomach.server.commands.CommandHandler;
 import io.github.mjk134.titanomach.server.config.TitanomachConfig;
 import io.github.mjk134.titanomach.server.entity.ServerTitanomachPlayer;
 import io.github.mjk134.titanomach.server.roles.RoleManager;
+import io.github.mjk134.titanomach.server.tasks.SlayerTask;
 import io.github.mjk134.titanomach.server.tasks.TaskManager;
 import io.github.mjk134.titanomach.utils.Skin;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.entity.event.v1.ServerEntityCombatEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
@@ -60,13 +63,24 @@ public class Titanomach implements ModInitializer {
             }
         });
 
+        ServerEntityCombatEvents.AFTER_KILLED_OTHER_ENTITY.register((handler, sender, entity) -> {
+            if (sender instanceof ServerPlayerEntity player) {
+                if (TASK_MANAGER.tasks.get(TASK_MANAGER.playerTaskID.get(sender.getUuidAsString())) instanceof SlayerTask task) {
+                    task.updateProgress(player);
+                }
+            }
+        });
+
+        ServerTickEvents.END_SERVER_TICK.register((server) -> {
+            TASK_MANAGER.tick(server);
+        });
+
         CommandRegistrationCallback.EVENT.register((dispatcher, dedicated, registrationEnvironment) -> {
             MOD_LOGGER.info("Command dispatcher has been initialized!");
             CommandHandler.registerCommands(dispatcher);
         });
 
         RoleManager.initialise();
-        TASK_MANAGER.initialise();
     }
 
 

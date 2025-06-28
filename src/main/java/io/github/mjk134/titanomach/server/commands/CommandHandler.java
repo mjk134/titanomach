@@ -17,6 +17,7 @@ public class CommandHandler {
                     .then(literal("disable").executes(DisableCommand::run))
                     .then(literal("start").executes(StartCommand::run))
                     .then(literal("addTask").executes(AddTaskCommand::run))
+                    .then(literal("submitTask").executes(SubmitTaskCommand::run))
                     .then(literal("debugstart").executes(DebugStartCommand::run))
                     .then(literal("addskin")
                             .then(argument("skinId", StringArgumentType.string())

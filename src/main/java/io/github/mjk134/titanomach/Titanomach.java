@@ -65,6 +65,8 @@ public class Titanomach implements ModInitializer {
             CommandHandler.registerCommands(dispatcher);
         });
 
+        
+
         // Probably need to move this somewhere else
         MenuManager.createMenus();
     }

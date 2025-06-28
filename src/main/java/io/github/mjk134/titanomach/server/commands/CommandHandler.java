@@ -1,7 +1,10 @@
 package io.github.mjk134.titanomach.server.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
+import io.github.mjk134.titanomach.Titanomach;
+import io.github.mjk134.titanomach.server.TitanomachPlayer;
 import net.minecraft.server.command.ServerCommandSource;
 
 import static net.minecraft.server.command.CommandManager.argument;
@@ -42,6 +45,15 @@ public class CommandHandler {
         dispatcher.register(
                 literal("roles")
                         .executes(RoleMenuCommand::run)
+        );
+
+        dispatcher.register(
+                literal("setpp")
+                        .then(argument("amount", IntegerArgumentType.integer())
+                                .executes((context) -> {
+                                    Titanomach.TITANOMACH_CONFIG.getPlayerConfig(context.getSource().getPlayer()).setProgressPoints(IntegerArgumentType.getInteger(context, "amount"));
+                                    return 0;
+                                }))
         );
     }
 

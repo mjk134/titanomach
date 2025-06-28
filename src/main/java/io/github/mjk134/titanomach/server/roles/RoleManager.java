@@ -59,16 +59,34 @@ public class RoleManager {
         return calculateRole(player.getProgressPoints());
     }
 
+    /// Get the next role in progression, returns null if max rank
+    public static Role getNextRole(Role role) {
+        int nextIdx = rolesOrdered.indexOf(role) + 1;
+        if (nextIdx >= rolesOrdered.size())
+            return null;
+        return rolesOrdered.get(nextIdx);
+    }
+
+    public static float getPercentageProgressToNextRole(TitanomachPlayer player) {
+        Role playerRole = getPlayerRole(player);
+        Role nextRole = RoleManager.getNextRole(playerRole);
+        if (nextRole != null) {
+            int totalPointsNeeded = nextRole.pointRequirement - playerRole.pointRequirement;
+            int playerProgress = player.getProgressPoints() - playerRole.pointRequirement;
+            return (float)playerProgress / (float)totalPointsNeeded;
+        }
+        return 1.0f;
+    }
+
     public static ArrayList<Role> getAllRoles() {
         return rolesOrdered;
     }
 
     public static Role calculateRole(int points) {
-        int pointsCopy = points;
-        for (Role role : rolesOrdered) {
-            pointsCopy -= role.pointRequirement;
-            if (pointsCopy <= 0) {
-                return role;
+        for (int i = 0; i < rolesOrdered.size(); i++) {
+            Role role = rolesOrdered.get(i);
+            if (role.pointRequirement > points) {
+                return rolesOrdered.get(Integer.max(0, i - 1));
             }
         }
         return rolesOrdered.getLast();

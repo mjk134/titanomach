@@ -1,19 +1,16 @@
 package io.github.mjk134.titanomach.server;
 
-import io.github.mjk134.titanomach.server.roles.RoleManager;
-import io.github.mjk134.titanomach.server.tasks.CollectionTask;
-import io.github.mjk134.titanomach.server.tasks.Task;
-
 import io.github.mjk134.titanomach.utils.RandomIdentity;
 
 import net.minecraft.server.network.ServerPlayerEntity;
+
+import static io.github.mjk134.titanomach.Titanomach.TITANOMACH_CONFIG;
 
 
 public class TitanomachPlayer {
     private String playerId;
     private Boolean hasJoined = false;
     private RandomIdentity randomIdentity;
-    private String roleName; // a string reference to role type
     private int progressPoints;
 
     public TitanomachPlayer(ServerPlayerEntity player) {
@@ -36,10 +33,14 @@ public class TitanomachPlayer {
 
     public void setProgressPoints(int progressPoints) {
         this.progressPoints = progressPoints;
+        TITANOMACH_CONFIG.dump();
     }
 
     public int getProgressPoints() {return this.progressPoints;}
 
-    public void addProgressPoints(int progressPoints) {this.progressPoints += progressPoints;}
+    public void addProgressPoints(int progressPoints) {
+        this.progressPoints += progressPoints;
+        TITANOMACH_CONFIG.dump();
+    }
 
 }

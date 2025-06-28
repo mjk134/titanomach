@@ -1,5 +1,6 @@
 package io.github.mjk134.titanomach.server.tasks;
 
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.screen.GenericContainerScreenHandler;
@@ -21,14 +22,8 @@ public class CollectionTask extends Task{
     }
 
     @Override
-    public void OpenTaskMenu(ServerPlayerEntity player) {
-        screen = new SimpleNamedScreenHandlerFactory( (i, playerInventory, playerEntity) -> GenericContainerScreenHandler.createGeneric9x3( i, playerInventory), Text.of("COLLECTION"));
-        player.openHandledScreen(screen);
-        for (int i = 0; i < 27; i++) {
-            if (i != 13) {
-                player.currentScreenHandler.getSlot(i).insertStack(new ItemStack(Registries.ITEM.get(Identifier.of("minecraft:glass_pane"))));
-            }
-        }
+    public void updateProgress(ServerPlayerEntity player) {
+        PlayerInventory inventory = player.getInventory();
     }
 
 }

@@ -7,6 +7,7 @@ import io.github.mjk134.titanomach.server.commands.CommandHandler;
 import io.github.mjk134.titanomach.server.config.TitanomachConfig;
 import io.github.mjk134.titanomach.server.entity.ServerTitanomachPlayer;
 import io.github.mjk134.titanomach.server.roles.RoleManager;
+import io.github.mjk134.titanomach.server.tasks.TaskManager;
 import io.github.mjk134.titanomach.utils.Skin;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -23,13 +24,14 @@ import java.util.concurrent.Executors;
 public class Titanomach implements ModInitializer {
 
     public static final String MOD_ID = "titanomach";
-    public static final Logger ModLogger = LoggerFactory.getLogger(MOD_ID);
+    public static final Logger MOD_LOGGER = LoggerFactory.getLogger(MOD_ID);
+    public static final TaskManager TASK_MANAGER = new TaskManager();
     public static final TitanomachConfig TITANOMACH_CONFIG = TitanomachConfig.load();
     public static final ExecutorService THREADPOOL = Executors.newCachedThreadPool();
 
     @Override
     public void onInitialize() {
-        ModLogger.info(MOD_ID + " has initialized.");
+        MOD_LOGGER.info(MOD_ID + " has initialized.");
 
         ServerPlayConnectionEvents.INIT.register((handler, server) -> {
             ServerPlayerEntity player = handler.getPlayer();
@@ -38,7 +40,7 @@ public class Titanomach implements ModInitializer {
                 Optional<String> value = ((ServerTitanomachPlayer) player).titanomach$getSkinValue();
                 Optional<String> signature = ((ServerTitanomachPlayer) player).titanomach$getSkinSignature();
 
-                ModLogger.info("Test skins {} {}", value, signature);
+                MOD_LOGGER.info("Test skins {} {}", value, signature);
 
                 Property property = TITANOMACH_CONFIG.getSkinProperty(TITANOMACH_CONFIG.getPlayerConfig(player.getUuidAsString()).getRandomIdentity().getSkinId());
                 ((ServerTitanomachPlayer) player).titanomach$setSkin(property, true);
@@ -59,11 +61,12 @@ public class Titanomach implements ModInitializer {
         });
 
         CommandRegistrationCallback.EVENT.register((dispatcher, dedicated, registrationEnvironment) -> {
-            ModLogger.info("Command dispatcher has been initialized!");
+            MOD_LOGGER.info("Command dispatcher has been initialized!");
             CommandHandler.registerCommands(dispatcher);
         });
 
         RoleManager.initialise();
+        TASK_MANAGER.initialise();
     }
 
 

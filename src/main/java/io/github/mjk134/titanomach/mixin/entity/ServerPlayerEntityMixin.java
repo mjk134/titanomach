@@ -4,7 +4,6 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
 import com.mojang.datafixers.util.Pair;
-import io.github.mjk134.titanomach.mixin.world.EntityTrackerAccessor;
 import io.github.mjk134.titanomach.mixin.world.ServerChunkLoadingManagerAccessor;
 import io.github.mjk134.titanomach.server.entity.ServerTitanomachPlayer;
 import io.github.mjk134.titanomach.server.network.FakeTextDisplayHolder;
@@ -13,7 +12,6 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerPosition;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.c2s.common.SyncedClientOptions;
 import net.minecraft.network.packet.s2c.play.*;
@@ -22,7 +20,6 @@ import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.network.ServerPlayerInteractionManager;
-import net.minecraft.server.world.ServerChunkLoadingManager;
 import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.storage.ReadView;
@@ -46,7 +43,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.*;
 
-import static io.github.mjk134.titanomach.Titanomach.ModLogger;
+import static io.github.mjk134.titanomach.Titanomach.MOD_LOGGER;
 
 
 @Mixin(ServerPlayerEntity.class)
@@ -186,11 +183,11 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements Fa
     @Override
     public void titanomach$reloadSkin() {
         if (self.getServer() == null) {
-            ModLogger.error("Tried to reload skin form client side! This should not happen!");
+            MOD_LOGGER.error("Tried to reload skin form client side! This should not happen!");
             return;
         }
 
-        ModLogger.info("Reloading skin for player {}", self.getName().getString());
+        MOD_LOGGER.info("Reloading skin for player {}", self.getName().getString());
 
         PlayerManager playerManager = self.getServer().getPlayerManager();
         ServerWorld serverWorld = getWorld();
@@ -261,7 +258,7 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements Fa
         this.sendAbilitiesUpdate();
         playerManager.sendPlayerStatus(self);
 
-        ModLogger.info("Skin reload complete for player {}", self.getName().getString());
+        MOD_LOGGER.info("Skin reload complete for player {}", self.getName().getString());
     }
 
     @Override
@@ -301,9 +298,9 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements Fa
 
     @Override
     public void titanomach$setSkin(Property skinData, boolean reload) {
-        ModLogger.info("Setting skin for player " + self.getName().getString());
+        MOD_LOGGER.info("Setting skin for player " + self.getName().getString());
         try {
-            ModLogger.info("Clearing existing skin for player");
+            MOD_LOGGER.info("Clearing existing skin for player");
             this.map.removeAll(ServerTitanomachPlayer.PROPERTY_TEXTURES);
         } catch (Exception ignored) {
             // Player has no skin data, no worries
@@ -324,7 +321,7 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements Fa
             this.lastSkinChangeTime = System.currentTimeMillis();
         } catch (Error e) {
             // Something went wrong when trying to set the skin
-            ModLogger.error(e.getMessage());
+            MOD_LOGGER.error(e.getMessage());
         }
 
     }

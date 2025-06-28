@@ -6,7 +6,6 @@ import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
@@ -14,7 +13,7 @@ import net.minecraft.util.math.Vec3d;
 
 import java.util.Objects;
 
-import static io.github.mjk134.titanomach.Titanomach.ModLogger;
+import static io.github.mjk134.titanomach.Titanomach.MOD_LOGGER;
 import static io.github.mjk134.titanomach.Titanomach.TITANOMACH_CONFIG;
 
 public class StartCommand {
@@ -50,7 +49,7 @@ public class StartCommand {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
-                ModLogger.error(e.getMessage());
+                MOD_LOGGER.error(e.getMessage());
             }
         }
         TITANOMACH_CONFIG.setEnabled(true);

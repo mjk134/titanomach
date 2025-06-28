@@ -8,7 +8,7 @@ import net.minecraft.text.Text;
 
 import java.util.Objects;
 
-import static io.github.mjk134.titanomach.Titanomach.ModLogger;
+import static io.github.mjk134.titanomach.Titanomach.MOD_LOGGER;
 import static io.github.mjk134.titanomach.Titanomach.TITANOMACH_CONFIG;
 
 public class AddSkinCommand {
@@ -17,7 +17,7 @@ public class AddSkinCommand {
         String texture = StringArgumentType.getString(context, "texture");
         String signature = StringArgumentType.getString(context, "signature");
 
-        ModLogger.info("Adding skin, {} texture, {} signature, {}", skinId, texture, signature);
+        MOD_LOGGER.info("Adding skin, {} texture, {} signature, {}", skinId, texture, signature);
         TITANOMACH_CONFIG.addToSkinPool(new Skin(texture, signature, skinId));
         Objects.requireNonNull(context.getSource().getPlayer()).sendMessage(Text.literal("Skin successfully added! Check the logs for more information."));
         return 0;

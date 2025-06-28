@@ -13,11 +13,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import static io.github.mjk134.titanomach.Titanomach.*;
 
@@ -53,8 +50,8 @@ public class TitanomachConfig {
             writer.write(json);
             writer.close();
         } catch (IOException e) {
-            ModLogger.error("An error occurred when dumping the Titanomach config.");
-            ModLogger.error(e.getMessage());
+            MOD_LOGGER.error("An error occurred when dumping the Titanomach config.");
+            MOD_LOGGER.error(e.getMessage());
         }
     }
 
@@ -72,11 +69,11 @@ public class TitanomachConfig {
             FileReader reader = new FileReader(MOD_ID + ".json");
             TitanomachConfig config = GSON.fromJson(reader, TitanomachConfig.class);
             reader.close();
-            ModLogger.info("Loaded Titanomach config.");
+            MOD_LOGGER.info("Loaded Titanomach config.");
             return config;
         } catch (IOException e) {
-            ModLogger.error("Failed to load config file, the class is replaced.");
-            ModLogger.error(e.getMessage());
+            MOD_LOGGER.error("Failed to load config file, the class is replaced.");
+            MOD_LOGGER.error(e.getMessage());
             return new TitanomachConfig();
         }
     }
@@ -136,10 +133,10 @@ public class TitanomachConfig {
             for (TitanomachPlayer player : this.playerConfigs.values()) {
                 // set skin id to blank
                 player.getRandomIdentity().setSkinId("");
-                ModLogger.info("Set {} to {}", player.getPlayerId(), player.getRandomIdentity().getSkinId());
+                MOD_LOGGER.info("Set {} to {}", player.getPlayerId(), player.getRandomIdentity().getSkinId());
             }
 
-            ModLogger.info("Beginning to set the skins.");
+            MOD_LOGGER.info("Beginning to set the skins.");
             for (TitanomachPlayer player : this.playerConfigs.values()) {
 
                 int randomNum = (int)(Math.random() * keysSize);
@@ -154,13 +151,13 @@ public class TitanomachConfig {
                             break;
                         }
                     }
-                    ModLogger.info("Random number set to {}", randomNum);
+                    MOD_LOGGER.info("Random number set to {}", randomNum);
                     if (isInUse) {
                         randomNum = (int)(Math.random() * keysSize);
                         id = keys.get(randomNum);
-                        ModLogger.info("Skin in use attempt using for player {}: {}", player.getPlayerId(), id);
+                        MOD_LOGGER.info("Skin in use attempt using for player {}: {}", player.getPlayerId(), id);
                     } else {
-                        ModLogger.info("Skin not in use using for player {}: {}", player.getPlayerId(), id);
+                        MOD_LOGGER.info("Skin not in use using for player {}: {}", player.getPlayerId(), id);
                         break;
                     }
                 }

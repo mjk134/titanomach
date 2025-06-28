@@ -5,6 +5,7 @@ import io.github.mjk134.titanomach.server.TitanomachPlayer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.server.MinecraftServer;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
@@ -13,6 +14,7 @@ public class RoleManager {
     public final static String DEFAULT_ROLE_NAME = "Peasant";
     private static int effectIntervalCounter = 0;
     private static final HashMap<String, Role> roles = new HashMap<>();
+    private static final ArrayList<Role> rolesOrdered = new ArrayList<>();
 
     public static void initialise() {
         ServerTickEvents.END_SERVER_TICK.register((server) -> {
@@ -37,7 +39,7 @@ public class RoleManager {
             String uuid = player.getUuidAsString();
             TitanomachPlayer titanomachPlayer = Titanomach.TITANOMACH_CONFIG.getPlayerConfig(uuid);
 
-            Role role = getRole(titanomachPlayer.getRoleName());
+            Role role = getPlayerRole(titanomachPlayer);
             if (role != null)
                 role.onEffectTick(player);
         });
@@ -45,6 +47,7 @@ public class RoleManager {
 
     private static void addRole(Role role) {
         roles.put(role.name, role);
+        rolesOrdered.add(role);
     }
 
     /// Get a Role from its string name
@@ -52,7 +55,22 @@ public class RoleManager {
         return roles.get(roleName);
     }
 
-    public static Collection<Role> getAllRoles() {
-        return roles.values();
+    public static Role getPlayerRole(TitanomachPlayer player) {
+        return calculateRole(player.getProgressPoints());
+    }
+
+    public static ArrayList<Role> getAllRoles() {
+        return rolesOrdered;
+    }
+
+    public static Role calculateRole(int points) {
+        int pointsCopy = points;
+        for (Role role : rolesOrdered) {
+            pointsCopy -= role.pointRequirement;
+            if (pointsCopy <= 0) {
+                return role;
+            }
+        }
+        return rolesOrdered.getLast();
     }
 }

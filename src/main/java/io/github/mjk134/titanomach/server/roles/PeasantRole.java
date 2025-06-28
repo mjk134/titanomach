@@ -15,7 +15,8 @@ public class PeasantRole extends Role {
                         §7Applies §9Weakness I
                         """,
                 "minecraft:wheat",
-                "§7");
+                "§7",
+                0);
     }
 
     @Override

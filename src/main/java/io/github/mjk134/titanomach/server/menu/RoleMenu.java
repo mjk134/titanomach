@@ -6,24 +6,17 @@ import io.github.mjk134.titanomach.server.roles.Role;
 import io.github.mjk134.titanomach.server.roles.RoleManager;
 import io.github.mjk134.titanomach.utils.ItemBuilder;
 import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.LoreComponent;
 import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.registry.Registries;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-
-import java.util.ArrayList;
-import java.util.List;
+import net.minecraft.server.network.ServerPlayerEntity;
 
 public class RoleMenu extends Menu {
     // this probably needs to change later
     public RoleMenu(PlayerEntity player) {
         super("Roles");
 
-        Role playerRole = RoleManager.getRole(Titanomach.TITANOMACH_CONFIG.getPlayerConfig(player.getUuidAsString()).getRoleName());
+        Role playerRole = RoleManager.getPlayerRole(Titanomach.TITANOMACH_CONFIG.getPlayerConfig((ServerPlayerEntity) player));
 
         addRoleIcon(RoleManager.getRole("Peasant"), 1, playerRole.name);
         addRoleIcon(RoleManager.getRole("Freeman"), 2, playerRole.name);
@@ -31,7 +24,6 @@ public class RoleMenu extends Menu {
         addRoleIcon(RoleManager.getRole("Noble"), 5, playerRole.name);
         addRoleIcon(RoleManager.getRole("King"), 6, playerRole.name);
         addRoleIcon(RoleManager.getRole("God"), 7, playerRole.name);
-
 
         GameProfile gameProfile = player.getGameProfile();
         ItemStack playerHead = new ItemBuilder("minecraft:player_head")

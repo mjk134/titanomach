@@ -14,11 +14,12 @@ public class TitanomachPlayer {
     private Boolean hasJoined = false;
     private RandomIdentity randomIdentity;
     private String roleName; // a string reference to role type
+    private int progressPoints;
 
     public TitanomachPlayer(ServerPlayerEntity player) {
         this.playerId = player.getUuid().toString();
         this.randomIdentity = RandomIdentity.getRandomIdentity(player);
-        this.roleName = RoleManager.DEFAULT_ROLE_NAME;
+        this.progressPoints = 0;
     }
 
     public RandomIdentity getRandomIdentity() {
@@ -33,8 +34,12 @@ public class TitanomachPlayer {
         return playerId;
     }
 
-    public void setRoleName(String roleName) {this.roleName = roleName;}
+    public void setProgressPoints(int progressPoints) {
+        this.progressPoints = progressPoints;
+    }
 
-    public String getRoleName() {return this.roleName;}
+    public int getProgressPoints() {return this.progressPoints;}
+
+    public void addProgressPoints(int progressPoints) {this.progressPoints += progressPoints;}
 
 }

@@ -8,6 +8,7 @@ import io.github.mjk134.titanomach.server.tasks.CollectionTask;
 import io.github.mjk134.titanomach.server.tasks.Task;
 import io.github.mjk134.titanomach.utils.RuntimeTypeAdapterFactory;
 import io.github.mjk134.titanomach.utils.Skin;
+import net.minecraft.server.network.ServerPlayerEntity;
 
 import java.io.File;
 import java.io.FileReader;

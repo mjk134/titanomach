@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static io.github.mjk134.titanomach.Titanomach.*;
 
@@ -110,7 +112,7 @@ public class TitanomachConfig {
         if (skin == null) {
             return null;
         }
-        return new Property("textures", skin.getTexture(), skin.getTexture());
+        return new Property("textures", skin.getTexture(), skin.getSignature());
     }
 
     public void setEnabled(boolean enabled) {
@@ -122,10 +124,51 @@ public class TitanomachConfig {
         return started;
     }
 
-    public void setStarted(boolean started) {
-        this.started = started;
+    /**
+     * Call this method to start the titanomachy.
+     */
+    public void start() {
+        this.started = true;
+        // Get keys of skins
+        List<String> keys = this.skinPool.keySet().stream().toList();
+        int keysSize = keys.size();
+        if (keysSize > 0) {
+            for (TitanomachPlayer player : this.playerConfigs.values()) {
+                // set skin id to blank
+                player.getRandomIdentity().setSkinId("");
+                ModLogger.info("Set {} to {}", player.getPlayerId(), player.getRandomIdentity().getSkinId());
+            }
+
+            ModLogger.info("Beginning to set the skins.");
+            for (TitanomachPlayer player : this.playerConfigs.values()) {
+
+                int randomNum = (int)(Math.random() * keysSize);
+                String id = keys.get(randomNum);
+
+                while (true) {
+                    boolean isInUse = false;
+                    for (TitanomachPlayer checkedPlayer : this.playerConfigs.values()) {
+                        if (checkedPlayer.getRandomIdentity().getSkinId().equals(id)) {
+
+                            isInUse = true;
+                            break;
+                        }
+                    }
+                    ModLogger.info("Random number set to {}", randomNum);
+                    if (isInUse) {
+                        randomNum = (int)(Math.random() * keysSize);
+                        id = keys.get(randomNum);
+                        ModLogger.info("Skin in use attempt using for player {}: {}", player.getPlayerId(), id);
+                    } else {
+                        ModLogger.info("Skin not in use using for player {}: {}", player.getPlayerId(), id);
+                        break;
+                    }
+                }
+
+                player.getRandomIdentity().setSkinId(id);
+            }
+        }
         this.dump();
     }
-
 
 }

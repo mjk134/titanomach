@@ -30,6 +30,7 @@ public class CommandHandler {
         dispatcher.register(literal("setskin")
                 .then(argument("skinId", StringArgumentType.string())
                         .executes(SetSkinCommand::run)));
+
         dispatcher.register(
                 literal("menu")
                         .executes(MenuTestCommand::run)

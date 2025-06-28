@@ -29,5 +29,4 @@ public class RandomIdentity {
         this.skinId = skinId;
     }
 
-
 }

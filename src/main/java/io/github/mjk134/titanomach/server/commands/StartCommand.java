@@ -54,7 +54,7 @@ public class StartCommand {
             }
         }
         TITANOMACH_CONFIG.setEnabled(true);
-        TITANOMACH_CONFIG.setStarted(true);
+        TITANOMACH_CONFIG.start();
         for (ServerPlayerEntity player : context.getSource().getServer().getPlayerManager().getPlayerList()) {
             player.networkHandler.disconnect(Text.literal("The Titanomachy has begun."));
         }

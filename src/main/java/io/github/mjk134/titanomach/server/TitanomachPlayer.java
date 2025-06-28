@@ -29,5 +29,8 @@ public class TitanomachPlayer {
         this.randomIdentity.setSkinId(skinId);
     }
 
+    public String getPlayerId() {
+        return playerId;
+    }
 
 }

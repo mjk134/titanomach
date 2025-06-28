@@ -1,11 +1,10 @@
 package io.github.mjk134.titanomach.server.commands;
 
 import com.mojang.brigadier.context.CommandContext;
-import io.github.mjk134.titanomach.server.tasks.CollectionTask;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 
-import static io.github.mjk134.titanomach.Titanomach.TASK_MANAGER;
+import static io.github.mjk134.titanomach.Titanomach.TITANOMACH_CONFIG;
 
 public class SubmitTaskCommand {
     public static int run(CommandContext<ServerCommandSource> context) {
@@ -13,7 +12,7 @@ public class SubmitTaskCommand {
         if (player == null) {
             return -1;
         }
-        TASK_MANAGER.submitTask("test", player);
+        TITANOMACH_CONFIG.getTaskManager().submitTask("test", player);
         return 0;
     }
 }

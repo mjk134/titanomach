@@ -8,15 +8,13 @@ import io.github.mjk134.titanomach.server.tasks.CollectionTask;
 import io.github.mjk134.titanomach.server.tasks.Task;
 import io.github.mjk134.titanomach.utils.RuntimeTypeAdapterFactory;
 import io.github.mjk134.titanomach.utils.Skin;
+import net.minecraft.server.network.ServerPlayerEntity;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static io.github.mjk134.titanomach.Titanomach.*;
@@ -88,6 +86,10 @@ public class TitanomachConfig {
 
     public TitanomachPlayer getPlayerConfig(String playerId) {
         return playerConfigs.get(playerId);
+    }
+
+    public TitanomachPlayer getPlayerConfig(ServerPlayerEntity player) {
+        return getPlayerConfig(player.getUuidAsString());
     }
 
     public Boolean isPlayerInConfig(String playerId) {

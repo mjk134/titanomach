@@ -11,8 +11,8 @@ public class PeasantRole extends Role {
                 "Peasant",
                 """
 
-                        §r§7Filler blah blah blah
-                        §r§7Applies §9Weakness I
+                        §7Filler blah blah blah
+                        §7Applies §9Weakness I
                         """,
                 "minecraft:wheat",
                 "§7");

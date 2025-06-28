@@ -10,6 +10,8 @@ import net.minecraft.util.Identifier;
 
 public class ExampleMenu extends Menu {
     public int count = 1;
+    // a player context is passed so that the menu can be personalised to that player
+    // this is not necessary if the menu items do not depend on the player
     public ExampleMenu(PlayerEntity playerContext) {
         // initialize the menu with title
         super("Example Menu");
@@ -32,9 +34,6 @@ public class ExampleMenu extends Menu {
         ItemStack emeraldIcon = new ItemStack(Registries.ITEM.get(Identifier.of("minecraft:emerald")));
         emeraldIcon.set(DataComponentTypes.CUSTOM_NAME, Text.of("Click me!"));
 
-        ItemStack fillerGlass = new ItemStack(Registries.ITEM.get(Identifier.of("minecraft:black_stained_glass_pane")));
-        fillerGlass.set(DataComponentTypes.CUSTOM_NAME, Text.of(""));
-
         ItemStack headItem = new ItemStack(Registries.ITEM.get(Identifier.of("minecraft:skeleton_skull")));
         headItem.set(DataComponentTypes.CUSTOM_NAME, Text.of("Your UUID: " + playerContext.getUuid().toString()));
 
@@ -42,10 +41,10 @@ public class ExampleMenu extends Menu {
                 .setClickableItem(8, nextArrow, nextMenuAction)
                 .setClickableItem(22, emeraldIcon, incrementAction)
                 .setItem(53, headItem) // add an item that depends on the additional context passed in, e.g. a player
-                .fillEmptyWith(fillerGlass);
+                .fillEmptyWithGlass();
     }
 
-    // this menu is nested in the first one only so that this example is all in one file
+    // this menu is nested in the first one so that this example is all in one file
     class ExampleMenu2 extends Menu {
         public ExampleMenu2() {
             super("Example Menu 2");

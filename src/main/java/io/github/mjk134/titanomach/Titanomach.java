@@ -6,6 +6,7 @@ import io.github.mjk134.titanomach.server.TitanomachPlayer;
 import io.github.mjk134.titanomach.server.commands.CommandHandler;
 import io.github.mjk134.titanomach.server.config.TitanomachConfig;
 import io.github.mjk134.titanomach.server.entity.ServerTitanomachPlayer;
+import io.github.mjk134.titanomach.server.roles.RoleManager;
 import io.github.mjk134.titanomach.utils.Skin;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -55,14 +56,14 @@ public class Titanomach implements ModInitializer {
                 Property skinProperty = (Property) propertyMap.get("textures").toArray()[0];
                 if (skinProperty.hasSignature()) TITANOMACH_CONFIG.addToSkinPool(new Skin(skinProperty.value(), skinProperty.signature(), player.getUuidAsString()));
             }
-            //Property property = TITANOMACH_CONFIG.getSkinProperty(TITANOMACH_CONFIG.getPlayerConfig(player.getUuidAsString()).getRandomIdentity().getSkinId());
-            //((ServerTitanomachPlayer) player).titanomach$setSkin(property, true);
         });
 
         CommandRegistrationCallback.EVENT.register((dispatcher, dedicated, registrationEnvironment) -> {
             ModLogger.info("Command dispatcher has been initialized!");
             CommandHandler.registerCommands(dispatcher);
         });
+
+        RoleManager.initialise();
     }
 
 

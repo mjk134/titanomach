@@ -32,8 +32,14 @@ public class CommandHandler {
                         .executes(SetSkinCommand::run)));
 
         dispatcher.register(
-                literal("menu")
+                literal("testmenu")
+                        .requires(source -> source.hasPermissionLevel(4))
                         .executes(MenuTestCommand::run)
+        );
+
+        dispatcher.register(
+                literal("roles")
+                        .executes(RoleMenuCommand::run)
         );
     }
 

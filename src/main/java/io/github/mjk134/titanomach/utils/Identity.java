@@ -2,18 +2,18 @@ package io.github.mjk134.titanomach.utils;
 
 import net.minecraft.server.network.ServerPlayerEntity;
 
-public class RandomIdentity {
+public class Identity {
     private String skinId;
     private String playerName;
 
-    public RandomIdentity(String skinId, String playerName) {
+    public Identity(String skinId, String playerName) {
         this.skinId = skinId;
         this.playerName = playerName;
     }
 
-    public static RandomIdentity getRandomIdentity(ServerPlayerEntity player) {
+    public static Identity getRandomIdentity(ServerPlayerEntity player) {
         int randomNum = (int)(Math.random() * 101);
-        return new RandomIdentity(player.getUuidAsString(), "Monkey" + randomNum);
+        return new Identity(player.getUuidAsString(), "Monkey" + randomNum);
     }
 
     public String getSkinId() {

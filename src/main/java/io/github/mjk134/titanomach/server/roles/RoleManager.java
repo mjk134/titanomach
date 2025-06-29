@@ -17,20 +17,20 @@ public class RoleManager {
     private static final ArrayList<Role> rolesOrdered = new ArrayList<>();
 
     public static void initialise() {
-        ServerTickEvents.END_SERVER_TICK.register((server) -> {
-            effectIntervalCounter++;
-            if (effectIntervalCounter == EFFECT_INTERVAL_TICKS) {
-                applyRoleEffects(server);
-                effectIntervalCounter = 0;
-            }
-        });
-
         addRole(new PeasantRole());
         addRole(new FreemanRole());
         addRole(new KnightRole());
         addRole(new NobleRole());
         addRole(new KingRole());
         addRole(new GodRole());
+    }
+
+    public static void tick(MinecraftServer server) {
+        effectIntervalCounter++;
+        if (effectIntervalCounter == EFFECT_INTERVAL_TICKS) {
+            applyRoleEffects(server);
+            effectIntervalCounter = 0;
+        }
     }
 
     private static void applyRoleEffects(MinecraftServer server) {

@@ -20,7 +20,6 @@ import net.minecraft.text.Text;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -39,7 +38,8 @@ public class Titanomach implements ModInitializer {
             ServerPlayerEntity player = handler.getPlayer();
 
             THREADPOOL.submit(() -> {
-                Property property = TITANOMACH_CONFIG.getSkinProperty(TITANOMACH_CONFIG.getPlayerConfig(player.getUuidAsString()).getRandomIdentity().getSkinId());
+                // TODO: REFACTOR THIS TO MAKE IT CLEANER
+                Property property = TITANOMACH_CONFIG.getSkinProperty(TITANOMACH_CONFIG.getPlayerConfig(player).getRandomIdentity().getSkinId());
                 ((ServerTitanomachPlayer) player).titanomach$setSkin(property, true);
             });
         });
@@ -56,12 +56,21 @@ public class Titanomach implements ModInitializer {
                 Property skinProperty = (Property) propertyMap.get("textures").toArray()[0];
                 if (skinProperty.hasSignature()) TITANOMACH_CONFIG.addToSkinPool(new Skin(skinProperty.value(), skinProperty.signature(), player.getUuidAsString()));
             }
+
+            if (TITANOMACH_CONFIG.isStarted()) {
+                TitanomachPlayer titanomachPlayer = TITANOMACH_CONFIG.getPlayerConfig(player);
+                if (!titanomachPlayer.getHasJoined()) {
+                    // TODO: IMPLEMENT JOIN LOGIC I.E. BROADCAST MESSAGES ADD BOOK AND QUILL ETC
+                    titanomachPlayer.setHasJoined(true);
+                    TITANOMACH_CONFIG.dump();
+                }
+            }
         });
 
         ServerEntityCombatEvents.AFTER_KILLED_OTHER_ENTITY.register((handler, sender, entity) -> {
             if (sender instanceof ServerPlayerEntity player) {
                 TaskManager taskManager = TITANOMACH_CONFIG.getTaskManager();
-                if (taskManager.tasks.get(taskManager.playerTaskID.get(sender.getUuidAsString())) instanceof SlayerTask task) {
+                if (taskManager.getTaskFromPlayer(player) instanceof SlayerTask task) {
                     task.updateProgress(player);
                 }
             }
@@ -69,6 +78,7 @@ public class Titanomach implements ModInitializer {
 
         ServerTickEvents.END_SERVER_TICK.register((server) -> {
             TITANOMACH_CONFIG.getTaskManager().tick(server);
+            RoleManager.tick(server);
         });
 
         CommandRegistrationCallback.EVENT.register((dispatcher, dedicated, registrationEnvironment) -> {

@@ -77,8 +77,10 @@ public class Titanomach implements ModInitializer {
         });
 
         ServerTickEvents.END_SERVER_TICK.register((server) -> {
-            TITANOMACH_CONFIG.getTaskManager().tick(server);
-            RoleManager.tick(server);
+            if (TITANOMACH_CONFIG.isEnabled()) {
+                TITANOMACH_CONFIG.getTaskManager().tick(server);
+                RoleManager.tick(server);
+            }
         });
 
         CommandRegistrationCallback.EVENT.register((dispatcher, dedicated, registrationEnvironment) -> {

@@ -1,5 +1,7 @@
 package io.github.mjk134.titanomach.server.roles;
 
+import io.github.mjk134.titanomach.server.tasks.CollectionTask;
+import io.github.mjk134.titanomach.server.tasks.Task;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.registry.Registries;
@@ -28,5 +30,12 @@ public class PeasantRole extends Role {
                         0
                 )
         );
+    }
+
+    @Override
+    public Task[] getGlobalTasks() {
+        return new Task[]{
+                new CollectionTask("Dirt collection", 27 * 64, 1000, true,"minecraft:dirt")
+        };
     }
 }

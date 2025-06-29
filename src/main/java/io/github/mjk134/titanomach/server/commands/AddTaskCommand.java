@@ -13,7 +13,7 @@ public static int run(CommandContext<ServerCommandSource> context) {
     if (player == null) {
         return -1;
     }
-    TITANOMACH_CONFIG.getTaskManager().addTask(new SlayerTask("test", 36 * 64, "minecraft:zombie"), player.getUuidAsString());
+    TITANOMACH_CONFIG.getTaskManager().addTask(new SlayerTask("test", 36 * 64, 100, "minecraft:zombie"), player.getUuidAsString());
     return 0;
 }
 }

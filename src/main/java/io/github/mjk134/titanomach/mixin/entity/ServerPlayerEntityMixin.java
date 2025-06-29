@@ -357,26 +357,6 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements Fa
             // Player has no skin data, no worries
         }
     }
-
-    @Inject(method="writeCustomData", at = @At("TAIL"))
-    private void writeCustomDataToNbt(WriteView view, CallbackInfo ci) {
-        if (this.titanomach$getSkinValue().isPresent()) {
-            view.putString("skinTexture", this.titanomach$getSkinValue().get());
-            if (this.titanomach$getSkinSignature().isPresent()) {
-                view.putString("skinSignature", this.titanomach$getSkinSignature().get());
-            }
-        }
-    }
-
-    @Inject(method="readCustomData", at = @At("TAIL"))
-    private void readCustomDataFromNbt(ReadView view, CallbackInfo ci) {
-        String skinTexture = view.getString("skinTexture", null);
-        if (skinTexture == null) return;
-        String skinSignature = view.getString("skinSignature", null);
-        if (skinSignature == null) return;
-        this.skinValue = skinTexture;
-        this.skinSignature = skinSignature;
-        this.titanomach$setSkin(skinTexture, skinSignature, false);
-    }
+    
 
 }

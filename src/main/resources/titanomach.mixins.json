@@ -4,6 +4,7 @@
   "package": "io.github.mjk134.titanomach.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "entity.PlayerEntityAccessor",
     "entity.DisplayEntityAccessor",
     "entity.DisplayEntityAccessor$TextDisplayEntityAccessor",
     "entity.EntityAccessor",

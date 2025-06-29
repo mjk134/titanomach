@@ -22,8 +22,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.network.ServerPlayerInteractionManager;
 import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.storage.ReadView;
-import net.minecraft.storage.WriteView;
 import net.minecraft.text.Text;
 import net.minecraft.util.PlayerInput;
 import net.minecraft.util.math.Vec3d;
@@ -44,6 +42,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.*;
 
 import static io.github.mjk134.titanomach.Titanomach.MOD_LOGGER;
+import static io.github.mjk134.titanomach.Titanomach.TITANOMACH_CONFIG;
+import static io.github.mjk134.titanomach.mixin.entity.PlayerEntityAccessor.getPLAYER_MODEL_PARTS;
 
 
 @Mixin(ServerPlayerEntity.class)
@@ -357,6 +357,16 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements Fa
             // Player has no skin data, no worries
         }
     }
-    
+
+    @Inject(method = "setClientOptions", at = @At("TAIL"))
+    private void disableCapeIfNeeded(SyncedClientOptions clientSkinPrefs, CallbackInfo ci) {
+        if (TITANOMACH_CONFIG.isEnabled()) {
+            byte playerModel = (byte) clientSkinPrefs.playerModelParts();
+
+            // Fake cape rule to be off
+            playerModel = (byte) (playerModel & ~(1));
+            this.self.getDataTracker().set(getPLAYER_MODEL_PARTS(), playerModel);
+        }
+    }
 
 }

@@ -1,21 +1,21 @@
 package io.github.mjk134.titanomach.server.commands;
 
 import com.mojang.brigadier.context.CommandContext;
-import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 
-public class HelloWorldCommand {
+public class TasksCommand {
     public static int run(CommandContext<ServerCommandSource> context) {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
         if (player == null) {
+            context.getSource().sendFeedback(() -> Text.literal("Only allowed to be run with a server player context."), false);
             return 1;
         }
 
-        player.networkHandler.sendPacket(new TitleS2CPacket(Text.literal("Hello world!!!")));
+        player.sendMessage(Text.literal("Task menu opened."), false);
         return 0;
     }
 }

@@ -34,7 +34,7 @@ public class PeasantRole extends Role {
 
     @Override
     public Task[] getGlobalTasks() {
-        return new Task[]{
+        return new Task[] {
                 new CollectionTask("Dirt collection", 27 * 64, 1000, true,"minecraft:dirt")
         };
     }

@@ -5,7 +5,7 @@ import io.github.mjk134.titanomach.server.menu.ExampleMenu;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 
-public class MenuTestCommand implements CommandInterface {
+public class MenuTestCommand {
     public static int run(CommandContext<ServerCommandSource> context) {
         ServerPlayerEntity player = context.getSource().getPlayer();
         if (player == null) {

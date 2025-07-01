@@ -13,7 +13,7 @@ public class PeasantRole extends Role {
                 "Peasant",
                 """
 
-                        §7Filler blah blah blah
+                        §7The downtrodden masses, fighting to survive.
                         §7Applies §9Weakness I
                         """,
                 "minecraft:wheat",

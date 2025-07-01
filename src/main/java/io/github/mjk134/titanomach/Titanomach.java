@@ -73,6 +73,31 @@ public class Titanomach implements ModInitializer {
                 if (taskManager.getTaskFromPlayer(player) instanceof SlayerTask task) {
                     task.updateProgress(player);
                 }
+                if (entity instanceof ServerPlayerEntity victim) {
+                    // entity/player is killed by sender so we have to mark them as hostile
+                    // check if notoriety level is 0
+                    TitanomachPlayer titanomachPlayer = TITANOMACH_CONFIG.getPlayerConfig(player);
+                    TitanomachPlayer victimPlayer = TITANOMACH_CONFIG.getPlayerConfig(victim);
+                    int murdererLevel = titanomachPlayer.getNotorietyLevel();
+                    int victimLevel = victimPlayer.getNotorietyLevel();
+
+                    if (murdererLevel == 0 && victimLevel == 0) {
+                        handler.getServer().sendMessage(Text.literal(player.getStyledDisplayName().getString() + " is now hostile!"));
+                        titanomachPlayer.incrementNotorietyLevel();
+                    } else if (victimLevel != 0 && murdererLevel == 0) {
+                        // Declare murderer as mercenary -> gain 3x rewards for the next 2 sessions
+                        victimPlayer.resetNotorietyLevel();
+                    } else if (victimLevel != 0) {
+                        // A hostile killed another hostile -> neutralise the victim but no mercenary effect is awarded
+                        victimPlayer.resetNotorietyLevel();
+                        // Give the hostile a further boost in PP so add 1 to the multiplier
+                    } else {
+                        // Hostile kills a victim, increase the hostile's multiplier
+
+                    }
+
+                    TITANOMACH_CONFIG.dump();
+                }
             }
         });
 

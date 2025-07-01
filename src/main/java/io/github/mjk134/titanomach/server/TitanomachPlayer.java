@@ -12,6 +12,10 @@ public class TitanomachPlayer {
     private Boolean hasJoined = false;
     private Identity identity;
     private int progressPoints;
+    private int notorietyLevel = 0;
+    public float progressPointMultiplier = 1;
+    // In terms of number of sessions
+    public int multiplierDuration;
 
     public TitanomachPlayer(ServerPlayerEntity player) {
         this.playerId = player.getUuid().toString();
@@ -49,5 +53,21 @@ public class TitanomachPlayer {
 
     public Boolean getHasJoined() {
         return hasJoined;
+    }
+
+    public int getNotorietyLevel() {
+        return notorietyLevel;
+    }
+
+    public void incrementNotorietyLevel() {
+        this.notorietyLevel++;
+    }
+
+    public void resetNotorietyLevel() {
+        this.notorietyLevel = 0;
+    }
+
+    public boolean isHostile() {
+        return notorietyLevel > 0;
     }
 }

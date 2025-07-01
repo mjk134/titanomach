@@ -44,6 +44,10 @@ public class TitanomachConfig {
             .registerTypeAdapterFactory(taskAdapterFactory)
             .create();
 
+    private Date lastSessionDate;
+    private static final Date initialisedCurrentDate = new Date();
+    private boolean hasVoteOccurred = false;
+    private boolean fivePlayersActive = false;
     private TaskManager taskManager =  new TaskManager();
 
     public TitanomachConfig() {}
@@ -60,6 +64,36 @@ public class TitanomachConfig {
         }
     }
 
+    public void initialize() {
+        // TODO: CHANGE THIS TO SUPPORT SERVER CRASHES
+        // Do some presession configuration
+        if (this.lastSessionDate == null) {
+            this.lastSessionDate = new Date();
+            this.dump();
+            return;
+        }
+        if (this.lastSessionDate.before(new Date())) {
+            this.lastSessionDate = new Date();
+            if (!hasVoteOccurred && fivePlayersActive) {
+                // do no vote penalty on all players
+            }
+            // Loop over players and reduce their PP session duration
+            for (TitanomachPlayer player : playerConfigs.values()) {
+                if (player.multiplierDuration > 0) {
+                    // Reduce duration
+                    player.multiplierDuration = player.multiplierDuration - 1;
+                    if (player.multiplierDuration == 0) {
+                        if (!player.isHostile()) {
+                            // Reset multiplier
+                            player.progressPointMultiplier = 1;
+                        }
+                    }
+                }
+            }
+        }
+        this.dump();
+    }
+
     public static TitanomachConfig load() {
         // Check if the file exists
         File file = new File(MOD_ID + ".json");
@@ -74,6 +108,7 @@ public class TitanomachConfig {
             FileReader reader = new FileReader(MOD_ID + ".json");
             TitanomachConfig config = GSON.fromJson(reader, TitanomachConfig.class);
             reader.close();
+            config.initialize();
             MOD_LOGGER.info("Loaded Titanomach config.");
             return config;
         } catch (IOException e) {

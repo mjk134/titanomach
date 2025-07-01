@@ -1,13 +1,13 @@
 package io.github.mjk134.titanomach.utils;
 
 public class Skin {
-    private String texture;
-    private String signature;
-    private String UUID;
-    public Skin(String texture, String signature, String UUID) {
+    private final String texture;
+    private final String signature;
+    private final String uuid;
+    public Skin(String texture, String signature, String uuid) {
         this.texture = texture;
         this.signature = signature;
-        this.UUID = UUID;
+        this.uuid = uuid;
     }
 
     public String getTexture() {
@@ -18,7 +18,7 @@ public class Skin {
         return signature;
     }
 
-    public String getUUID() {
-        return UUID;
+    public String getUuid() {
+        return uuid;
     }
 }

@@ -32,7 +32,7 @@ public class Titanomach implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        MOD_LOGGER.info(MOD_ID + " has initialized.");
+        MOD_LOGGER.info(MOD_ID + " is initializing.");
 
         ServerPlayConnectionEvents.INIT.register((handler, server) -> {
             ServerPlayerEntity player = handler.getPlayer();
@@ -114,6 +114,8 @@ public class Titanomach implements ModInitializer {
         });
 
         RoleManager.initialise();
+
+        MOD_LOGGER.info(MOD_ID + " has initialised.");
     }
 
 

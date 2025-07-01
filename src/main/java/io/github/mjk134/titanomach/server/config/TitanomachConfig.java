@@ -92,6 +92,7 @@ public class TitanomachConfig {
             }
         }
         this.dump();
+
     }
 
     public static TitanomachConfig load() {
@@ -108,8 +109,9 @@ public class TitanomachConfig {
             FileReader reader = new FileReader(MOD_ID + ".json");
             TitanomachConfig config = GSON.fromJson(reader, TitanomachConfig.class);
             reader.close();
-            config.initialize();
             MOD_LOGGER.info("Loaded Titanomach config.");
+            config.initialize();
+            MOD_LOGGER.info(MOD_ID + " config has initialised.");
             return config;
         } catch (IOException e) {
             MOD_LOGGER.error("Failed to load config file, the class is replaced.");
@@ -140,7 +142,7 @@ public class TitanomachConfig {
     }
 
     public void addToSkinPool(Skin skin) {
-        skinPool.put(skin.getUUID(), skin);
+        skinPool.put(skin.getUuid(), skin);
         this.dump();
     }
 

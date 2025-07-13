@@ -28,6 +28,8 @@ public abstract class Role {
         this(name, description, Registries.ITEM.get(Identifier.of(itemIconID)), titleFormat, pointRequirement);
     }
 
+    /// Is called periodically to apply effects from roles to a player.
+    /// Previous role effects are also applied cumulatively, starting from the Peasant role
     public void onEffectTick(PlayerEntity player) {}
 
     public Task[] getGlobalTasks() {

@@ -2,10 +2,13 @@ package io.github.mjk134.titanomach.server.roles;
 
 import io.github.mjk134.titanomach.server.tasks.CollectionTask;
 import io.github.mjk134.titanomach.server.tasks.Task;
+import io.github.mjk134.titanomach.utils.EffectUtil;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
+
+import static io.github.mjk134.titanomach.Titanomach.MOD_LOGGER;
 
 public class PeasantRole extends Role {
     public PeasantRole() {
@@ -23,13 +26,7 @@ public class PeasantRole extends Role {
 
     @Override
     public void onEffectTick(PlayerEntity player) {
-        player.addStatusEffect(
-                new StatusEffectInstance(
-                        Registries.STATUS_EFFECT.getEntry(Identifier.of("minecraft:weakness")).get(),
-                        RoleManager.EFFECT_INTERVAL_TICKS,
-                        0
-                )
-        );
+        EffectUtil.applyEffect(player, "minecraft:weakness", RoleManager.EFFECT_INTERVAL_TICKS + 1, 1);
     }
 
     @Override

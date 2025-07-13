@@ -2,12 +2,11 @@ package io.github.mjk134.titanomach.server.roles;
 
 import io.github.mjk134.titanomach.Titanomach;
 import io.github.mjk134.titanomach.server.TitanomachPlayer;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.server.MinecraftServer;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 
 public class RoleManager {
     public final static int EFFECT_INTERVAL_TICKS = 100;
@@ -40,8 +39,13 @@ public class RoleManager {
             TitanomachPlayer titanomachPlayer = Titanomach.TITANOMACH_CONFIG.getPlayerConfig(uuid);
 
             Role role = getPlayerRole(titanomachPlayer);
-            if (role != null)
+            if (role != null) {
+                // Each previous role effect is also added
+                for (Role activeRole : getPreviousRoles(role)) {
+                    activeRole.onEffectTick(player);
+                }
                 role.onEffectTick(player);
+            }
         });
     }
 
@@ -65,6 +69,10 @@ public class RoleManager {
         if (nextIdx >= rolesOrdered.size())
             return null;
         return rolesOrdered.get(nextIdx);
+    }
+
+    public static List<Role> getPreviousRoles(Role role) {
+        return rolesOrdered.subList(0, rolesOrdered.indexOf(role));
     }
 
     public static float getPercentageProgressToNextRole(TitanomachPlayer player) {

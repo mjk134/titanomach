@@ -66,7 +66,7 @@ public class TitanomachConfig {
 
     public void initialize() {
         // TODO: CHANGE THIS TO SUPPORT SERVER CRASHES
-        // Do some presession configuration
+        // Do some pre-session configuration
         if (this.lastSessionDate == null) {
             this.lastSessionDate = new Date();
             this.dump();
@@ -100,7 +100,7 @@ public class TitanomachConfig {
         File file = new File(MOD_ID + ".json");
         if (!file.exists()) {
             TitanomachConfig config = new TitanomachConfig();
-            config.dump();
+            config.initialize();
             return config;
         }
         // Load the file if it does exist

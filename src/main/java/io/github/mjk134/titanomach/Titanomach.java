@@ -15,6 +15,8 @@ import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.entity.event.v1.ServerEntityCombatEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.minecraft.network.packet.s2c.play.ChatMessageS2CPacket;
+import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import org.slf4j.Logger;
@@ -80,22 +82,34 @@ public class Titanomach implements ModInitializer {
                     TitanomachPlayer victimPlayer = TITANOMACH_CONFIG.getPlayerConfig(victim);
                     int murdererLevel = titanomachPlayer.getNotorietyLevel();
                     int victimLevel = victimPlayer.getNotorietyLevel();
+                    PlayerManager playerManager = handler.getServer().getPlayerManager();
 
                     if (murdererLevel == 0 && victimLevel == 0) {
-                        handler.getServer().sendMessage(Text.literal(player.getStyledDisplayName().getString() + " is now hostile!"));
+                        // send message to all players
+                        for (ServerPlayerEntity serverPlayer : playerManager.getPlayerList()) {
+                            serverPlayer.sendMessage(Text.literal(player.getStyledDisplayName().getString() + " is now &c &lHOSTILE!"));
+                        }
                         titanomachPlayer.incrementNotorietyLevel();
+                        titanomachPlayer.progressPointMultiplier += 1;
                     } else if (victimLevel != 0 && murdererLevel == 0) {
                         // Declare murderer as mercenary -> gain 3x rewards for the next 2 sessions
                         victimPlayer.resetNotorietyLevel();
+                        titanomachPlayer.progressPointMultiplier += 3;
+                        titanomachPlayer.multiplierDuration = 2;
+                        for (ServerPlayerEntity serverPlayer : playerManager.getPlayerList()) {
+                            serverPlayer.sendMessage(Text.literal(player.getStyledDisplayName().getString() + " is now &c &lMERCENARY!"));
+                        }
                     } else if (victimLevel != 0) {
                         // A hostile killed another hostile -> neutralise the victim but no mercenary effect is awarded
                         victimPlayer.resetNotorietyLevel();
                         // Give the hostile a further boost in PP so add 1 to the multiplier
+                        titanomachPlayer.incrementNotorietyLevel();
+                        titanomachPlayer.progressPointMultiplier = titanomachPlayer.progressPointMultiplier + 1;
                     } else {
                         // Hostile kills a victim, increase the hostile's multiplier
-
+                        titanomachPlayer.incrementNotorietyLevel();
+                        titanomachPlayer.progressPointMultiplier = titanomachPlayer.progressPointMultiplier + 1;
                     }
-
                     TITANOMACH_CONFIG.dump();
                 }
             }

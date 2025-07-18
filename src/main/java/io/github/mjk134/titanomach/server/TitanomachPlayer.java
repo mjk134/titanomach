@@ -1,8 +1,13 @@
 package io.github.mjk134.titanomach.server;
 
+import io.github.mjk134.titanomach.Titanomach;
+import io.github.mjk134.titanomach.server.roles.Role;
+import io.github.mjk134.titanomach.server.roles.RoleManager;
 import io.github.mjk134.titanomach.utils.Identity;
 
 import net.minecraft.server.network.ServerPlayerEntity;
+
+import java.util.UUID;
 
 import static io.github.mjk134.titanomach.Titanomach.TITANOMACH_CONFIG;
 
@@ -35,15 +40,20 @@ public class TitanomachPlayer {
         return playerId;
     }
 
-    public void setProgressPoints(int progressPoints) {
-        this.progressPoints = progressPoints;
+    public void setProgressPoints(int amount) {
+        this.progressPoints = amount;
         TITANOMACH_CONFIG.dump();
     }
 
     public int getProgressPoints() { return this.progressPoints; }
 
-    public void addProgressPoints(int progressPoints) {
-        this.progressPoints += progressPoints;
+    public void addProgressPoints(int amount) {
+        Role prevRole = RoleManager.calculateRole(this.progressPoints);
+        this.progressPoints += amount;
+        Role nextRole = RoleManager.calculateRole(this.progressPoints);
+        if (prevRole != nextRole) {
+            nextRole.onRankUp(Titanomach.SERVER_INSTANCE.getPlayerManager().getPlayer(UUID.fromString(playerId)));
+        }
         TITANOMACH_CONFIG.dump();
     }
 

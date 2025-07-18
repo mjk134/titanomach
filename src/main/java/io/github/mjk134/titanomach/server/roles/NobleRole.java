@@ -6,6 +6,8 @@ import net.minecraft.entity.player.PlayerEntity;
 public class NobleRole extends Role {
     public NobleRole() {
         super("Noble", "filler", "minecraft:diamond", "§b", 25000);
+        addRankUpReward("minecraft:emerald", 64);
+        addRankUpReward("minecraft:diamond", 32);
     }
 
     @Override

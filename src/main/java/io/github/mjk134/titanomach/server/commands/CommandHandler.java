@@ -52,12 +52,22 @@ public class CommandHandler {
         );
 
         dispatcher.register(
-                literal("setpp")
-                        .then(argument("amount", IntegerArgumentType.integer())
-                                .executes((context) -> {
-                                    Titanomach.TITANOMACH_CONFIG.getPlayerConfig(context.getSource().getPlayer()).setProgressPoints(IntegerArgumentType.getInteger(context, "amount"));
-                                    return 0;
-                                }))
+                literal("pp")
+                        .requires(source -> source.hasPermissionLevel(4))
+                        .then(literal("set")
+                                .then(argument("amount", IntegerArgumentType.integer())
+                                        .executes((context) -> {
+                                            Titanomach.TITANOMACH_CONFIG.getPlayerConfig(context.getSource().getPlayer()).setProgressPoints(IntegerArgumentType.getInteger(context, "amount"));
+                                            return 0;
+                                        }))
+                        )
+                        .then(literal("add")
+                                .then(argument("amount", IntegerArgumentType.integer())
+                                        .executes((context) -> {
+                                            Titanomach.TITANOMACH_CONFIG.getPlayerConfig(context.getSource().getPlayer()).addProgressPoints(IntegerArgumentType.getInteger(context, "amount"));
+                                            return 0;
+                                        }))
+                        )
         );
     }
 

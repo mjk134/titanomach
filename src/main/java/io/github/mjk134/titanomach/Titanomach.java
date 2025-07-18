@@ -13,6 +13,7 @@ import io.github.mjk134.titanomach.utils.Skin;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.entity.event.v1.ServerEntityCombatEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.network.packet.s2c.play.ChatMessageS2CPacket;
@@ -32,6 +33,7 @@ public class Titanomach implements ModInitializer {
     public static final Logger MOD_LOGGER = LoggerFactory.getLogger(MOD_ID);
     public static final TitanomachConfig TITANOMACH_CONFIG = TitanomachConfig.load();
     public static final ExecutorService THREADPOOL = Executors.newCachedThreadPool();
+    public static MinecraftServer SERVER_INSTANCE;
 
     @Override
     public void onInitialize() {
@@ -123,6 +125,8 @@ public class Titanomach implements ModInitializer {
                 RoleManager.tick(server);
             }
         });
+
+        ServerLifecycleEvents.SERVER_STARTING.register((server) -> {SERVER_INSTANCE = server;});
 
         CommandRegistrationCallback.EVENT.register((dispatcher, dedicated, registrationEnvironment) -> {
             MOD_LOGGER.info("Command dispatcher has been initialized!");

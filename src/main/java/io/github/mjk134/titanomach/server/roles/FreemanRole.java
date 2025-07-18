@@ -1,14 +1,22 @@
 package io.github.mjk134.titanomach.server.roles;
 
 import io.github.mjk134.titanomach.utils.EffectUtil;
-import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 
 public class FreemanRole extends Role {
     public FreemanRole() {
-        super("Freeman", "filler", "minecraft:orange_wool", "§6", 6250);
+        super(
+                "Freeman",
+                "filler",
+                "minecraft:orange_wool",
+                "§6",
+                6250
+        );
+
+        addRankUpReward("minecraft:golden_apple", 8);
+        addRankUpReward("minecraft:diamond", 4);
     }
 
     @Override

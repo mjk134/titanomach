@@ -6,6 +6,7 @@ import net.minecraft.entity.player.PlayerEntity;
 public class GodRole extends Role {
     public GodRole() {
         super("God", "filler", "minecraft:command_block", "§c", 100000);
+        addRankUpReward("minecraft:netherite_ingot", 64);
     }
 
     @Override

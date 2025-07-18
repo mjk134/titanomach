@@ -7,7 +7,6 @@ public class Task {
     public String name;
     public int progress;
     public int maxProgress;
-    public boolean isGlobal = false;
     public int progressPointReward;
 
     public Task(String name, int maxProgress, int progressPointReward) {
@@ -16,14 +15,10 @@ public class Task {
         this.progressPointReward = progressPointReward;
     }
 
-    public Task(String name, int maxProgress, int progressPointReward, boolean isGlobal) {
-        this.name = name;
-        this.maxProgress = maxProgress;
-        this.progressPointReward = progressPointReward;
-        this.isGlobal = isGlobal;
-    }
 
-    public void updateProgress(ServerPlayerEntity player) {}
+    public void updateProgress(ServerPlayerEntity player) {
+
+    }
 
     public boolean submitTask(ServerPlayerEntity player) {return false;}
 

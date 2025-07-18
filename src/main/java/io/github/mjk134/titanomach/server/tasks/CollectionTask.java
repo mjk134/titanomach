@@ -20,11 +20,6 @@ public class CollectionTask extends Task{
     private final String targetItem;
     private NamedScreenHandlerFactory screen;
 
-    public CollectionTask(String name, int maxProgress, int progressPointReward, boolean isGlobal, String targetItem) {
-        super(name, maxProgress, progressPointReward, isGlobal);
-        this.targetItem = targetItem;
-    }
-
     public CollectionTask(String name, int maxProgress, int progressPointReward, String targetItem) {
         super(name, maxProgress, progressPointReward);
         this.targetItem = targetItem;

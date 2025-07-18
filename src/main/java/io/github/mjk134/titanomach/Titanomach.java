@@ -87,7 +87,7 @@ public class Titanomach implements ModInitializer {
                     if (murdererLevel == 0 && victimLevel == 0) {
                         // send message to all players
                         for (ServerPlayerEntity serverPlayer : playerManager.getPlayerList()) {
-                            serverPlayer.sendMessage(Text.literal(player.getStyledDisplayName().getString() + " is now &c &lHOSTILE!"));
+                            serverPlayer.sendMessage(Text.literal(player.getStyledDisplayName().getString() + " is now §c§l HOSTILE!"));
                         }
                         titanomachPlayer.incrementNotorietyLevel();
                         titanomachPlayer.progressPointMultiplier += 1;
@@ -97,7 +97,7 @@ public class Titanomach implements ModInitializer {
                         titanomachPlayer.progressPointMultiplier += 3;
                         titanomachPlayer.multiplierDuration = 2;
                         for (ServerPlayerEntity serverPlayer : playerManager.getPlayerList()) {
-                            serverPlayer.sendMessage(Text.literal(player.getStyledDisplayName().getString() + " is now &c &lMERCENARY!"));
+                            serverPlayer.sendMessage(Text.literal(player.getStyledDisplayName().getString() + " is now §c§l MERCENARY!"));
                         }
                     } else if (victimLevel != 0) {
                         // A hostile killed another hostile -> neutralise the victim but no mercenary effect is awarded

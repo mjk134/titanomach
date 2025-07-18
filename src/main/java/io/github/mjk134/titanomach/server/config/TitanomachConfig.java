@@ -4,10 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.mojang.authlib.properties.Property;
 import io.github.mjk134.titanomach.server.TitanomachPlayer;
-import io.github.mjk134.titanomach.server.tasks.CollectionTask;
-import io.github.mjk134.titanomach.server.tasks.SlayerTask;
-import io.github.mjk134.titanomach.server.tasks.Task;
-import io.github.mjk134.titanomach.server.tasks.TaskManager;
+import io.github.mjk134.titanomach.server.tasks.*;
 import io.github.mjk134.titanomach.utils.RuntimeTypeAdapterFactory;
 import io.github.mjk134.titanomach.utils.Skin;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -38,6 +35,7 @@ public class TitanomachConfig {
     private static final RuntimeTypeAdapterFactory<Task> taskAdapterFactory = RuntimeTypeAdapterFactory
             .of(Task.class, "type")
             .registerSubtype(CollectionTask.class, "collection")
+            .registerSubtype(GlobalCollectionTask.class, "global_collection")
             .registerSubtype(SlayerTask.class, "slayer");
     public static final Gson GSON = new GsonBuilder()
             .setPrettyPrinting()

@@ -16,6 +16,7 @@ import net.fabricmc.fabric.api.entity.event.v1.ServerEntityCombatEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.network.packet.s2c.play.ChatMessageS2CPacket;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
@@ -68,6 +69,7 @@ public class Titanomach implements ModInitializer {
                 }
             }
         });
+
 
         ServerEntityCombatEvents.AFTER_KILLED_OTHER_ENTITY.register((handler, sender, entity) -> {
             if (sender instanceof ServerPlayerEntity player) {

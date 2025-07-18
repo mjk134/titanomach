@@ -1,12 +1,11 @@
 package io.github.mjk134.titanomach.server.roles;
 
-import io.github.mjk134.titanomach.server.tasks.CollectionTask;
 import io.github.mjk134.titanomach.server.tasks.Task;
+import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
-import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
 
 import java.util.ArrayList;
@@ -19,6 +18,7 @@ public abstract class Role {
     public final String titleFormat;
     public final int pointRequirement;
     private final List<ItemStack> rankUpRewards;
+    private final List<StatusEffectInstance> effects;
 
     public Role(String name, String description, String itemIconID, String titleFormat, int pointRequirement) {
         this.name = name;
@@ -27,11 +27,16 @@ public abstract class Role {
         this.titleFormat = titleFormat;
         this.pointRequirement = pointRequirement;
         this.rankUpRewards = new ArrayList<>();
+        this.effects = new ArrayList<>();
     }
 
     /// Is called periodically to apply effects from roles to a player.
     /// Previous role effects are also applied cumulatively, starting from the Peasant role
-    public void onEffectTick(PlayerEntity player) {}
+    public void onEffectTick(PlayerEntity player) {
+        for (StatusEffectInstance effect : this.effects) {
+            player.addStatusEffect(new StatusEffectInstance(effect));
+        }
+    }
 
     /// Called when this role is first reached
     public void onRankUp(PlayerEntity player) {
@@ -50,6 +55,14 @@ public abstract class Role {
 
     public List<ItemStack> getRankUpRewards() {
         return this.rankUpRewards;
+    }
+
+    public void addEffect(String effectID, int level) {
+        this.effects.add(new StatusEffectInstance(
+                Registries.STATUS_EFFECT.getEntry(Identifier.of(effectID)).get(),
+                -1, // infinite duration
+                level - 1
+        ));
     }
 
     public Task[] getGlobalTasks() {

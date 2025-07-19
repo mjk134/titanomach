@@ -61,8 +61,15 @@ public abstract class Role {
         this.effects.add(new StatusEffectInstance(
                 Registries.STATUS_EFFECT.getEntry(Identifier.of(effectID)).get(),
                 -1, // infinite duration
-                level - 1
+                level - 1,
+                false,
+                false,
+                false
         ));
+    }
+
+    public List<StatusEffectInstance> getEffects() {
+        return this.effects;
     }
 
     public Task[] getGlobalTasks() {

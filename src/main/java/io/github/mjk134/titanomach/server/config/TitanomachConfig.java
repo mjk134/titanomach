@@ -8,6 +8,7 @@ import io.github.mjk134.titanomach.server.tasks.*;
 import io.github.mjk134.titanomach.utils.RuntimeTypeAdapterFactory;
 import io.github.mjk134.titanomach.utils.Skin;
 import net.minecraft.server.network.ServerPlayerEntity;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.FileReader;
@@ -42,11 +43,15 @@ public class TitanomachConfig {
             .registerTypeAdapterFactory(taskAdapterFactory)
             .create();
 
+    @Nullable
     private Date lastSessionDate;
     private static final Date initialisedCurrentDate = new Date();
     private boolean hasVoteOccurred = false;
     private boolean fivePlayersActive = false;
     private TaskManager taskManager =  new TaskManager();
+
+    @Nullable
+    private TitanomachPlayer sacrificialPlayer;
 
     public TitanomachConfig() {}
 

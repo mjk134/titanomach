@@ -1,5 +1,6 @@
 package io.github.mjk134.titanomach;
 
+import com.google.common.base.Stopwatch;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
 import io.github.mjk134.titanomach.server.TitanomachPlayer;
@@ -9,6 +10,7 @@ import io.github.mjk134.titanomach.server.entity.ServerTitanomachPlayer;
 import io.github.mjk134.titanomach.server.roles.RoleManager;
 import io.github.mjk134.titanomach.server.tasks.SlayerTask;
 import io.github.mjk134.titanomach.server.tasks.TaskManager;
+import io.github.mjk134.titanomach.server.vote.VoteManager;
 import io.github.mjk134.titanomach.utils.Skin;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -51,6 +53,7 @@ public class Titanomach implements ModInitializer {
 
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
             ServerPlayerEntity player = handler.getPlayer();
+            VoteManager.resumeStopwatch(player);
             player.sendMessage(Text.literal("Welcome to Titanomach!"), true);
             Boolean isInConfig = TITANOMACH_CONFIG.isPlayerInConfig(player.getUuidAsString());
             // Initialise player here
@@ -71,6 +74,11 @@ public class Titanomach implements ModInitializer {
                 }
             }
         });
+
+        ServerPlayConnectionEvents.DISCONNECT.register(((handler, server) -> {
+            ServerPlayerEntity player = handler.getPlayer();
+            VoteManager.stopStopwatch(player);
+        }));
 
 
         ServerEntityCombatEvents.AFTER_KILLED_OTHER_ENTITY.register((handler, sender, entity) -> {

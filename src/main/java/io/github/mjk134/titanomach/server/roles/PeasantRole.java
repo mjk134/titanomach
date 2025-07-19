@@ -7,9 +7,7 @@ public class PeasantRole extends Role {
         super(
                 "Peasant",
                 """
-
                         §7The downtrodden masses, fighting to survive.
-                        §7Applies §9Weakness I
                         """,
                 "minecraft:wheat",
                 "§7",

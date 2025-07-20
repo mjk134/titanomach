@@ -5,6 +5,7 @@ import io.github.mjk134.titanomach.Titanomach;
 import io.github.mjk134.titanomach.server.TitanomachPlayer;
 import io.github.mjk134.titanomach.server.roles.Role;
 import io.github.mjk134.titanomach.server.roles.RoleManager;
+import io.github.mjk134.titanomach.server.tasks.TaskInfo;
 import io.github.mjk134.titanomach.utils.ItemBuilder;
 import io.github.mjk134.titanomach.utils.TextUtils;
 import net.minecraft.component.DataComponentTypes;
@@ -14,6 +15,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+
+import java.util.List;
 
 public class RoleMenu extends Menu {
     // this probably needs to change later
@@ -32,6 +35,7 @@ public class RoleMenu extends Menu {
 
         addProgressBar(tPlayer);
         addPlayerHead(player);
+        addPlayerTasks(playerRole, tPlayer);
 
         fillEmptyWithGlass();
     }
@@ -126,5 +130,31 @@ public class RoleMenu extends Menu {
             roleIcon.set(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, true);
         }
         this.setItem(slot, roleIcon);
+    }
+
+    private void addPlayerTasks(Role role, TitanomachPlayer player) {
+        List<TaskInfo> tasks = role.getPlayerTaskPool();
+        for (int i = 0; i<7; i++) {
+            ItemBuilder taskIconBuilder = new ItemBuilder("minecraft:map");
+            if (i < tasks.size()) {
+                TaskInfo taskInfo = tasks.get(i);
+
+                // add title
+                String title;
+                switch (taskInfo.taskType) {
+                    case COLLECTION -> title = "§fCollect " + taskInfo.maxProgress + " " + TextUtils.itemIDtoName(taskInfo.target);
+                    case SLAYER -> title = "§fSlay " + taskInfo.maxProgress + " " + TextUtils.entityIDtoName(taskInfo.target);
+                    case null, default -> title = "§cUNKNOWN_TASK_TYPE";
+                }
+                taskIconBuilder.setName(title);
+
+                // add pp reward
+                taskIconBuilder.addLoreLine("§7Grants §e" + taskInfo.progressPointReward + " §aPP");
+            }
+            else {
+                taskIconBuilder.setName("Empty Task");
+            }
+            setItem(28 + i, taskIconBuilder.create());
+        }
     }
 }

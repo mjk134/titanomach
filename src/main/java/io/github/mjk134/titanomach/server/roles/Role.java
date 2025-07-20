@@ -1,6 +1,7 @@
 package io.github.mjk134.titanomach.server.roles;
 
 import io.github.mjk134.titanomach.server.tasks.Task;
+import io.github.mjk134.titanomach.server.tasks.TaskInfo;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -19,6 +20,7 @@ public abstract class Role {
     public final int pointRequirement;
     private final List<ItemStack> rankUpRewards;
     private final List<StatusEffectInstance> effects;
+    private final List<TaskInfo> playerTaskPool;
 
     public Role(String name, String description, String itemIconID, String titleFormat, int pointRequirement) {
         this.name = name;
@@ -28,6 +30,7 @@ public abstract class Role {
         this.pointRequirement = pointRequirement;
         this.rankUpRewards = new ArrayList<>();
         this.effects = new ArrayList<>();
+        this.playerTaskPool = new ArrayList<>();
     }
 
     /// Is called periodically to apply effects from roles to a player.
@@ -72,9 +75,16 @@ public abstract class Role {
         return this.effects;
     }
 
+    public void addPlayerTask(TaskInfo task) {
+        this.playerTaskPool.add(task);
+    }
+
     public Task[] getGlobalTasks() {
         return new Task[]{};
     }
-    public Task[] getPlayerTasks() { return new Task[]{}; }
+
+    public List<TaskInfo> getPlayerTaskPool() {
+        return this.playerTaskPool;
+    }
 }
 

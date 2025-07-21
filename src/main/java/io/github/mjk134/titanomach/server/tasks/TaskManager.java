@@ -3,7 +3,6 @@ package io.github.mjk134.titanomach.server.tasks;
 import io.github.mjk134.titanomach.server.TitanomachPlayer;
 import io.github.mjk134.titanomach.utils.TextUtils;
 import net.minecraft.entity.boss.BossBar;
-import net.minecraft.entity.boss.BossBarManager;
 import net.minecraft.entity.boss.ServerBossBar;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
@@ -11,8 +10,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 
 import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 
 import static io.github.mjk134.titanomach.Titanomach.MOD_LOGGER;
 import static io.github.mjk134.titanomach.Titanomach.TITANOMACH_CONFIG;
@@ -99,13 +96,15 @@ public class TaskManager {
         return getTask(taskId);
     }
 
-    public void submitTask(String taskID, ServerPlayerEntity player) {
+    public boolean submitTask(String taskID, ServerPlayerEntity player) {
         Task task = tasks.get(taskID);
-        if (task.submitTask(player)) {
+        boolean success = task.submitTask(player);
+        if (success) {
             TITANOMACH_CONFIG.getPlayerConfig(player).addProgressPoints(task.progressPointReward);
             tasks.remove(taskID);
             playerTaskIdMap.remove(player.getUuidAsString());
         }
         TITANOMACH_CONFIG.dump();
+        return success;
     }
 }

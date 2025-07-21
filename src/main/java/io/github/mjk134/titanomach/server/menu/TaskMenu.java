@@ -14,8 +14,10 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.Text;
-import org.apache.logging.log4j.core.jmx.Server;
+import net.minecraft.util.Identifier;
 
 import java.util.List;
 
@@ -167,6 +169,7 @@ public class TaskMenu extends Menu {
                         taskManager.addTask(task, playerID);
                         task.updateProgress((ServerPlayerEntity) player);
                         addPlayerTasks(RoleManager.getPlayerRole(tPlayer), tPlayer);
+                        player.playSoundToPlayer(SoundEvent.of(Identifier.of("minecraft:block.note_block.pling")), SoundCategory.UI, 1.0f, 1.0f);
                     };
                 } else {
                     if (thisTaskSelected) {
@@ -179,9 +182,12 @@ public class TaskMenu extends Menu {
                         taskIconBuilder.addLoreMultiline("\n§9Click to submit items");
 
                         clickAction = (player, slot, menuContext) -> {
-                            taskManager.submitTask(currentTask.name, (ServerPlayerEntity) player);
+                            boolean success = taskManager.submitTask(currentTask.name, (ServerPlayerEntity) player);
                             addPlayerTasks(RoleManager.getPlayerRole(tPlayer), tPlayer);
                             addProgressBar(tPlayer);
+                            if (success) {
+                                player.playSoundToPlayer(SoundEvent.of(Identifier.of("minecraft:entity.player.levelup")), SoundCategory.UI, 1.0f, 1.0f);
+                            }
                         };
                     } else {
                         taskIconBuilder.addLoreMultiline("\n§c§oYou have already selected another task!");

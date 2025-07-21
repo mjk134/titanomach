@@ -3,16 +3,8 @@ package io.github.mjk134.titanomach.server.tasks;
 import io.github.mjk134.titanomach.utils.TextUtils;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.registry.Registries;
-import net.minecraft.screen.GenericContainerScreenHandler;
 import net.minecraft.screen.NamedScreenHandlerFactory;
-import net.minecraft.screen.ScreenHandlerListener;
-import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
-import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
 
 import static io.github.mjk134.titanomach.Titanomach.MOD_LOGGER;
 import static io.github.mjk134.titanomach.Titanomach.TITANOMACH_CONFIG;
@@ -33,16 +25,16 @@ public class CollectionTask extends Task{
                 this.progress += itemStack.getCount();
             }
         }
-        int percentProgress = ((int) ((((float) this.progress) / this.maxProgress) * 100));
-        if (percentProgress >= 100) {
-            percentProgress = 100;
-        }
-        if (percentProgress == 100) {
-            player.sendMessage(Text.literal(String.valueOf(percentProgress)).withColor(Formatting.GREEN.getColorValue().intValue()), true);
-        }
-        else {
-            player.sendMessage(Text.literal(String.valueOf(percentProgress)), true);
-        }
+//        int percentProgress = ((int) ((((float) this.progress) / this.maxProgress) * 100));
+//        if (percentProgress >= 100) {
+//            percentProgress = 100;
+//        }
+//        if (percentProgress == 100) {
+//            player.sendMessage(Text.literal(String.valueOf(percentProgress)).withColor(Formatting.GREEN.getColorValue().intValue()), true);
+//        }
+//        else {
+//            player.sendMessage(Text.literal(String.valueOf(percentProgress)), true);
+//        }
         TITANOMACH_CONFIG.dump();
     }
 

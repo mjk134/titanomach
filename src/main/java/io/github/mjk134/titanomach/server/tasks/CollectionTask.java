@@ -1,5 +1,6 @@
 package io.github.mjk134.titanomach.server.tasks;
 
+import io.github.mjk134.titanomach.utils.TextUtils;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
@@ -66,5 +67,10 @@ public class CollectionTask extends Task{
             }
         }
         return false;
+    }
+
+    @Override
+    public String getTargetDisplayName() {
+        return TextUtils.itemIDtoName(targetID);
     }
 }

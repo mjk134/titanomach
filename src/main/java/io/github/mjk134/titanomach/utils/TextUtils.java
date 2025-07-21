@@ -36,8 +36,13 @@ public class TextUtils {
 
     /// Generate a progress bar string with formatting. Use `decimalPlaces = -1` to hide the percentage caption.
     public static String progressBar(int length, float percentage, boolean showPercentage) {
+        percentage = Float.min(Float.max(percentage, 0.0f), 1.0f);
         int nFilled = (int) (length * percentage);
         String percentageCaption = showPercentage ? " §e" + (percentage * 100)  + "§6%": "";
         return "§2[§a" + "-".repeat(nFilled) + "§7" + "-".repeat(length - nFilled) + "§2]" + percentageCaption;
+    }
+
+    public static String capitalize(String text) {
+        return text.substring(0, 1).toUpperCase() + text.substring(1);
     }
 }

@@ -17,4 +17,10 @@ public enum TaskType {
             case SLAYER -> "slain";
         };
     }
+
+    public static TaskType get(Task task) {
+        if (task instanceof CollectionTask) return COLLECTION;
+        if (task instanceof SlayerTask) return SLAYER;
+        throw new IllegalArgumentException("Invalid task type");
+    }
 }

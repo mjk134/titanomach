@@ -1,7 +1,9 @@
 package io.github.mjk134.titanomach.server.tasks;
 
 import io.github.mjk134.titanomach.server.TitanomachPlayer;
+import io.github.mjk134.titanomach.utils.TextUtils;
 import net.minecraft.entity.boss.BossBar;
+import net.minecraft.entity.boss.BossBarManager;
 import net.minecraft.entity.boss.ServerBossBar;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
@@ -32,31 +34,32 @@ public class TaskManager {
             for (Task task : tasks.values()) {
                 task.progress = 0;
             }
-            for (Map.Entry<String, String> entry : playerTaskIdMap.entrySet()) {
-                String taskName = entry.getValue();
-                String playerId = entry.getKey();
-                Task task = tasks.get(taskName);
+            for (ServerPlayerEntity player : playerManager.getPlayerList()) {
+                String playerId = player.getUuidAsString();
+                Task task = getTaskFromPlayer(player);
+                ServerBossBar bossBar = individualBossBars.get(playerId);
+
                 // Check a task exists for the player, if not then cleanup here
                 if (task == null) {
                     // remove boss bar
-                    MOD_LOGGER.info("No task with name " + taskName + " was found.");
                     individualBossBars.remove(playerId);
+                    // if boss bar exists, remove the player so its garbage collected
+                    if (bossBar != null) bossBar.removePlayer(player);
                     continue;
                 }
-                ServerPlayerEntity player = playerManager.getPlayer(UUID.fromString(playerId));
-                // Check if the player is logged on
-                if (player == null) continue;
-                ServerBossBar bossBar = individualBossBars.get(playerId);
 
                 // Check if there is a progress bar for this player
                 if (bossBar == null) {
-                    MOD_LOGGER.info("Boss bar not found for " + playerId);
-                    // If it's not in the map put it in (this is done everytime the server restarts)
-                    individualBossBars.put(playerId, new ServerBossBar(Text.literal(task.name), BossBar.Color.GREEN, BossBar.Style.NOTCHED_10));
+                    // If it's not in the map put it in
+                    String barText = TextUtils.capitalize(TaskType.presentVerb(TaskType.get(task))) + " " + task.maxProgress + " " + task.getTargetDisplayName();
+                    individualBossBars.put(playerId, new ServerBossBar(Text.literal(barText), BossBar.Color.GREEN, BossBar.Style.NOTCHED_10));
                     bossBar = individualBossBars.get(playerId);
-                    bossBar.addPlayer(player);
                 }
 
+                // if player is not in the boss bar, add it (fixes boss bar not showing on reconnect)
+                if (!bossBar.getPlayers().contains(player)) {
+                    bossBar.addPlayer(player);
+                };
 
                 if (task instanceof CollectionTask collectionTask) {
                     collectionTask.updateProgress(player);
@@ -99,7 +102,7 @@ public class TaskManager {
     public void submitTask(String taskID, ServerPlayerEntity player) {
         if (tasks.get(taskID).submitTask(player)) {
             tasks.remove(taskID);
-            playerTaskIdMap.remove(player.getName().toString());
+            playerTaskIdMap.remove(player.getUuidAsString());
         }
         TITANOMACH_CONFIG.dump();
     }

@@ -23,4 +23,8 @@ public class Task {
 
     public boolean submitTask(ServerPlayerEntity player) {return false;}
 
+    /// Get name of the task target that can be displayed
+    public String getTargetDisplayName() {
+        return targetID;
+    }
 }

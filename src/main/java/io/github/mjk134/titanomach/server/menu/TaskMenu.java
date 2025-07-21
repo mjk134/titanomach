@@ -151,7 +151,7 @@ public class TaskMenu extends Menu {
                     case COLLECTION -> TextUtils.itemIDtoName(taskInfo.target);
                     case SLAYER -> TextUtils.entityIDtoName(taskInfo.target);
                 };
-                taskIconBuilder.setName("§6§l" + TaskType.presentVerb(taskInfo.taskType).toUpperCase() + "§r§f " + taskInfo.maxProgress + " " + TextUtils.itemIDtoName(taskInfo.target) + activeModifier);
+                taskIconBuilder.setName("§6§l" + TaskType.presentVerb(taskInfo.taskType).toUpperCase() + "§r§f " + taskInfo.maxProgress + " " + targetName + activeModifier);
 
                 // add pp reward
                 taskIconBuilder.addLoreLine("§7Grants §e" + taskInfo.progressPointReward + " §aPP");

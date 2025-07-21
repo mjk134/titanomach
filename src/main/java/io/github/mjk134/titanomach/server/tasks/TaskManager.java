@@ -11,7 +11,6 @@ import net.minecraft.text.Text;
 
 import java.util.HashMap;
 
-import static io.github.mjk134.titanomach.Titanomach.MOD_LOGGER;
 import static io.github.mjk134.titanomach.Titanomach.TITANOMACH_CONFIG;
 
 public class TaskManager {
@@ -28,9 +27,6 @@ public class TaskManager {
         if (tickCounter == 30) {
             // 0.001 ms difference
             PlayerManager playerManager = server.getPlayerManager();
-            for (Task task : tasks.values()) {
-                task.progress = 0;
-            }
             for (ServerPlayerEntity player : playerManager.getPlayerList()) {
                 String playerId = player.getUuidAsString();
                 Task task = getTaskFromPlayer(player);
@@ -53,15 +49,16 @@ public class TaskManager {
                     bossBar = individualBossBars.get(playerId);
                 }
 
-                // if player is not in the boss bar, add it (fixes boss bar not showing on reconnect)
+                // If player is not in the boss bar, add it (fixes boss bar not showing on reconnect)
                 if (!bossBar.getPlayers().contains(player)) {
                     bossBar.addPlayer(player);
                 };
 
                 if (task instanceof CollectionTask collectionTask) {
                     collectionTask.updateProgress(player);
-                    bossBar.setPercent(((float) collectionTask.progress / collectionTask.maxProgress));
                 }
+
+                bossBar.setPercent(task.getPercentageProgress());
             }
             tickCounter = 0;
         }

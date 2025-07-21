@@ -27,4 +27,8 @@ public class Task {
     public String getTargetDisplayName() {
         return targetID;
     }
+
+    public float getPercentageProgress() {
+        return (float) progress / maxProgress;
+    }
 }

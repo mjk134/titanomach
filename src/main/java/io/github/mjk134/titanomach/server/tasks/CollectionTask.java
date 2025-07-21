@@ -6,7 +6,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.server.network.ServerPlayerEntity;
 
-import static io.github.mjk134.titanomach.Titanomach.MOD_LOGGER;
 import static io.github.mjk134.titanomach.Titanomach.TITANOMACH_CONFIG;
 
 public class CollectionTask extends Task{
@@ -18,6 +17,7 @@ public class CollectionTask extends Task{
 
     @Override
     public void updateProgress(ServerPlayerEntity player) {
+        this.progress = 0;
         PlayerInventory inventory = player.getInventory();
         for (int i = 0; i < inventory.size(); ++i) {
             ItemStack itemStack = inventory.getStack(i);

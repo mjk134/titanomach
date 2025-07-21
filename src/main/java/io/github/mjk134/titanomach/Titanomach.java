@@ -1,6 +1,5 @@
 package io.github.mjk134.titanomach;
 
-import com.google.common.base.Stopwatch;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
 import io.github.mjk134.titanomach.server.TitanomachPlayer;
@@ -18,7 +17,6 @@ import net.fabricmc.fabric.api.entity.event.v1.ServerEntityCombatEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
-import net.minecraft.network.packet.s2c.play.ChatMessageS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -85,7 +83,7 @@ public class Titanomach implements ModInitializer {
             if (sender instanceof ServerPlayerEntity player) {
                 TaskManager taskManager = TITANOMACH_CONFIG.getTaskManager();
                 if (taskManager.getTaskFromPlayer(player) instanceof SlayerTask task) {
-                    task.updateProgress(player);
+                    task.onEntityKill(player, entity);
                 }
                 if (entity instanceof ServerPlayerEntity victim) {
                     // entity/player is killed by sender so we have to mark them as hostile

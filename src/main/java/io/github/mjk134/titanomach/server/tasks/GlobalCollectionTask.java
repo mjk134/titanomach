@@ -9,7 +9,7 @@ public class GlobalCollectionTask extends GlobalTask {
     private final String targetItem;
 
     public GlobalCollectionTask(String name, int maxProgress, int progressPointReward, String targetItem) {
-        super(name, maxProgress, progressPointReward);
+        super(name, maxProgress, progressPointReward, targetItem);
         this.targetItem = targetItem;
     }
 

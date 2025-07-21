@@ -5,6 +5,7 @@ import io.github.mjk134.titanomach.Titanomach;
 import io.github.mjk134.titanomach.server.TitanomachPlayer;
 import io.github.mjk134.titanomach.server.roles.Role;
 import io.github.mjk134.titanomach.server.roles.RoleManager;
+import io.github.mjk134.titanomach.server.tasks.*;
 import io.github.mjk134.titanomach.utils.ItemBuilder;
 import io.github.mjk134.titanomach.utils.TextUtils;
 import net.minecraft.component.DataComponentTypes;
@@ -15,9 +16,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 
-public class RoleMenu extends Menu {
+import java.util.List;
+
+public class TaskMenu extends Menu {
     // this probably needs to change later
-    public RoleMenu(PlayerEntity player) {
+    public TaskMenu(PlayerEntity player) {
         super("Roles");
 
         TitanomachPlayer tPlayer = Titanomach.TITANOMACH_CONFIG.getPlayerConfig((ServerPlayerEntity) player);
@@ -32,6 +35,7 @@ public class RoleMenu extends Menu {
 
         addProgressBar(tPlayer);
         addPlayerHead(player);
+        addPlayerTasks(playerRole, tPlayer);
 
         fillEmptyWithGlass();
     }
@@ -126,5 +130,63 @@ public class RoleMenu extends Menu {
             roleIcon.set(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, true);
         }
         this.setItem(slot, roleIcon);
+    }
+
+    private void addPlayerTasks(Role role, TitanomachPlayer tPlayer) {
+        TaskManager taskManager = Titanomach.TITANOMACH_CONFIG.getTaskManager();
+        Task currentTask = taskManager.getTaskFromPlayer(tPlayer);
+        boolean playerHasTask = currentTask != null;
+
+        List<TaskInfo> tasks = role.getPlayerTaskPool();
+        for (int i = 0; i<7; i++) {
+            ItemBuilder taskIconBuilder = new ItemBuilder("minecraft:map");
+            MenuClickAction clickAction = MenuClickAction.NO_ACTION;
+            if (i < tasks.size()) {
+                TaskInfo taskInfo = tasks.get(i);
+                boolean thisTaskSelected = playerHasTask && taskInfo.equals(currentTask);
+
+                // add title
+                String activeModifier = thisTaskSelected ? " §8(Active)" : "";
+                String targetName = switch (taskInfo.taskType) {
+                    case COLLECTION -> TextUtils.itemIDtoName(taskInfo.target);
+                    case SLAYER -> TextUtils.entityIDtoName(taskInfo.target);
+                };
+                taskIconBuilder.setName("§6§l" + TaskType.presentVerb(taskInfo.taskType).toUpperCase() + "§r§f " + taskInfo.maxProgress + " " + TextUtils.itemIDtoName(taskInfo.target) + activeModifier);
+
+                // add pp reward
+                taskIconBuilder.addLoreLine("§7Grants §e" + taskInfo.progressPointReward + " §aPP");
+
+                // add click tooltip if no task is selected
+                if (!playerHasTask) {
+                    taskIconBuilder.addLoreMultiline("\n§9Click to select this task!");
+                    // select event
+                    clickAction = (player, slot, menuContext) -> {
+                        String playerID = tPlayer.getPlayerId();
+                        Task task = taskInfo.createTask(playerID);
+                        taskManager.addTask(task, playerID);
+                    };
+                } else {
+                    if (thisTaskSelected) {
+                        taskIconBuilder.setItem("minecraft:filled_map");
+                        taskIconBuilder.setEnchanted(true);
+
+                        taskIconBuilder.addLoreMultiline("\n§e" + currentTask.progress + "§6/§e" + currentTask.maxProgress + " §7" + targetName + " " + TaskType.pastVerb(taskInfo.taskType));
+                        taskIconBuilder.addLoreLine(TextUtils.progressBar(16, (float) currentTask.progress / currentTask.maxProgress, true));
+
+                        taskIconBuilder.addLoreMultiline("\n§9Click to submit items");
+
+                        clickAction = (player, slot, menuContext) -> {
+                            taskManager.submitTask(currentTask.name, (ServerPlayerEntity) player);
+                        };
+                    } else {
+                        taskIconBuilder.addLoreMultiline("\n§c§oYou have already selected another task!");
+                    }
+                }
+            }
+            else {
+                taskIconBuilder.setName("Empty Task");
+            }
+            setClickableItem(28 + i, taskIconBuilder.create(), clickAction);
+        }
     }
 }

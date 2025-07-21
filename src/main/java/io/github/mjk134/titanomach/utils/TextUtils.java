@@ -1,5 +1,9 @@
 package io.github.mjk134.titanomach.utils;
 
+import net.minecraft.registry.Registries;
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
+
 import java.util.List;
 
 public class TextUtils {
@@ -20,5 +24,20 @@ public class TextUtils {
             }
         }
         return result.toString();
+    }
+
+    public static String itemIDtoName(String id) {
+        return Registries.ITEM.get(Identifier.of(id)).getName().getString();
+    }
+
+    public static String entityIDtoName(String id) {
+        return Registries.ENTITY_TYPE.get(Identifier.of(id)).getName().getString();
+    }
+
+    /// Generate a progress bar string with formatting. Use `decimalPlaces = -1` to hide the percentage caption.
+    public static String progressBar(int length, float percentage, boolean showPercentage) {
+        int nFilled = (int) (length * percentage);
+        String percentageCaption = showPercentage ? " §e" + (percentage * 100)  + "§6%": "";
+        return "§2[§a" + "-".repeat(nFilled) + "§7" + "-".repeat(length - nFilled) + "§2]" + percentageCaption;
     }
 }

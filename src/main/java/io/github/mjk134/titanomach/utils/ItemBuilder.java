@@ -1,6 +1,8 @@
 package io.github.mjk134.titanomach.utils;
 
+import io.github.mjk134.titanomach.Titanomach;
 import it.unimi.dsi.fastutil.objects.ReferenceSortedSets;
+import net.minecraft.component.ComponentMap;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.LoreComponent;
 import net.minecraft.component.type.TooltipDisplayComponent;
@@ -13,7 +15,7 @@ import net.minecraft.util.Identifier;
 import java.util.ArrayList;
 
 public class ItemBuilder {
-    private final ItemStack item;
+    private ItemStack item;
     private final ArrayList<Text> lore;
 
     public ItemBuilder(Item item) {
@@ -23,6 +25,15 @@ public class ItemBuilder {
 
     public ItemBuilder(String itemID) {
         this(Registries.ITEM.get(Identifier.of(itemID)));
+    }
+
+    public ItemBuilder setItem(Item item) {
+        this.item.applyComponentsFrom(item.getComponents());
+        return this;
+    }
+
+    public ItemBuilder setItem(String itemID) {
+        return setItem(Registries.ITEM.get(Identifier.of(itemID)));
     }
 
     public ItemBuilder setName(String name) {

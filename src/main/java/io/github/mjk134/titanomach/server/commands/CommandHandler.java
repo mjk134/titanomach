@@ -1,9 +1,7 @@
 package io.github.mjk134.titanomach.server.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
-import io.github.mjk134.titanomach.Titanomach;
 import net.minecraft.server.command.ServerCommandSource;
 
 import static net.minecraft.server.command.CommandManager.argument;
@@ -36,19 +34,8 @@ public class CommandHandler {
                         .executes(SetSkinCommand::run)));
 
         dispatcher.register(
-                literal("testmenu")
-                        .requires(source -> source.hasPermissionLevel(4))
-                        .executes(MenuTestCommand::run)
-        );
-
-        dispatcher.register(
-                literal("roles")
-                        .executes(RoleMenuCommand::run)
-        );
-
-        dispatcher.register(
                 literal("tasks")
-                        .executes(TasksCommand::run)
+                        .executes(TaskMenuCommand::run)
         );
 
         dispatcher.register(PPCommands.get());

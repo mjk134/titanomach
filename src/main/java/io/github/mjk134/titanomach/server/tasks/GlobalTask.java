@@ -10,8 +10,8 @@ import static io.github.mjk134.titanomach.Titanomach.TITANOMACH_CONFIG;
 public abstract class GlobalTask extends Task {
     public HashMap<String, Integer> playerContributions = new HashMap<>();
 
-    public GlobalTask(String name, int maxProgress, int progressPointReward) {
-        super(name, maxProgress, progressPointReward);
+    public GlobalTask(String name, int maxProgress, int progressPointReward, String targetID) {
+        super(name, maxProgress, progressPointReward, targetID);
     }
 
     public void addPlayerToTask(ServerPlayerEntity player) {

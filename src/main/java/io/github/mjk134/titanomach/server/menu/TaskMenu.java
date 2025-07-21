@@ -185,12 +185,24 @@ public class TaskMenu extends Menu {
                         if (currentTask.progress >= currentTask.maxProgress) {
                             taskIconBuilder.addLoreMultiline("\n§9Click to submit task");
                         }
+                        else if (currentTask instanceof CollectionTask) {
+                            if (((CollectionTask) currentTask).inventoryCount > 0) {
+                                taskIconBuilder.addLoreMultiline("\n§9Click to submit current items");
+                            }
+                        }
 
                         clickAction = (player, slot, menuContext) -> {
                             boolean success = taskManager.submitTask(currentTask.name, (ServerPlayerEntity) player);
                             if (success) {
                                 player.playSoundToPlayer(SoundEvents.ENTITY_PLAYER_LEVELUP, SoundCategory.UI, 1.0f, 1.0f);
                             }
+                            else if (currentTask instanceof CollectionTask) {
+                                if (((CollectionTask) currentTask).inventoryCount > 0) {
+                                    player.playSoundToPlayer(SoundEvents.BLOCK_NOTE_BLOCK_HAT.value(), SoundCategory.UI, 1.0f, 0.5f);
+                                    ((CollectionTask) currentTask).inventoryCount = 0;
+                                }
+                            }
+
                             // update ui
                             addRoles(tPlayer);
                             addPlayerTasks(tPlayer);

@@ -15,32 +15,33 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvent;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 
 import java.util.List;
 
 public class TaskMenu extends Menu {
     // this probably needs to change later
     public TaskMenu(PlayerEntity player) {
-        super("Roles");
-
+        super("Tasks");
         TitanomachPlayer tPlayer = Titanomach.TITANOMACH_CONFIG.getPlayerConfig((ServerPlayerEntity) player);
-        Role playerRole = RoleManager.getPlayerRole(tPlayer);
 
+        addRoles(tPlayer);
+        addProgressBar(tPlayer);
+        addPlayerHead(player);
+        addPlayerTasks(tPlayer);
+
+        fillEmptyWithGlass();
+    }
+
+    private void addRoles(TitanomachPlayer tPlayer) {
+        Role playerRole = RoleManager.getPlayerRole(tPlayer);
         addRoleIcon(RoleManager.getRole("Peasant"), 1, playerRole.name);
         addRoleIcon(RoleManager.getRole("Freeman"), 2, playerRole.name);
         addRoleIcon(RoleManager.getRole("Knight"), 3, playerRole.name);
         addRoleIcon(RoleManager.getRole("Noble"), 5, playerRole.name);
         addRoleIcon(RoleManager.getRole("King"), 6, playerRole.name);
         addRoleIcon(RoleManager.getRole("God"), 7, playerRole.name);
-
-        addProgressBar(tPlayer);
-        addPlayerHead(player);
-        addPlayerTasks(playerRole, tPlayer);
-
-        fillEmptyWithGlass();
     }
 
     private void addPlayerHead(PlayerEntity player) {
@@ -64,7 +65,7 @@ public class TaskMenu extends Menu {
         Role currentRole =  RoleManager.getPlayerRole(player);
         Role nextRole = RoleManager.getNextRole(currentRole);
         for (int i = 0; i < 7; i++) {
-            String itemID = "";
+            String itemID;
             if (i < numberOfGreen) {
                 itemID = "minecraft:lime_stained_glass_pane";
             }
@@ -135,7 +136,8 @@ public class TaskMenu extends Menu {
         this.setItem(slot, roleIcon);
     }
 
-    private void addPlayerTasks(Role role, TitanomachPlayer tPlayer) {
+    private void addPlayerTasks(TitanomachPlayer tPlayer) {
+        Role role = RoleManager.getPlayerRole(tPlayer);
         TaskManager taskManager = Titanomach.TITANOMACH_CONFIG.getTaskManager();
         Task currentTask = taskManager.getTaskFromPlayer(tPlayer);
         boolean playerHasTask = currentTask != null;
@@ -168,8 +170,8 @@ public class TaskMenu extends Menu {
                         Task task = taskInfo.createTask(playerID);
                         taskManager.addTask(task, playerID);
                         task.updateProgress((ServerPlayerEntity) player);
-                        addPlayerTasks(RoleManager.getPlayerRole(tPlayer), tPlayer);
-                        player.playSoundToPlayer(SoundEvent.of(Identifier.of("minecraft:block.note_block.pling")), SoundCategory.UI, 1.0f, 1.0f);
+                        addPlayerTasks(tPlayer);
+                        player.playSoundToPlayer(SoundEvents.BLOCK_NOTE_BLOCK_PLING.value(), SoundCategory.UI, 1.0f, 1.0f);
                     };
                 } else {
                     if (thisTaskSelected) {
@@ -179,15 +181,21 @@ public class TaskMenu extends Menu {
                         taskIconBuilder.addLoreMultiline("\n§e" + currentTask.progress + "§6/§e" + currentTask.maxProgress + " §7" + targetName + " " + TaskType.pastVerb(taskInfo.taskType));
                         taskIconBuilder.addLoreLine(TextUtils.progressBar(16, (float) currentTask.progress / currentTask.maxProgress, true));
 
-                        taskIconBuilder.addLoreMultiline("\n§9Click to submit items");
+                        // String submitText = currentTask.progress == currentTask.maxProgress ? "§9Click to submit task" : "§c§oNot enough items to complete task!";
+                        if (currentTask.progress >= currentTask.maxProgress) {
+                            taskIconBuilder.addLoreMultiline("\n§9Click to submit task");
+                        }
 
                         clickAction = (player, slot, menuContext) -> {
                             boolean success = taskManager.submitTask(currentTask.name, (ServerPlayerEntity) player);
-                            addPlayerTasks(RoleManager.getPlayerRole(tPlayer), tPlayer);
-                            addProgressBar(tPlayer);
                             if (success) {
-                                player.playSoundToPlayer(SoundEvent.of(Identifier.of("minecraft:entity.player.levelup")), SoundCategory.UI, 1.0f, 1.0f);
+                                player.playSoundToPlayer(SoundEvents.ENTITY_PLAYER_LEVELUP, SoundCategory.UI, 1.0f, 1.0f);
                             }
+                            // update ui
+                            addRoles(tPlayer);
+                            addPlayerTasks(tPlayer);
+                            addProgressBar(tPlayer);
+                            addPlayerHead(player);
                         };
                     } else {
                         taskIconBuilder.addLoreMultiline("\n§c§oYou have already selected another task!");

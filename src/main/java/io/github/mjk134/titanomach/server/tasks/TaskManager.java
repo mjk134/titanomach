@@ -57,8 +57,13 @@ public class TaskManager {
                 if (task instanceof CollectionTask collectionTask) {
                     collectionTask.updateProgress(player);
                 }
-
-                bossBar.setPercent(task.getPercentageProgress());
+                float percentageProgress = task.getPercentageProgress();
+                if (percentageProgress > 1) {
+                    bossBar.setPercent(1);
+                }
+                else {
+                    bossBar.setPercent(percentageProgress);
+                }
             }
             tickCounter = 0;
         }

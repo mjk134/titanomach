@@ -15,13 +15,12 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
-import org.apache.logging.log4j.core.jmx.Server;
 
 import java.util.List;
 
-public class RoleMenu extends Menu {
+public class TaskMenu extends Menu {
     // this probably needs to change later
-    public RoleMenu(PlayerEntity player) {
+    public TaskMenu(PlayerEntity player) {
         super("Roles");
 
         TitanomachPlayer tPlayer = Titanomach.TITANOMACH_CONFIG.getPlayerConfig((ServerPlayerEntity) player);

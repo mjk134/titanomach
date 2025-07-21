@@ -4,10 +4,11 @@
   "package": "io.github.mjk134.titanomach.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "entity.PlayerEntityAccessor",
+    "advancement.AdvancementFrameMixin",
     "entity.DisplayEntityAccessor",
     "entity.DisplayEntityAccessor$TextDisplayEntityAccessor",
     "entity.EntityAccessor",
+    "entity.PlayerEntityAccessor",
     "entity.PlayerEntityMixin",
     "entity.ServerPlayerEntityMixin",
     "network.EntityPassengersSetS2CPacketMixin",

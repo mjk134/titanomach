@@ -100,7 +100,9 @@ public class TaskManager {
     }
 
     public void submitTask(String taskID, ServerPlayerEntity player) {
-        if (tasks.get(taskID).submitTask(player)) {
+        Task task = tasks.get(taskID);
+        if (task.submitTask(player)) {
+            TITANOMACH_CONFIG.getPlayerConfig(player).addProgressPoints(task.progressPointReward);
             tasks.remove(taskID);
             playerTaskIdMap.remove(player.getUuidAsString());
         }

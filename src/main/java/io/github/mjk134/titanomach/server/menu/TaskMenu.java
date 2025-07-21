@@ -15,6 +15,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import org.apache.logging.log4j.core.jmx.Server;
 
 import java.util.List;
 
@@ -164,6 +165,8 @@ public class TaskMenu extends Menu {
                         String playerID = tPlayer.getPlayerId();
                         Task task = taskInfo.createTask(playerID);
                         taskManager.addTask(task, playerID);
+                        task.updateProgress((ServerPlayerEntity) player);
+                        addPlayerTasks(RoleManager.getPlayerRole(tPlayer), tPlayer);
                     };
                 } else {
                     if (thisTaskSelected) {
@@ -177,6 +180,8 @@ public class TaskMenu extends Menu {
 
                         clickAction = (player, slot, menuContext) -> {
                             taskManager.submitTask(currentTask.name, (ServerPlayerEntity) player);
+                            addPlayerTasks(RoleManager.getPlayerRole(tPlayer), tPlayer);
+                            addProgressBar(tPlayer);
                         };
                     } else {
                         taskIconBuilder.addLoreMultiline("\n§c§oYou have already selected another task!");

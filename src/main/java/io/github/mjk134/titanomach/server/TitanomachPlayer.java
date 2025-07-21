@@ -49,7 +49,7 @@ public class TitanomachPlayer {
 
     public void addProgressPoints(int amount) {
         Role prevRole = RoleManager.calculateRole(this.progressPoints);
-        this.progressPoints += amount;
+        this.progressPoints += (int) (amount * this.progressPointMultiplier);
         Role nextRole = RoleManager.calculateRole(this.progressPoints);
         if (prevRole != nextRole) {
             nextRole.onRankUp(Titanomach.SERVER_INSTANCE.getPlayerManager().getPlayer(UUID.fromString(playerId)));

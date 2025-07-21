@@ -68,7 +68,7 @@ public class VoteManager {
         HashMap<UUID, Integer> voteCount = new HashMap<>();
         for (UUID uuid : playerVoteMap.values()) {
             if (VoteManager.isPlayerExempt(uuid)) continue;
-            if (!voteCount.containsKey(uuid)){
+            if (!voteCount.containsKey(uuid)) {
                 voteCount.put(uuid, 1);
             } else {
                 int currentCount = voteCount.get(uuid);

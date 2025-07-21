@@ -17,7 +17,6 @@ public class Task {
         this.targetID = targetID;
     }
 
-
     public void updateProgress(ServerPlayerEntity player) {
 
     }

@@ -1,5 +1,6 @@
 package io.github.mjk134.titanomach.server.tasks;
 
+import io.github.mjk134.titanomach.server.TitanomachPlayer;
 import net.minecraft.entity.boss.BossBar;
 import net.minecraft.entity.boss.ServerBossBar;
 import net.minecraft.server.MinecraftServer;
@@ -87,6 +88,11 @@ public class TaskManager {
 
     public Task getTaskFromPlayer(ServerPlayerEntity player) {
         String taskId = playerTaskIdMap.get(player.getUuidAsString());
+        return getTask(taskId);
+    }
+
+    public Task getTaskFromPlayer(TitanomachPlayer player) {
+        String taskId = playerTaskIdMap.get(player.getPlayerId());
         return getTask(taskId);
     }
 

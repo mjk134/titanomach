@@ -17,12 +17,10 @@ import static io.github.mjk134.titanomach.Titanomach.MOD_LOGGER;
 import static io.github.mjk134.titanomach.Titanomach.TITANOMACH_CONFIG;
 
 public class CollectionTask extends Task{
-    private final String targetItem;
     private NamedScreenHandlerFactory screen;
 
     public CollectionTask(String name, int maxProgress, int progressPointReward, String targetItem) {
-        super(name, maxProgress, progressPointReward);
-        this.targetItem = targetItem;
+        super(name, maxProgress, progressPointReward, targetItem);
     }
 
     @Override
@@ -30,7 +28,7 @@ public class CollectionTask extends Task{
         PlayerInventory inventory = player.getInventory();
         for (int i = 0; i < inventory.size(); ++i) {
             ItemStack itemStack = inventory.getStack(i);
-            if (itemStack.getItem().toString().equals(targetItem)) {
+            if (itemStack.getItem().toString().equals(targetID)) {
                 this.progress += itemStack.getCount();
             }
         }
@@ -54,7 +52,7 @@ public class CollectionTask extends Task{
         if (this.progress >= this.maxProgress) {
             for (int i = 0; i < inventory.size(); ++i) {
                 ItemStack itemStack = inventory.getStack(i);
-                if (itemStack.getItem().toString().equals(targetItem)) {
+                if (itemStack.getItem().toString().equals(targetID)) {
                     if (maxProgress - itemStack.getCount() <= 0) {
                         this.progress = 0;
                         inventory.setStack(i, new ItemStack(itemStack.getItem()).copyWithCount(itemStack.getCount() - maxProgress));

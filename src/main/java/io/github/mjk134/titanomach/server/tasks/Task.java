@@ -8,11 +8,13 @@ public class Task {
     public int progress;
     public int maxProgress;
     public int progressPointReward;
+    public String targetID;
 
-    public Task(String name, int maxProgress, int progressPointReward) {
+    public Task(String name, int maxProgress, int progressPointReward, String targetID) {
         this.name = name;
         this.maxProgress = maxProgress;
         this.progressPointReward = progressPointReward;
+        this.targetID = targetID;
     }
 
 

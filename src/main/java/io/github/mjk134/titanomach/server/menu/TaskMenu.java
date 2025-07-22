@@ -161,14 +161,19 @@ public class TaskMenu extends Menu {
 
                 // add click tooltip if no task is selected
                 if (!playerHasTask) {
-                    taskIconBuilder.addLoreMultiline("\n§9Click to select this task!");
-                    // select event
-                    clickAction = (player, slot, menuContext) -> {
-                        String playerID = tPlayer.getPlayerId();
-                        taskManager.addTask(task, playerID);
-                        addPlayerTasks(tPlayer);
-                        player.playSoundToPlayer(SoundEvents.BLOCK_NOTE_BLOCK_PLING.value(), SoundCategory.UI, 1.0f, 1.0f);
-                    };
+                    if (!taskManager.completedPlayerTasks.contains(task.name)) {
+                        taskIconBuilder.addLoreMultiline("\n§9Click to select this task!");
+                        // select event
+                        clickAction = (player, slot, menuContext) -> {
+                            String playerID = tPlayer.getPlayerId();
+                            taskManager.addTask(task, playerID);
+                            addPlayerTasks(tPlayer);
+                            player.playSoundToPlayer(SoundEvents.BLOCK_NOTE_BLOCK_PLING.value(), SoundCategory.UI, 1.0f, 1.0f);
+                        };
+                    }
+                    else {
+                        taskIconBuilder.addLoreMultiline("\n§c§oThis task has already been completed!");
+                    }
                 } else {
                     if (thisTaskSelected) {
                         taskIconBuilder.setItem("minecraft:filled_map");
@@ -186,19 +191,16 @@ public class TaskMenu extends Menu {
                         // String submitText = currentTask.progress == currentTask.maxProgress ? "§9Click to submit task" : "§c§oNot enough items to complete task!";
                         if (currentTask.progress >= currentTask.maxProgress) {
                             taskIconBuilder.addLoreMultiline("\n§9Click to submit task");
-                        }
-                        else if (currentTask instanceof CollectionTask collectionTask) {
+                        } else if (currentTask instanceof CollectionTask collectionTask) {
                             if (collectionTask.getInventoryCount((ServerPlayerEntity) tPlayer.getPlayerEntity()) > 0) {
                                 taskIconBuilder.addLoreMultiline("\n§9Click to submit current items");
                             }
                         }
-
                         clickAction = (player, slot, menuContext) -> {
                             SubmitStatus status = taskManager.submitTask(currentTask.name, (ServerPlayerEntity) player);
                             if (status == SubmitStatus.COMPLETED) {
                                 player.playSoundToPlayer(SoundEvents.ENTITY_PLAYER_LEVELUP, SoundCategory.UI, 1.0f, 1.0f);
-                            }
-                            else if (status == SubmitStatus.PARTIAL) {
+                            } else if (status == SubmitStatus.PARTIAL) {
                                 player.playSoundToPlayer(SoundEvents.BLOCK_NOTE_BLOCK_HAT.value(), SoundCategory.UI, 1.0f, 0.5f);
                             } else {
                                 player.playSoundToPlayer(SoundEvents.BLOCK_ANVIL_PLACE, SoundCategory.UI, 1.0f, 1.0f);

@@ -43,4 +43,9 @@ public class AdvancementTask extends Task{
     public String getTargetDisplayName() {
         return TextUtils.advancementIDtoName(targetID);
     }
+
+    @Override
+    public String getFormattedName() {
+        return "§6§l" + TaskType.presentVerb(TaskType.get(this)).toUpperCase() + "§r§a " + this.getTargetDisplayName();
+    }
 }

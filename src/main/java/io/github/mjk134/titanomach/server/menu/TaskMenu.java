@@ -15,6 +15,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 
@@ -25,14 +26,16 @@ public class TaskMenu extends Menu {
     public TaskMenu(PlayerEntity player) {
         super("Tasks");
         TitanomachPlayer tPlayer = Titanomach.TITANOMACH_CONFIG.getPlayerConfig((ServerPlayerEntity) player);
+        refreshUI(tPlayer);
+        fillEmptyWithGlass();
+    }
 
+    private void refreshUI(TitanomachPlayer tPlayer) {
         addRoles(tPlayer);
         addProgressBar(tPlayer);
-        addPlayerHead(player);
+        addPlayerHead(tPlayer);
         addPlayerTasks(tPlayer);
         addGlobalTasks(tPlayer);
-
-        fillEmptyWithGlass();
     }
 
     private void addRoles(TitanomachPlayer tPlayer) {
@@ -45,8 +48,8 @@ public class TaskMenu extends Menu {
         addRoleIcon(RoleManager.getRole("God"), 7, playerRole.name);
     }
 
-    private void addPlayerHead(PlayerEntity player) {
-        TitanomachPlayer tPlayer = Titanomach.TITANOMACH_CONFIG.getPlayerConfig((ServerPlayerEntity) player);
+    private void addPlayerHead(TitanomachPlayer tPlayer) {
+        PlayerEntity player = tPlayer.getPlayerEntity();
         Role playerRole = RoleManager.getPlayerRole(tPlayer);
         GameProfile gameProfile = player.getGameProfile();
 
@@ -198,20 +201,13 @@ public class TaskMenu extends Menu {
                         }
                         clickAction = (player, slot, menuContext) -> {
                             SubmitStatus status = taskManager.submitTask(currentTask.name, (ServerPlayerEntity) player);
-                            if (status == SubmitStatus.COMPLETED) {
-                                player.playSoundToPlayer(SoundEvents.ENTITY_PLAYER_LEVELUP, SoundCategory.UI, 1.0f, 1.0f);
-                            } else if (status == SubmitStatus.PARTIAL) {
-                                player.playSoundToPlayer(SoundEvents.BLOCK_NOTE_BLOCK_HAT.value(), SoundCategory.UI, 1.0f, 0.5f);
-                            } else {
-                                player.playSoundToPlayer(SoundEvents.BLOCK_ANVIL_PLACE, SoundCategory.UI, 1.0f, 1.0f);
-                            }
-
-                            // update ui
-                            addRoles(tPlayer);
-                            addPlayerTasks(tPlayer);
-                            addProgressBar(tPlayer);
-                            addPlayerHead(player);
-                            addGlobalTasks(tPlayer);
+                            SoundEvent sound = switch (status) {
+                                case COMPLETED -> SoundEvents.ENTITY_PLAYER_LEVELUP;
+                                case PARTIAL -> SoundEvents.BLOCK_NOTE_BLOCK_PLING.value();
+                                case FAIL -> SoundEvents.BLOCK_ANVIL_PLACE;
+                            };
+                            player.playSoundToPlayer(sound, SoundCategory.UI, 1.0f, 1.0f);
+                            refreshUI(tPlayer);
                         };
                     } else {
                         taskIconBuilder.addLoreMultiline("\n§c§oYou have already selected another task!");
@@ -254,12 +250,7 @@ public class TaskMenu extends Menu {
                         SubmitStatus status = taskManager.submitTask(task.name, (ServerPlayerEntity) player);;
                         if (status == SubmitStatus.PARTIAL || status == SubmitStatus.COMPLETED) {
                             player.playSoundToPlayer(SoundEvents.BLOCK_NOTE_BLOCK_PLING.value(), SoundCategory.UI, 1.0f, 1.0f);
-                            // update ui
-                            addRoles(tPlayer);
-                            addPlayerTasks(tPlayer);
-                            addProgressBar(tPlayer);
-                            addPlayerHead(player);
-                            addGlobalTasks(tPlayer);
+                            refreshUI(tPlayer);
                         } else {
                             player.playSoundToPlayer(SoundEvents.BLOCK_ANVIL_PLACE, SoundCategory.UI, 1.0f, 1.0f);
                         }

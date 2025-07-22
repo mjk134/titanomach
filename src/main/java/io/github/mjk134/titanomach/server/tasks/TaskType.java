@@ -21,6 +21,14 @@ public enum TaskType {
         };
     }
 
+    public static String icon(TaskType taskType) {
+        return switch (taskType) {
+            case COLLECTION -> "⛏";
+            case SLAYER -> "\uD83D\uDDE1";
+            case ADVANCEMENT -> "☆";
+        };
+    }
+
     public static TaskType get(Task task) {
         if (task instanceof CollectionTask || task instanceof GlobalCollectionTask) return COLLECTION;
         if (task instanceof SlayerTask) return SLAYER;

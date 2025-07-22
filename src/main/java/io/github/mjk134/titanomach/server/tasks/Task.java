@@ -44,7 +44,8 @@ public class Task {
     }
 
     public String getFormattedName() {
-        return "§6§l" + TaskType.presentVerb(TaskType.get(this)).toUpperCase() + "§r§f " + this.maxProgress + " " + this.getTargetDisplayName();
+        TaskType tasktype = TaskType.get(this);
+        return "§6" + TaskType.icon(tasktype) + " §l" + TaskType.presentVerb(tasktype).toUpperCase() + "§r§f " + this.maxProgress + " " + this.getTargetDisplayName();
     }
 
     public float getPercentageProgress() {

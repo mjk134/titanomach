@@ -58,7 +58,7 @@ public class TextUtils {
         optimisticPercentage = Float.min(Float.max(optimisticPercentage, 0.0f), 1.0f);
         int npFilled = (int) (length * percentage);
         int nopFilled = (int) (length * optimisticPercentage) - npFilled;
-        String percentageCaption = showPercentage ? " §e" + (percentage * 100)  + "§6%": "";
+        String percentageCaption = showPercentage ? " §e" + (int)(percentage * 100)  + "§6%": "";
         return "§2[§a" + "-".repeat(npFilled) + "§6" + "-".repeat(nopFilled) + "§7" + "-".repeat(length - npFilled - nopFilled) + "§2]" + percentageCaption;
     }
 

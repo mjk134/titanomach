@@ -46,6 +46,7 @@ public class AdvancementTask extends Task{
 
     @Override
     public String getFormattedName() {
-        return "§6§l" + TaskType.presentVerb(TaskType.get(this)).toUpperCase() + "§r§a " + this.getTargetDisplayName();
+        TaskType tasktype = TaskType.get(this);
+        return "§6" + TaskType.icon(tasktype) + " §l" + TaskType.presentVerb(tasktype).toUpperCase() + "§r§a " + this.getTargetDisplayName();
     }
 }

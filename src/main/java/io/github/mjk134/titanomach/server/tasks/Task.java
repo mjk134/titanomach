@@ -17,11 +17,10 @@ public class Task {
         this.targetID = targetID;
     }
 
-    public void updateProgress(ServerPlayerEntity player) {
 
-    }
+    public SubmitStatus submitTask(ServerPlayerEntity player) {return SubmitStatus.FAIL;}
 
-    public boolean submitTask(ServerPlayerEntity player) {return false;}
+    public boolean canSubmit(ServerPlayerEntity player) {return progress >= maxProgress;}
 
     /// Get name of the task target that can be displayed
     public String getTargetDisplayName() {

@@ -20,8 +20,11 @@ public class SlayerTask extends Task{
     }
 
     @Override
-    public boolean submitTask(ServerPlayerEntity player) {
-        return this.progress >= this.maxProgress;
+    public SubmitStatus submitTask(ServerPlayerEntity player) {
+        if (canSubmit(player)) {
+            return SubmitStatus.COMPLETED;
+        }
+        return SubmitStatus.FAIL;
     }
 
     @Override

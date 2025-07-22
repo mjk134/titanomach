@@ -54,9 +54,6 @@ public class TaskManager {
                     bossBar.addPlayer(player);
                 };
 
-                if (task instanceof CollectionTask collectionTask) {
-                    collectionTask.updateProgress(player);
-                }
                 float percentageProgress = task.getPercentageProgress();
                 if (percentageProgress > 1) {
                     bossBar.setPercent(1);
@@ -98,15 +95,15 @@ public class TaskManager {
         return getTask(taskId);
     }
 
-    public boolean submitTask(String taskID, ServerPlayerEntity player) {
+    public SubmitStatus submitTask(String taskID, ServerPlayerEntity player) {
         Task task = tasks.get(taskID);
-        boolean success = task.submitTask(player);
-        if (success) {
+        SubmitStatus status = task.submitTask(player);
+        if (status == SubmitStatus.COMPLETED) {
             TITANOMACH_CONFIG.getPlayerConfig(player).addProgressPoints(task.progressPointReward);
             tasks.remove(taskID);
             playerTaskIdMap.remove(player.getUuidAsString());
         }
         TITANOMACH_CONFIG.dump();
-        return success;
+        return status;
     }
 }

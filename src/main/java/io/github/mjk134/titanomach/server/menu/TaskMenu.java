@@ -169,7 +169,6 @@ public class TaskMenu extends Menu {
                         String playerID = tPlayer.getPlayerId();
                         Task task = taskInfo.createTask(playerID);
                         taskManager.addTask(task, playerID);
-                        task.updateProgress((ServerPlayerEntity) player);
                         addPlayerTasks(tPlayer);
                         player.playSoundToPlayer(SoundEvents.BLOCK_NOTE_BLOCK_PLING.value(), SoundCategory.UI, 1.0f, 1.0f);
                     };
@@ -185,22 +184,19 @@ public class TaskMenu extends Menu {
                         if (currentTask.progress >= currentTask.maxProgress) {
                             taskIconBuilder.addLoreMultiline("\n§9Click to submit task");
                         }
-                        else if (currentTask instanceof CollectionTask) {
-                            if (((CollectionTask) currentTask).inventoryCount > 0) {
+                        else if (currentTask instanceof CollectionTask collectionTask) {
+                            if (collectionTask.getInventoryCount((ServerPlayerEntity) tPlayer.getPlayerEntity()) > 0) {
                                 taskIconBuilder.addLoreMultiline("\n§9Click to submit current items");
                             }
                         }
 
                         clickAction = (player, slot, menuContext) -> {
-                            boolean success = taskManager.submitTask(currentTask.name, (ServerPlayerEntity) player);
-                            if (success) {
+                            SubmitStatus status = taskManager.submitTask(currentTask.name, (ServerPlayerEntity) player);
+                            if (status == SubmitStatus.COMPLETED) {
                                 player.playSoundToPlayer(SoundEvents.ENTITY_PLAYER_LEVELUP, SoundCategory.UI, 1.0f, 1.0f);
                             }
-                            else if (currentTask instanceof CollectionTask) {
-                                if (((CollectionTask) currentTask).inventoryCount > 0) {
-                                    player.playSoundToPlayer(SoundEvents.BLOCK_NOTE_BLOCK_HAT.value(), SoundCategory.UI, 1.0f, 0.5f);
-                                    ((CollectionTask) currentTask).inventoryCount = 0;
-                                }
+                            else if (status == SubmitStatus.PARTIAL) {
+                                player.playSoundToPlayer(SoundEvents.BLOCK_NOTE_BLOCK_HAT.value(), SoundCategory.UI, 1.0f, 0.5f);
                             }
 
                             // update ui

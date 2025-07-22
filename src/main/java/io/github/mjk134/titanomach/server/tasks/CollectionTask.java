@@ -10,68 +10,50 @@ import static io.github.mjk134.titanomach.Titanomach.TITANOMACH_CONFIG;
 
 public class CollectionTask extends Task{
     private NamedScreenHandlerFactory screen;
-    private int bankedProgress;
-    public int inventoryCount;
 
     public CollectionTask(String name, int maxProgress, int progressPointReward, String targetItem) {
         super(name, maxProgress, progressPointReward, targetItem);
-        int bankedProgress = 0;
     }
 
     @Override
-    public void updateProgress(ServerPlayerEntity player) {
-        inventoryCount = 0;
+    // returns whether the task can be submitted
+    public SubmitStatus submitTask(ServerPlayerEntity player) {
+        SubmitStatus status = SubmitStatus.FAIL;
         PlayerInventory inventory = player.getInventory();
+        for (int i = 0; i < inventory.size(); ++i) {
+            ItemStack itemStack = inventory.getStack(i);
+            if (itemStack.getItem().toString().equals(targetID)) {
+                if (progress + itemStack.getCount() < maxProgress) {
+                    progress += itemStack.getCount();
+                    inventory.setStack(i, ItemStack.EMPTY);
+                    status = SubmitStatus.PARTIAL;
+                }
+                else  {
+                    itemStack.setCount(itemStack.getCount() - (maxProgress-progress));
+                    progress = maxProgress;
+                    status = SubmitStatus.COMPLETED;
+                }
+            }
+        }
+        TITANOMACH_CONFIG.dump();
+        return status;
+    }
+
+    @Override
+    public boolean canSubmit(ServerPlayerEntity player) {
+        return progress + getInventoryCount(player) >= this.maxProgress;
+    }
+
+    public int getInventoryCount(ServerPlayerEntity player) {
+        PlayerInventory inventory = player.getInventory();
+        int inventoryCount = 0;
         for (int i = 0; i < inventory.size(); ++i) {
             ItemStack itemStack = inventory.getStack(i);
             if (itemStack.getItem().toString().equals(targetID)) {
                 inventoryCount += itemStack.getCount();
             }
         }
-        this.progress = this.bankedProgress + inventoryCount;
-//        int percentProgress = ((int) ((((float) this.progress) / this.maxProgress) * 100));
-//        if (percentProgress >= 100) {
-//            percentProgress = 100;
-//        }
-//        if (percentProgress == 100) {
-//            player.sendMessage(Text.literal(String.valueOf(percentProgress)).withColor(Formatting.GREEN.getColorValue().intValue()), true);
-//        }
-//        else {
-//            player.sendMessage(Text.literal(String.valueOf(percentProgress)), true);
-//        }
-        TITANOMACH_CONFIG.dump();
-    }
-
-    @Override
-    // returns whether the task can be submitted
-    public boolean submitTask(ServerPlayerEntity player) {
-        PlayerInventory inventory = player.getInventory();
-        if (this.progress >= this.maxProgress) {
-            this.maxProgress -= this.bankedProgress;
-            for (int i = 0; i < inventory.size(); ++i) {
-                ItemStack itemStack = inventory.getStack(i);
-                if (itemStack.getItem().toString().equals(targetID)) {
-                    if (maxProgress - itemStack.getCount()<= 0) {
-                        this.progress = 0;
-                        inventory.setStack(i, new ItemStack(itemStack.getItem()).copyWithCount(itemStack.getCount() - maxProgress));
-                        maxProgress = 0;
-                        return true;
-                    }
-                    this.maxProgress -= itemStack.getCount();
-                    inventory.setStack(i, ItemStack.EMPTY);
-                }
-            }
-        }
-        else {
-            for (int i = 0; i < inventory.size(); ++i) {
-                ItemStack itemStack = inventory.getStack(i);
-                if (itemStack.getItem().toString().equals(targetID)) {
-                    this.bankedProgress += itemStack.getCount();
-                    inventory.setStack(i, ItemStack.EMPTY);
-                }
-            }
-        }
-        return false;
+        return  inventoryCount;
     }
 
     @Override

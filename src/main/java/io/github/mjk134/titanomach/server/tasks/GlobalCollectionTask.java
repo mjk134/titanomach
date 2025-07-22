@@ -1,6 +1,7 @@
 package io.github.mjk134.titanomach.server.tasks;
 
 import io.github.mjk134.titanomach.utils.TextUtils;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 
@@ -11,32 +12,32 @@ public class GlobalCollectionTask extends GlobalTask {
         super(name, maxProgress, progressPointReward, targetItem);
     }
 
-    /**
-     * This method is called on the submission of task data.
-     * If true remove the item stack in the display slot
-     * If false don't do anything and move it back to where it was after the menu is closed
-     */
     @Override
-    public boolean updateProgress(ServerPlayerEntity player, ItemStack itemStack) {
-        // First, check if item stack is of the target item
-        if (!itemStack.getItem().toString().equals(targetID)) {
-            return false;
+    // returns whether the task can be submitted
+    public SubmitStatus submitTask(ServerPlayerEntity player) {
+        SubmitStatus status = SubmitStatus.FAIL;
+        PlayerInventory inventory = player.getInventory();
+        int prevProgress = progress;
+        for (int i = 0; i < inventory.size(); ++i) {
+            ItemStack itemStack = inventory.getStack(i);
+            if (itemStack.getItem().toString().equals(targetID)) {
+                if (progress + itemStack.getCount() < maxProgress) {
+                    progress += itemStack.getCount();
+                    inventory.setStack(i, ItemStack.EMPTY);
+                    status = SubmitStatus.PARTIAL;
+                }
+                else  {
+                    itemStack.setCount(itemStack.getCount() - (maxProgress-progress));
+                    progress = maxProgress;
+                    taskComplete();
+                    status = SubmitStatus.COMPLETED;
+                }
+            }
         }
-        int itemCount = itemStack.getCount();
-        // Since we know it's the target item, update player progress and the task progress
-        this.progress += itemCount;
 
-        if (this.progress >= maxProgress) {
-            // run taskComplete and remove it off the player's tasks
-            this.taskComplete();
-            return true;
-        }
-
-        this.updatePlayerContributions(player, itemCount);
-
-        // Dump config, tick checker should automatically update progress via bb
+        updatePlayerContributions(player, progress - prevProgress);
         TITANOMACH_CONFIG.dump();
-        return true;
+        return status;
     }
 
     @Override

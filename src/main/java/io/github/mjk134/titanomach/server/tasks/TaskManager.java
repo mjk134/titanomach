@@ -9,7 +9,9 @@ import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import static io.github.mjk134.titanomach.Titanomach.TITANOMACH_CONFIG;
 
@@ -21,6 +23,7 @@ public class TaskManager {
     /// PlayerId, ServerBossBar
     private static final HashMap<String, ServerBossBar> individualBossBars = new HashMap<>();
     private static int tickCounter = 0;
+    public final List<String> completedGlobalTasks = new ArrayList<>();
 
     public void tick(MinecraftServer server) {
         tickCounter++;
@@ -48,16 +51,9 @@ public class TaskManager {
                 // Check if there is a progress bar for this player
                 if (bossBar == null) {
                     // If it's not in the map put it in
-                    if (!(task instanceof AdvancementTask)) {
-                        String barText = TextUtils.capitalize(TaskType.presentVerb(TaskType.get(task))) + " " + task.maxProgress + " " + task.getTargetDisplayName();
-                        individualBossBars.put(playerId, new ServerBossBar(Text.literal(barText), BossBar.Color.GREEN, BossBar.Style.NOTCHED_10));
-                        bossBar = individualBossBars.get(playerId);
-                    }
-                    else {
-                        String barText = TextUtils.capitalize(TaskType.presentVerb(TaskType.get(task))) + " "  + task.getTargetDisplayName();
-                        individualBossBars.put(playerId, new ServerBossBar(Text.literal(barText), BossBar.Color.GREEN, BossBar.Style.NOTCHED_10));
-                        bossBar = individualBossBars.get(playerId);
-                    }
+                    String barText = task.getFormattedName();
+                    individualBossBars.put(playerId, new ServerBossBar(Text.literal(barText), BossBar.Color.GREEN, BossBar.Style.NOTCHED_10));
+                    bossBar = individualBossBars.get(playerId);
                 }
 
                 // If player is not in the boss bar, add it (fixes boss bar not showing on reconnect)
@@ -113,8 +109,16 @@ public class TaskManager {
             TITANOMACH_CONFIG.getPlayerConfig(player).addProgressPoints(task.progressPointReward);
             tasks.remove(taskID);
             playerTaskIdMap.remove(player.getUuidAsString());
+
+            if (task instanceof GlobalTask) {
+                completedGlobalTasks.add(taskID);
+            }
         }
         TITANOMACH_CONFIG.dump();
         return status;
+    }
+
+    public void resetGlobalTasks() {
+        completedGlobalTasks.clear();
     }
 }

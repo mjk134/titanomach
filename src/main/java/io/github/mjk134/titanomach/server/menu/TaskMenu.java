@@ -149,16 +149,12 @@ public class TaskMenu extends Menu {
             MenuClickAction clickAction = MenuClickAction.NO_ACTION;
             if (i < tasks.size()) {
                 TaskInfo taskInfo = tasks.get(i);
+                Task task = taskInfo.createTask(tPlayer.getPlayerId());
                 boolean thisTaskSelected = playerHasTask && taskInfo.equals(currentTask);
 
                 // add title
                 String activeModifier = thisTaskSelected ? " §8(Active)" : "";
-                String targetName = switch (taskInfo.taskType) {
-                    case COLLECTION -> TextUtils.itemIDtoName(taskInfo.target);
-                    case SLAYER -> TextUtils.entityIDtoName(taskInfo.target);
-                    case ADVANCEMENT ->  TextUtils.advancementIDtoName(taskInfo.target);
-                };
-                taskIconBuilder.setName("§6§l" + TaskType.presentVerb(taskInfo.taskType).toUpperCase() + "§r§f " + taskInfo.maxProgress + " " + targetName + activeModifier);
+                taskIconBuilder.setName(task.getFormattedName() + activeModifier);
 
                 // add pp reward
                 taskIconBuilder.addLoreLine("§7Grants §e" + taskInfo.progressPointReward + " §aPP");
@@ -169,7 +165,6 @@ public class TaskMenu extends Menu {
                     // select event
                     clickAction = (player, slot, menuContext) -> {
                         String playerID = tPlayer.getPlayerId();
-                        Task task = taskInfo.createTask(playerID);
                         taskManager.addTask(task, playerID);
                         addPlayerTasks(tPlayer);
                         player.playSoundToPlayer(SoundEvents.BLOCK_NOTE_BLOCK_PLING.value(), SoundCategory.UI, 1.0f, 1.0f);
@@ -179,7 +174,7 @@ public class TaskMenu extends Menu {
                         taskIconBuilder.setItem("minecraft:filled_map");
                         taskIconBuilder.setEnchanted(true);
 
-                        taskIconBuilder.addLoreMultiline("\n§e" + currentTask.progress + "§6/§e" + currentTask.maxProgress + " §7" + targetName + " " + TaskType.pastVerb(taskInfo.taskType));
+                        taskIconBuilder.addLoreMultiline("\n§e" + currentTask.progress + "§6/§e" + currentTask.maxProgress + " §7" + task.getTargetDisplayName() + " " + TaskType.pastVerb(taskInfo.taskType));
 
                         if (currentTask instanceof CollectionTask collectionTask) {
                             taskIconBuilder.addLoreLine(TextUtils.progressBarWithOptimisticProgress(16, (float) currentTask.progress / currentTask.maxProgress, true, (float) (collectionTask.getInventoryCount((ServerPlayerEntity) tPlayer.getPlayerEntity()) + currentTask.progress) / currentTask.maxProgress));
@@ -205,6 +200,8 @@ public class TaskMenu extends Menu {
                             }
                             else if (status == SubmitStatus.PARTIAL) {
                                 player.playSoundToPlayer(SoundEvents.BLOCK_NOTE_BLOCK_HAT.value(), SoundCategory.UI, 1.0f, 0.5f);
+                            } else {
+                                player.playSoundToPlayer(SoundEvents.BLOCK_ANVIL_PLACE, SoundCategory.UI, 1.0f, 1.0f);
                             }
 
                             // update ui
@@ -229,6 +226,7 @@ public class TaskMenu extends Menu {
 
     public void addGlobalTasks(TitanomachPlayer tPlayer) {
         List<GlobalTask> tasks = RoleManager.getPlayerRole(tPlayer).getGlobalTasks();
+        TaskManager taskManager = Titanomach.TITANOMACH_CONFIG.getTaskManager();
 
         for (int i = 0; i < 3; i++) {
             ItemBuilder taskIconBuilder = new ItemBuilder("minecraft:painting");
@@ -238,29 +236,35 @@ public class TaskMenu extends Menu {
                 TaskType taskType = TaskType.get(task);
 
                 // add title
-                taskIconBuilder.setName("§6§l" + TaskType.presentVerb(taskType).toUpperCase() + "§r§f " + task.maxProgress + " " + task.getTargetDisplayName() + " §7(§d§lGLOBAL \uD83C\uDF0E§7)");
+                taskIconBuilder.setName(task.getFormattedName() + " §7(§d§lGLOBAL \uD83C\uDF0E§7)");
 
                 // add pp reward
                 taskIconBuilder.addLoreLine("§7Grants §e" + task.progressPointReward + " §aPP" + "§7 across all contributors");
 
-                // add click tooltip if no task is selected
-                taskIconBuilder.setEnchanted(true);
-
                 taskIconBuilder.addLoreMultiline("\n§e" + task.progress + "§6/§e" + task.maxProgress + " §7" + task.getTargetDisplayName() + " " + TaskType.pastVerb(taskType));
                 taskIconBuilder.addLoreLine(TextUtils.progressBar(16, task.getPercentageProgress(), true));
 
-                taskIconBuilder.addLoreMultiline("\n§9Click to contribute items");
-
-                clickAction = (player, slot, menuContext) -> {
-                    // TODO: add global task submit
-                    player.playSoundToPlayer(SoundEvents.BLOCK_NOTE_BLOCK_PLING.value(), SoundCategory.UI, 1.0f, 1.0f);
-                    // update ui
-                    addRoles(tPlayer);
-                    addPlayerTasks(tPlayer);
-                    addProgressBar(tPlayer);
-                    addPlayerHead(player);
-                    addGlobalTasks(tPlayer);
-                };
+                boolean completed = taskManager.completedGlobalTasks.contains(task.name);
+                if (!completed) {
+                    taskIconBuilder.setEnchanted(true);
+                    taskIconBuilder.addLoreMultiline("\n§9Click to contribute items");
+                    clickAction = (player, slot, menuContext) -> {
+                        SubmitStatus status = taskManager.submitTask(task.name, (ServerPlayerEntity) player);;
+                        if (status == SubmitStatus.PARTIAL || status == SubmitStatus.COMPLETED) {
+                            player.playSoundToPlayer(SoundEvents.BLOCK_NOTE_BLOCK_PLING.value(), SoundCategory.UI, 1.0f, 1.0f);
+                            // update ui
+                            addRoles(tPlayer);
+                            addPlayerTasks(tPlayer);
+                            addProgressBar(tPlayer);
+                            addPlayerHead(player);
+                            addGlobalTasks(tPlayer);
+                        } else {
+                            player.playSoundToPlayer(SoundEvents.BLOCK_ANVIL_PLACE, SoundCategory.UI, 1.0f, 1.0f);
+                        }
+                    };
+                } else {
+                    taskIconBuilder.addLoreMultiline("\n§c§oThis task has already been completed!");
+                }
             }
             else {
                 taskIconBuilder.setName("Empty Task");

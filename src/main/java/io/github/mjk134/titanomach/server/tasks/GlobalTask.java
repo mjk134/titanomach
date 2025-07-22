@@ -1,6 +1,5 @@
 package io.github.mjk134.titanomach.server.tasks;
 
-import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 import java.util.HashMap;
@@ -18,8 +17,13 @@ public abstract class GlobalTask extends Task {
         playerContributions.put(player.getUuidAsString(), 0);
     }
 
-    public void updatePlayerContributions(ServerPlayerEntity player, int progress) {
-        playerContributions.put(player.getUuidAsString(), progress);
+    /// Add an amount of contribution to the specified player
+    public void updatePlayerContributions(ServerPlayerEntity player, int amount) {
+        String uuid = player.getUuidAsString();
+        if (!playerContributions.containsKey(uuid)) {
+            addPlayerToTask(player);
+        }
+        playerContributions.put(uuid, playerContributions.get(uuid) + amount);
     }
 
     public HashMap<String, Integer> getPlayerContributionsAsProgressPoints() {
@@ -37,15 +41,11 @@ public abstract class GlobalTask extends Task {
     public void taskComplete() {
         // Get list of players with this task Id and assign their respective PPs
         HashMap<String, Integer> map = getPlayerContributionsAsProgressPoints();
-        TITANOMACH_CONFIG.getTaskManager().playerTaskIdMap.keySet().forEach((playerId) -> {
+        map.keySet().forEach((playerId) -> {
             // Get the player from the config
             TITANOMACH_CONFIG.getPlayerConfig(playerId).addProgressPoints(map.get(playerId));
-            TITANOMACH_CONFIG.getTaskManager().playerTaskIdMap.remove(playerId);
         });
-        // Remove from task pool
-        TITANOMACH_CONFIG.getTaskManager().tasks.remove(this.name);
+
         TITANOMACH_CONFIG.dump();
     }
-
-    public abstract boolean updateProgress(ServerPlayerEntity player, ItemStack itemStack);
 }

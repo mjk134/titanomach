@@ -24,9 +24,10 @@ public class VoteManager {
     // Some players may choose to sacrifice an item to be excluded from the vote -> this can be done by gui
     public static List<UUID> sacrificedItemPlayers = new ArrayList<>();
 
-    public static void meetsRequirements(PlayerManager playerManager) {
+    public static boolean meetsRequirements(PlayerManager playerManager) {
         List<ServerPlayerEntity> players = playerManager.getPlayerList();
         VoteManager.isOngoing = players.size() >= 5;
+        return VoteManager.isOngoing;
     }
 
     public static boolean meetsRequirements() {

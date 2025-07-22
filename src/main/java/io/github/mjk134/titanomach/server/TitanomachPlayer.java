@@ -5,6 +5,7 @@ import io.github.mjk134.titanomach.server.roles.Role;
 import io.github.mjk134.titanomach.server.roles.RoleManager;
 import io.github.mjk134.titanomach.utils.Identity;
 
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 import java.util.UUID;
@@ -52,7 +53,7 @@ public class TitanomachPlayer {
         this.progressPoints += (int) (amount * this.progressPointMultiplier);
         Role nextRole = RoleManager.calculateRole(this.progressPoints);
         if (prevRole != nextRole) {
-            nextRole.onRankUp(Titanomach.SERVER_INSTANCE.getPlayerManager().getPlayer(UUID.fromString(playerId)));
+            nextRole.onRankUp(getPlayerEntity());
         }
         TITANOMACH_CONFIG.dump();
     }
@@ -79,5 +80,9 @@ public class TitanomachPlayer {
 
     public boolean isHostile() {
         return notorietyLevel > 0;
+    }
+
+    public PlayerEntity getPlayerEntity() {
+        return Titanomach.SERVER_INSTANCE.getPlayerManager().getPlayer(UUID.fromString(playerId));
     }
 }

@@ -16,49 +16,44 @@ public class CollectionTask extends Task{
     }
 
     @Override
-    public void updateProgress(ServerPlayerEntity player) {
-        this.progress = 0;
+    // returns whether the task can be submitted
+    public SubmitStatus submitTask(ServerPlayerEntity player) {
+        SubmitStatus status = SubmitStatus.FAIL;
         PlayerInventory inventory = player.getInventory();
         for (int i = 0; i < inventory.size(); ++i) {
             ItemStack itemStack = inventory.getStack(i);
             if (itemStack.getItem().toString().equals(targetID)) {
-                this.progress += itemStack.getCount();
-            }
-        }
-//        int percentProgress = ((int) ((((float) this.progress) / this.maxProgress) * 100));
-//        if (percentProgress >= 100) {
-//            percentProgress = 100;
-//        }
-//        if (percentProgress == 100) {
-//            player.sendMessage(Text.literal(String.valueOf(percentProgress)).withColor(Formatting.GREEN.getColorValue().intValue()), true);
-//        }
-//        else {
-//            player.sendMessage(Text.literal(String.valueOf(percentProgress)), true);
-//        }
-        TITANOMACH_CONFIG.dump();
-    }
-
-    @Override
-    // returns whether the task can be submitted
-    public boolean submitTask(ServerPlayerEntity player) {
-        PlayerInventory inventory = player.getInventory();
-        if (this.progress >= this.maxProgress) {
-            for (int i = 0; i < inventory.size(); ++i) {
-                ItemStack itemStack = inventory.getStack(i);
-                if (itemStack.getItem().toString().equals(targetID)) {
-                    if (maxProgress - itemStack.getCount() <= 0) {
-                        this.progress = 0;
-                        inventory.setStack(i, new ItemStack(itemStack.getItem()).copyWithCount(itemStack.getCount() - maxProgress));
-                        maxProgress = 0;
-                        return true;
-                    }
-                    this.progress -= itemStack.getCount();
-                    this.maxProgress -= itemStack.getCount();
+                if (progress + itemStack.getCount() < maxProgress) {
+                    progress += itemStack.getCount();
                     inventory.setStack(i, ItemStack.EMPTY);
+                    status = SubmitStatus.PARTIAL;
+                }
+                else  {
+                    itemStack.setCount(itemStack.getCount() - (maxProgress-progress));
+                    progress = maxProgress;
+                    status = SubmitStatus.COMPLETED;
                 }
             }
         }
-        return false;
+        TITANOMACH_CONFIG.dump();
+        return status;
+    }
+
+    @Override
+    public boolean canSubmit(ServerPlayerEntity player) {
+        return progress + getInventoryCount(player) >= this.maxProgress;
+    }
+
+    public int getInventoryCount(ServerPlayerEntity player) {
+        PlayerInventory inventory = player.getInventory();
+        int inventoryCount = 0;
+        for (int i = 0; i < inventory.size(); ++i) {
+            ItemStack itemStack = inventory.getStack(i);
+            if (itemStack.getItem().toString().equals(targetID)) {
+                inventoryCount += itemStack.getCount();
+            }
+        }
+        return  inventoryCount;
     }
 
     @Override

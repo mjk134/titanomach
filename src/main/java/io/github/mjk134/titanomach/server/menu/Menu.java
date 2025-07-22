@@ -9,6 +9,7 @@ import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 
@@ -16,12 +17,15 @@ public class Menu {
     private Inventory inventory;
     private String name;
     private final HashMap<Integer, MenuClickAction> slotActionMap;
+    @Nullable
+    private MenuClickAction inventoryClickAction;
     public boolean keepDefaultInventoryBehaviour = false;
 
     public Menu(String name) {
         this.inventory = new SimpleInventory(54);
         this.name = name;
         this.slotActionMap = new HashMap<>();
+        this.inventoryClickAction = null;
     }
 
     public Inventory getInventory() {
@@ -86,7 +90,13 @@ public class Menu {
     }
 
     public MenuClickAction getAction(int slot) {
-        return slotActionMap.get(slot);
+        MenuClickAction action = slotActionMap.get(slot);
+        if (action == null && slot >= 54) return this.inventoryClickAction;
+        return action;
+    }
+
+    public void setInventoryAction(MenuClickAction action) {
+        this.inventoryClickAction = action;
     }
 
     public void displayTo(PlayerEntity player) {

@@ -2,6 +2,7 @@ package io.github.mjk134.titanomach.server.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
+import io.github.mjk134.titanomach.server.menu.VoteMenu;
 import net.minecraft.server.command.ServerCommandSource;
 
 import static net.minecraft.server.command.CommandManager.argument;
@@ -36,6 +37,11 @@ public class CommandHandler {
         dispatcher.register(
                 literal("tasks")
                         .executes(TaskMenuCommand::run)
+        );
+
+        dispatcher.register(
+                literal("vote")
+                        .executes(VoteCommand::run)
         );
 
         dispatcher.register(PPCommands.get());

@@ -38,7 +38,7 @@ public class TextUtils {
     public static String progressBar(int length, float percentage, boolean showPercentage) {
         percentage = Float.min(Float.max(percentage, 0.0f), 1.0f);
         int nFilled = (int) (length * percentage);
-        String percentageCaption = showPercentage ? " §e" + (percentage * 100)  + "§6%": "";
+        String percentageCaption = showPercentage ? " §e" + (int)(percentage * 100)  + "§6%": "";
         return "§2[§a" + "-".repeat(nFilled) + "§7" + "-".repeat(length - nFilled) + "§2]" + percentageCaption;
     }
 

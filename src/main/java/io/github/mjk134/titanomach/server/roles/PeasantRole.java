@@ -1,5 +1,6 @@
 package io.github.mjk134.titanomach.server.roles;
 
+import io.github.mjk134.titanomach.server.tasks.GlobalCollectionTask;
 import io.github.mjk134.titanomach.server.tasks.Task;
 import io.github.mjk134.titanomach.server.tasks.TaskInfo;
 import io.github.mjk134.titanomach.server.tasks.TaskType;
@@ -24,5 +25,7 @@ public class PeasantRole extends Role {
         addPlayerTask(new TaskInfo(TaskType.SLAYER, "minecraft:sheep", 20, 128));
         addPlayerTask(new TaskInfo(TaskType.SLAYER, "minecraft:pig", 20, 128));
         addPlayerTask(new TaskInfo(TaskType.SLAYER, "minecraft:zombie", 10, 128));
+
+        addGlobalTask(new GlobalCollectionTask("peasant-global-1", 27*64, 720, "minecraft:dirt"));
     }
 }

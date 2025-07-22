@@ -1,5 +1,8 @@
 package io.github.mjk134.titanomach.server.roles;
 
+import io.github.mjk134.titanomach.Titanomach;
+import io.github.mjk134.titanomach.server.tasks.GlobalCollectionTask;
+import io.github.mjk134.titanomach.server.tasks.GlobalTask;
 import io.github.mjk134.titanomach.server.tasks.Task;
 import io.github.mjk134.titanomach.server.tasks.TaskInfo;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -19,6 +22,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public abstract class Role {
@@ -30,6 +34,7 @@ public abstract class Role {
     private final List<ItemStack> rankUpRewards;
     private final List<StatusEffectInstance> effects;
     private final List<TaskInfo> playerTaskPool;
+    private final List<GlobalTask> globalTaskPool;
 
     public Role(String name, String description, String itemIconID, String titleFormat, int pointRequirement) {
         this.name = name;
@@ -40,6 +45,7 @@ public abstract class Role {
         this.rankUpRewards = new ArrayList<>();
         this.effects = new ArrayList<>();
         this.playerTaskPool = new ArrayList<>();
+        this.globalTaskPool = new ArrayList<>();
     }
 
     /// Is called periodically to apply effects from roles to a player.
@@ -104,8 +110,13 @@ public abstract class Role {
         this.playerTaskPool.add(task);
     }
 
-    public Task[] getGlobalTasks() {
-        return new Task[]{};
+    public void addGlobalTask(GlobalTask task) {
+        this.globalTaskPool.add(task);
+        Titanomach.TITANOMACH_CONFIG.getTaskManager().tasks.put(task.name, task);
+    }
+
+    public List<GlobalTask> getGlobalTasks() {
+        return this.globalTaskPool;
     }
 
     public List<TaskInfo> getPlayerTaskPool() {

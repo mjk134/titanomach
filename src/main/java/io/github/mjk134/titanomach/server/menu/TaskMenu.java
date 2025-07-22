@@ -30,6 +30,7 @@ public class TaskMenu extends Menu {
         addProgressBar(tPlayer);
         addPlayerHead(player);
         addPlayerTasks(tPlayer);
+        addGlobalTasks(tPlayer);
 
         fillEmptyWithGlass();
     }
@@ -56,7 +57,7 @@ public class TaskMenu extends Menu {
 
         ItemStack playerHead = playerHeadBuilder.create();
         playerHead.set(DataComponentTypes.PROFILE, new ProfileComponent(gameProfile));
-        setItem(22, playerHead);
+        setItem(53, playerHead);
     }
 
     private void addProgressBar(TitanomachPlayer player) {
@@ -143,7 +144,7 @@ public class TaskMenu extends Menu {
         boolean playerHasTask = currentTask != null;
 
         List<TaskInfo> tasks = role.getPlayerTaskPool();
-        for (int i = 0; i<7; i++) {
+        for (int i = 0; i<14; i++) {
             ItemBuilder taskIconBuilder = new ItemBuilder("minecraft:map");
             MenuClickAction clickAction = MenuClickAction.NO_ACTION;
             if (i < tasks.size()) {
@@ -178,7 +179,7 @@ public class TaskMenu extends Menu {
                         taskIconBuilder.setEnchanted(true);
 
                         taskIconBuilder.addLoreMultiline("\n§e" + currentTask.progress + "§6/§e" + currentTask.maxProgress + " §7" + targetName + " " + TaskType.pastVerb(taskInfo.taskType));
-                        taskIconBuilder.addLoreLine(TextUtils.progressBar(16, (float) currentTask.progress / currentTask.maxProgress, true));
+                        taskIconBuilder.addLoreLine(TextUtils.progressBar(16, currentTask.getPercentageProgress(), true));
 
                         // String submitText = currentTask.progress == currentTask.maxProgress ? "§9Click to submit task" : "§c§oNot enough items to complete task!";
                         if (currentTask.progress >= currentTask.maxProgress) {
@@ -204,6 +205,7 @@ public class TaskMenu extends Menu {
                             addPlayerTasks(tPlayer);
                             addProgressBar(tPlayer);
                             addPlayerHead(player);
+                            addGlobalTasks(tPlayer);
                         };
                     } else {
                         taskIconBuilder.addLoreMultiline("\n§c§oYou have already selected another task!");
@@ -213,7 +215,50 @@ public class TaskMenu extends Menu {
             else {
                 taskIconBuilder.setName("Empty Task");
             }
-            setClickableItem(28 + i, taskIconBuilder.create(), clickAction);
+            int slot = i < 7 ? 28 + i : 30 + i;
+            setClickableItem(slot, taskIconBuilder.create(), clickAction);
+        }
+    }
+
+    public void addGlobalTasks(TitanomachPlayer tPlayer) {
+        List<GlobalTask> tasks = RoleManager.getPlayerRole(tPlayer).getGlobalTasks();
+
+        for (int i = 0; i < 3; i++) {
+            ItemBuilder taskIconBuilder = new ItemBuilder("minecraft:painting");
+            MenuClickAction clickAction = MenuClickAction.NO_ACTION;
+            if (i < tasks.size()) {
+                GlobalTask task = tasks.get(i);
+                TaskType taskType = TaskType.get(task);
+
+                // add title
+                taskIconBuilder.setName("§6§l" + TaskType.presentVerb(taskType).toUpperCase() + "§r§f " + task.maxProgress + " " + task.getTargetDisplayName() + " §7(§d§lGLOBAL \uD83C\uDF0E§7)");
+
+                // add pp reward
+                taskIconBuilder.addLoreLine("§7Grants §e" + task.progressPointReward + " §aPP" + "§7 across all contributors");
+
+                // add click tooltip if no task is selected
+                taskIconBuilder.setEnchanted(true);
+
+                taskIconBuilder.addLoreMultiline("\n§e" + task.progress + "§6/§e" + task.maxProgress + " §7" + task.getTargetDisplayName() + " " + TaskType.pastVerb(taskType));
+                taskIconBuilder.addLoreLine(TextUtils.progressBar(16, task.getPercentageProgress(), true));
+
+                taskIconBuilder.addLoreMultiline("\n§9Click to contribute items");
+
+                clickAction = (player, slot, menuContext) -> {
+                    // TODO: add global task submit
+                    player.playSoundToPlayer(SoundEvents.BLOCK_NOTE_BLOCK_PLING.value(), SoundCategory.UI, 1.0f, 1.0f);
+                    // update ui
+                    addRoles(tPlayer);
+                    addPlayerTasks(tPlayer);
+                    addProgressBar(tPlayer);
+                    addPlayerHead(player);
+                    addGlobalTasks(tPlayer);
+                };
+            }
+            else {
+                taskIconBuilder.setName("Empty Task");
+            }
+            setClickableItem(21 + i, taskIconBuilder.create(), clickAction);
         }
     }
 }

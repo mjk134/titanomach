@@ -1,16 +1,14 @@
 package io.github.mjk134.titanomach.server.tasks;
 
+import io.github.mjk134.titanomach.utils.TextUtils;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 import static io.github.mjk134.titanomach.Titanomach.TITANOMACH_CONFIG;
 
 public class GlobalCollectionTask extends GlobalTask {
-    private final String targetItem;
-
     public GlobalCollectionTask(String name, int maxProgress, int progressPointReward, String targetItem) {
         super(name, maxProgress, progressPointReward, targetItem);
-        this.targetItem = targetItem;
     }
 
     /**
@@ -21,7 +19,7 @@ public class GlobalCollectionTask extends GlobalTask {
     @Override
     public boolean updateProgress(ServerPlayerEntity player, ItemStack itemStack) {
         // First, check if itemstack is of the target item
-        if (!itemStack.getItem().toString().equals(targetItem)) {
+        if (!itemStack.getItem().toString().equals(targetID)) {
             return false;
         }
         int itemCount = itemStack.getCount();
@@ -40,5 +38,10 @@ public class GlobalCollectionTask extends GlobalTask {
         // Dump config, tick checker should automatically update progress via bb
         TITANOMACH_CONFIG.dump();
         return true;
+    }
+
+    @Override
+    public String getTargetDisplayName() {
+        return TextUtils.itemIDtoName(targetID);
     }
 }

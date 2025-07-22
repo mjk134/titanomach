@@ -19,7 +19,7 @@ public enum TaskType {
     }
 
     public static TaskType get(Task task) {
-        if (task instanceof CollectionTask) return COLLECTION;
+        if (task instanceof CollectionTask || task instanceof GlobalCollectionTask) return COLLECTION;
         if (task instanceof SlayerTask) return SLAYER;
         throw new IllegalArgumentException("Invalid task type");
     }

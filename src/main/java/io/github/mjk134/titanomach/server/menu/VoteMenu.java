@@ -64,7 +64,7 @@ public class VoteMenu extends Menu {
     }
 
 
-    class PlayerVotingMenu extends Menu {
+    static class PlayerVotingMenu extends Menu {
 
         public PlayerVotingMenu(ServerPlayerEntity player) {
             super("Vote for a player");
@@ -111,7 +111,7 @@ public class VoteMenu extends Menu {
         }
     }
 
-    class ConfirmItemSacrificeMenu extends Menu {
+    static class ConfirmItemSacrificeMenu extends Menu {
         public ConfirmItemSacrificeMenu(ItemStack itemStack) {
             super("Confirm item sacrifice");
 
@@ -134,6 +134,10 @@ public class VoteMenu extends Menu {
                     });
 
             setClickableItem(24, new ItemBuilder("minecraft:red_wool").create(), (_player, _slot, _ctx) -> {
+
+            });
+
+            setInventoryAction((_p, _s, _mctx) -> {
 
             });
 

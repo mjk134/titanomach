@@ -5,6 +5,7 @@ import net.minecraft.advancement.AdvancementEntry;
 import net.minecraft.advancement.AdvancementManager;
 import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
 import java.util.List;
@@ -59,7 +60,7 @@ public class TextUtils {
         int npFilled = (int) (length * percentage);
         int nopFilled = (int) (length * optimisticPercentage) - npFilled;
         String percentageCaption = showPercentage ? " §e" + (int)(percentage * 100)  + "§6%": "";
-        return "§2[§a" + "-".repeat(npFilled) + "§6" + "-".repeat(nopFilled) + "§7" + "-".repeat(length - npFilled - nopFilled) + "§2]" + percentageCaption;
+        return Formatting.FORMATTING_CODE_PREFIX + "2[§a" + "-".repeat(npFilled) + "§6" + "-".repeat(nopFilled) + "§7" + "-".repeat(length - npFilled - nopFilled) + "§2]" + percentageCaption;
     }
 
     public static String capitalize(String text) {

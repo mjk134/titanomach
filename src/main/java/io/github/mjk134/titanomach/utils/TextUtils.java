@@ -41,6 +41,14 @@ public class TextUtils {
         String percentageCaption = showPercentage ? " §e" + (int)(percentage * 100)  + "§6%": "";
         return "§2[§a" + "-".repeat(nFilled) + "§7" + "-".repeat(length - nFilled) + "§2]" + percentageCaption;
     }
+    public static String progressBarWithOptimisticProgress(int length, float percentage, boolean showPercentage, float optimisticPercentage) {
+        percentage = Float.min(Float.max(percentage, 0.0f), 1.0f);
+        optimisticPercentage = Float.min(Float.max(optimisticPercentage, 0.0f), 1.0f);
+        int npFilled = (int) (length * percentage);
+        int nopFilled = (int) (length * optimisticPercentage) - npFilled;
+        String percentageCaption = showPercentage ? " §e" + (percentage * 100)  + "§6%": "";
+        return "§2[§a" + "-".repeat(npFilled) + "§6" + "-".repeat(nopFilled) + "§7" + "-".repeat(length - npFilled - nopFilled) + "§2]" + percentageCaption;
+    }
 
     public static String capitalize(String text) {
         return text.substring(0, 1).toUpperCase() + text.substring(1);

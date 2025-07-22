@@ -1,6 +1,10 @@
 package io.github.mjk134.titanomach.server.tasks;
 
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.ClickEvent;
+import net.minecraft.text.HoverEvent;
+import net.minecraft.text.Style;
+import net.minecraft.text.Text;
 
 
 public class Task {
@@ -9,6 +13,7 @@ public class Task {
     public int maxProgress;
     public int progressPointReward;
     public String targetID;
+    private boolean messageSent = false;
 
     public Task(String name, int maxProgress, int progressPointReward, String targetID) {
         this.name = name;
@@ -21,6 +26,17 @@ public class Task {
     public SubmitStatus submitTask(ServerPlayerEntity player) {return SubmitStatus.FAIL;}
 
     public boolean canSubmit(ServerPlayerEntity player) {return progress >= maxProgress;}
+
+    public void sendMessage(ServerPlayerEntity player) {
+        if (!messageSent) {
+            player.sendMessage(Text.of("§7§l────────────────────────"));
+            player.sendMessage(Text.of("§eTask completed !"));
+            player.sendMessage(Text.of("§6§l" + TaskType.presentVerb(TaskType.get(this)).toUpperCase() + " §r§f§l" + maxProgress + " " + this.getTargetDisplayName() + " §r§a§l✓"));
+            player.sendMessage(Text.literal("§9§l[CLICK HERE] §r§eto submit").setStyle(Style.EMPTY.withClickEvent(new ClickEvent.RunCommand("/tasks")).withHoverEvent(new HoverEvent.ShowText(Text.of("§eClick to open the §6§ltasks §r§emenu")))));
+            player.sendMessage(Text.of("§7§l────────────────────────"));
+            messageSent = true;
+        }
+    }
 
     /// Get name of the task target that can be displayed
     public String getTargetDisplayName() {

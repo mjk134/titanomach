@@ -41,6 +41,10 @@ public class TaskManager {
                     continue;
                 }
 
+                if (task.canSubmit(player)) {
+                    task.sendMessage(player);
+                }
+
                 // Check if there is a progress bar for this player
                 if (bossBar == null) {
                     // If it's not in the map put it in

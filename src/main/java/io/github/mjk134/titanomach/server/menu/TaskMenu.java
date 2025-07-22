@@ -179,7 +179,13 @@ public class TaskMenu extends Menu {
                         taskIconBuilder.setEnchanted(true);
 
                         taskIconBuilder.addLoreMultiline("\n§e" + currentTask.progress + "§6/§e" + currentTask.maxProgress + " §7" + targetName + " " + TaskType.pastVerb(taskInfo.taskType));
-                        taskIconBuilder.addLoreLine(TextUtils.progressBar(16, currentTask.getPercentageProgress(), true));
+
+                        if (currentTask instanceof CollectionTask collectionTask) {
+                            taskIconBuilder.addLoreLine(TextUtils.progressBarWithOptimisticProgress(16, (float) currentTask.progress / currentTask.maxProgress, true, (float) (collectionTask.getInventoryCount((ServerPlayerEntity) tPlayer.getPlayerEntity()) + currentTask.progress) / currentTask.maxProgress));
+                        }
+                        else {
+                            taskIconBuilder.addLoreLine(TextUtils.progressBar(16, (float) currentTask.progress / currentTask.maxProgress, true));
+                        }
 
                         // String submitText = currentTask.progress == currentTask.maxProgress ? "§9Click to submit task" : "§c§oNot enough items to complete task!";
                         if (currentTask.progress >= currentTask.maxProgress) {

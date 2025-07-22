@@ -18,10 +18,8 @@ public class GlobalCollectionTask extends GlobalTask {
      */
     @Override
     public boolean updateProgress(ServerPlayerEntity player, ItemStack itemStack) {
-        // First, check if itemstack is of the target item
-        if (!itemStack.getItem().toString().equals(targetID)) {
         // First, check if item stack is of the target item
-        if (!itemStack.getItem().toString().equals(targetItem)) {
+        if (!itemStack.getItem().toString().equals(targetID)) {
             return false;
         }
         int itemCount = itemStack.getCount();

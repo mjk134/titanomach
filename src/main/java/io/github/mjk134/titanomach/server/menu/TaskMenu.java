@@ -204,6 +204,8 @@ public class TaskMenu extends Menu {
                             }
                             else if (status == SubmitStatus.PARTIAL) {
                                 player.playSoundToPlayer(SoundEvents.BLOCK_NOTE_BLOCK_HAT.value(), SoundCategory.UI, 1.0f, 0.5f);
+                            } else {
+                                player.playSoundToPlayer(SoundEvents.BLOCK_ANVIL_PLACE, SoundCategory.UI, 1.0f, 1.0f);
                             }
 
                             // update ui
@@ -228,6 +230,7 @@ public class TaskMenu extends Menu {
 
     public void addGlobalTasks(TitanomachPlayer tPlayer) {
         List<GlobalTask> tasks = RoleManager.getPlayerRole(tPlayer).getGlobalTasks();
+        TaskManager taskManager = Titanomach.TITANOMACH_CONFIG.getTaskManager();
 
         for (int i = 0; i < 3; i++) {
             ItemBuilder taskIconBuilder = new ItemBuilder("minecraft:painting");
@@ -242,24 +245,30 @@ public class TaskMenu extends Menu {
                 // add pp reward
                 taskIconBuilder.addLoreLine("§7Grants §e" + task.progressPointReward + " §aPP" + "§7 across all contributors");
 
-                // add click tooltip if no task is selected
-                taskIconBuilder.setEnchanted(true);
-
                 taskIconBuilder.addLoreMultiline("\n§e" + task.progress + "§6/§e" + task.maxProgress + " §7" + task.getTargetDisplayName() + " " + TaskType.pastVerb(taskType));
                 taskIconBuilder.addLoreLine(TextUtils.progressBar(16, task.getPercentageProgress(), true));
 
-                taskIconBuilder.addLoreMultiline("\n§9Click to contribute items");
-
-                clickAction = (player, slot, menuContext) -> {
-                    // TODO: add global task submit
-                    player.playSoundToPlayer(SoundEvents.BLOCK_NOTE_BLOCK_PLING.value(), SoundCategory.UI, 1.0f, 1.0f);
-                    // update ui
-                    addRoles(tPlayer);
-                    addPlayerTasks(tPlayer);
-                    addProgressBar(tPlayer);
-                    addPlayerHead(player);
-                    addGlobalTasks(tPlayer);
-                };
+                boolean completed = taskManager.completedGlobalTasks.contains(task.name);
+                if (!completed) {
+                    taskIconBuilder.setEnchanted(true);
+                    taskIconBuilder.addLoreMultiline("\n§9Click to contribute items");
+                    clickAction = (player, slot, menuContext) -> {
+                        SubmitStatus status = taskManager.submitTask(task.name, (ServerPlayerEntity) player);;
+                        if (status == SubmitStatus.PARTIAL || status == SubmitStatus.COMPLETED) {
+                            player.playSoundToPlayer(SoundEvents.BLOCK_NOTE_BLOCK_PLING.value(), SoundCategory.UI, 1.0f, 1.0f);
+                            // update ui
+                            addRoles(tPlayer);
+                            addPlayerTasks(tPlayer);
+                            addProgressBar(tPlayer);
+                            addPlayerHead(player);
+                            addGlobalTasks(tPlayer);
+                        } else {
+                            player.playSoundToPlayer(SoundEvents.BLOCK_ANVIL_PLACE, SoundCategory.UI, 1.0f, 1.0f);
+                        }
+                    };
+                } else {
+                    taskIconBuilder.addLoreMultiline("\n§c§oThis task has already been completed!");
+                }
             }
             else {
                 taskIconBuilder.setName("Empty Task");

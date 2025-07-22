@@ -25,6 +25,7 @@ public class PeasantRole extends Role {
         addPlayerTask(new TaskInfo(TaskType.SLAYER, "minecraft:sheep", 20, 128));
         addPlayerTask(new TaskInfo(TaskType.SLAYER, "minecraft:pig", 20, 128));
         addPlayerTask(new TaskInfo(TaskType.SLAYER, "minecraft:zombie", 10, 128));
+        addPlayerTask(new TaskInfo(TaskType.ADVANCEMENT, "minecraft:story/upgrade_tools",1, 128));
 
         addGlobalTask(new GlobalCollectionTask("peasant-global-1", 27*64, 720, "minecraft:dirt"));
     }

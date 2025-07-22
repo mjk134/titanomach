@@ -18,7 +18,7 @@ public class TaskInfo {
     }
 
     public String generateID(String playerID) {
-        return playerID + "-" + this.taskType.toString() + "-" + this.target + "-" + this.maxProgress + "-" + this.progressPointReward;
+        return playerID + " " + this.taskType.toString() + " " + this.target + " " + this.maxProgress + " " + this.progressPointReward;
     }
 
     public Task createTask(String playerID) {
@@ -32,6 +32,11 @@ public class TaskInfo {
             case TaskType.SLAYER -> new SlayerTask(
                     generateID(playerID),
                     maxProgress,
+                    progressPointReward,
+                    target
+            );
+            case TaskType.ADVANCEMENT -> new AdvancementTask(
+                    generateID(playerID),
                     progressPointReward,
                     target
             );

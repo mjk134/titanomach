@@ -156,6 +156,7 @@ public class TaskMenu extends Menu {
                 String targetName = switch (taskInfo.taskType) {
                     case COLLECTION -> TextUtils.itemIDtoName(taskInfo.target);
                     case SLAYER -> TextUtils.entityIDtoName(taskInfo.target);
+                    case ADVANCEMENT ->  TextUtils.advancementIDtoName(taskInfo.target);
                 };
                 taskIconBuilder.setName("§6§l" + TaskType.presentVerb(taskInfo.taskType).toUpperCase() + "§r§f " + taskInfo.maxProgress + " " + targetName + activeModifier);
 

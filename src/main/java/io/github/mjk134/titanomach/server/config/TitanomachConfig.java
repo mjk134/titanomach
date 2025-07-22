@@ -37,7 +37,9 @@ public class TitanomachConfig {
             .of(Task.class, "type")
             .registerSubtype(CollectionTask.class, "collection")
             .registerSubtype(GlobalCollectionTask.class, "global_collection")
-            .registerSubtype(SlayerTask.class, "slayer");
+            .registerSubtype(SlayerTask.class, "slayer")
+            .registerSubtype(AdvancementTask.class, "advancement");
+
     public static final Gson GSON = new GsonBuilder()
             .setPrettyPrinting()
             .registerTypeAdapterFactory(taskAdapterFactory)

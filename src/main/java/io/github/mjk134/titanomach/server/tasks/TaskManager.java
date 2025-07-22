@@ -48,9 +48,16 @@ public class TaskManager {
                 // Check if there is a progress bar for this player
                 if (bossBar == null) {
                     // If it's not in the map put it in
-                    String barText = TextUtils.capitalize(TaskType.presentVerb(TaskType.get(task))) + " " + task.maxProgress + " " + task.getTargetDisplayName();
-                    individualBossBars.put(playerId, new ServerBossBar(Text.literal(barText), BossBar.Color.GREEN, BossBar.Style.NOTCHED_10));
-                    bossBar = individualBossBars.get(playerId);
+                    if (!(task instanceof AdvancementTask)) {
+                        String barText = TextUtils.capitalize(TaskType.presentVerb(TaskType.get(task))) + " " + task.maxProgress + " " + task.getTargetDisplayName();
+                        individualBossBars.put(playerId, new ServerBossBar(Text.literal(barText), BossBar.Color.GREEN, BossBar.Style.NOTCHED_10));
+                        bossBar = individualBossBars.get(playerId);
+                    }
+                    else {
+                        String barText = TextUtils.capitalize(TaskType.presentVerb(TaskType.get(task))) + " "  + task.getTargetDisplayName();
+                        individualBossBars.put(playerId, new ServerBossBar(Text.literal(barText), BossBar.Color.GREEN, BossBar.Style.NOTCHED_10));
+                        bossBar = individualBossBars.get(playerId);
+                    }
                 }
 
                 // If player is not in the boss bar, add it (fixes boss bar not showing on reconnect)

@@ -1,10 +1,16 @@
 package io.github.mjk134.titanomach.utils;
 
+import net.minecraft.advancement.Advancement;
+import net.minecraft.advancement.AdvancementEntry;
+import net.minecraft.advancement.AdvancementManager;
 import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 import java.util.List;
+import java.util.Objects;
+
+import static io.github.mjk134.titanomach.Titanomach.SERVER_INSTANCE;
 
 public class TextUtils {
     public static String removeFormatting(String text) {
@@ -28,6 +34,12 @@ public class TextUtils {
 
     public static String itemIDtoName(String id) {
         return Registries.ITEM.get(Identifier.of(id)).getName().getString();
+    }
+
+    public static String advancementIDtoName(String id) {
+        AdvancementManager advancementManager = SERVER_INSTANCE.getAdvancementLoader().getManager();
+        Text advancementName = Advancement.getNameFromIdentity(Objects.requireNonNull(advancementManager.get(Identifier.of(id))).getAdvancementEntry());
+        return advancementName.getString();
     }
 
     public static String entityIDtoName(String id) {

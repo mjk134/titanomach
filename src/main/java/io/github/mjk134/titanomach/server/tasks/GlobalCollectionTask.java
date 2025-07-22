@@ -13,21 +13,22 @@ public class GlobalCollectionTask extends GlobalTask {
 
     /**
      * This method is called on the submission of task data.
-     * If true remove the itemstack in the display slot
-     * If false dont do anything and move it back to where it was after the menu is closed
+     * If true remove the item stack in the display slot
+     * If false don't do anything and move it back to where it was after the menu is closed
      */
     @Override
     public boolean updateProgress(ServerPlayerEntity player, ItemStack itemStack) {
         // First, check if itemstack is of the target item
         if (!itemStack.getItem().toString().equals(targetID)) {
+        // First, check if item stack is of the target item
+        if (!itemStack.getItem().toString().equals(targetItem)) {
             return false;
         }
         int itemCount = itemStack.getCount();
-        // Since we know its the target item, update player progress and the task progress
+        // Since we know it's the target item, update player progress and the task progress
         this.progress += itemCount;
 
         if (this.progress >= maxProgress) {
-
             // run taskComplete and remove it off the player's tasks
             this.taskComplete();
             return true;

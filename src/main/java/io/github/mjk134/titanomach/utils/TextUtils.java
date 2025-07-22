@@ -47,7 +47,7 @@ public class TextUtils {
         return Registries.ENTITY_TYPE.get(Identifier.of(id)).getName().getString();
     }
 
-    /// Generate a progress bar string with formatting. Use `decimalPlaces = -1` to hide the percentage caption.
+    /// Generate a progress bar string with formatting.
     public static String progressBar(int length, float percentage, boolean showPercentage) {
         percentage = Float.min(Float.max(percentage, 0.0f), 1.0f);
         int nFilled = (int) (length * percentage);

@@ -22,23 +22,26 @@ import net.minecraft.text.Text;
 import java.util.List;
 
 public class TaskMenu extends Menu {
-    // this probably needs to change later
+    private final PlayerEntity player;
+    private final TitanomachPlayer tPlayer;
+
     public TaskMenu(PlayerEntity player) {
         super("Tasks");
-        TitanomachPlayer tPlayer = Titanomach.TITANOMACH_CONFIG.getPlayerConfig((ServerPlayerEntity) player);
-        refreshUI(tPlayer);
+        this.player = player;
+        this.tPlayer = Titanomach.TITANOMACH_CONFIG.getPlayerConfig((ServerPlayerEntity) player);
+        refreshUI();
         fillEmptyWithGlass();
     }
 
-    private void refreshUI(TitanomachPlayer tPlayer) {
-        addRoles(tPlayer);
-        addProgressBar(tPlayer);
-        addPlayerHead(tPlayer);
-        addPlayerTasks(tPlayer);
-        addGlobalTasks(tPlayer);
+    private void refreshUI() {
+        addRoles();
+        addProgressBar();
+        addPlayerHead();
+        addPlayerTasks();
+        addGlobalTasks();
     }
 
-    private void addRoles(TitanomachPlayer tPlayer) {
+    private void addRoles() {
         Role playerRole = RoleManager.getPlayerRole(tPlayer);
         addRoleIcon(RoleManager.getRole("Peasant"), 1, playerRole.name);
         addRoleIcon(RoleManager.getRole("Freeman"), 2, playerRole.name);
@@ -48,8 +51,7 @@ public class TaskMenu extends Menu {
         addRoleIcon(RoleManager.getRole("God"), 7, playerRole.name);
     }
 
-    private void addPlayerHead(TitanomachPlayer tPlayer) {
-        PlayerEntity player = tPlayer.getPlayerEntity();
+    private void addPlayerHead() {
         Role playerRole = RoleManager.getPlayerRole(tPlayer);
         GameProfile gameProfile = player.getGameProfile();
 
@@ -63,10 +65,10 @@ public class TaskMenu extends Menu {
         setItem(53, playerHead);
     }
 
-    private void addProgressBar(TitanomachPlayer player) {
-        float progress = RoleManager.getPercentageProgressToNextRole(player);
+    private void addProgressBar() {
+        float progress = RoleManager.getPercentageProgressToNextRole(tPlayer);
         int numberOfGreen = (int) (progress * 7);
-        Role currentRole =  RoleManager.getPlayerRole(player);
+        Role currentRole =  RoleManager.getPlayerRole(tPlayer);
         Role nextRole = RoleManager.getNextRole(currentRole);
         for (int i = 0; i < 7; i++) {
             String itemID;
@@ -82,7 +84,7 @@ public class TaskMenu extends Menu {
 
             ItemStack itemIcon;
             if (nextRole != null) {
-                int progressIntoRank = player.getProgressPoints() - currentRole.pointRequirement;
+                int progressIntoRank = tPlayer.getProgressPoints() - currentRole.pointRequirement;
                 int totalNeeded = nextRole.pointRequirement - currentRole.pointRequirement;
                 ItemBuilder builder = new ItemBuilder(itemID)
                         .setName("§cProgress to " + nextRole.titleFormat + "§l" + nextRole.name)
@@ -140,7 +142,7 @@ public class TaskMenu extends Menu {
         this.setItem(slot, roleIcon);
     }
 
-    private void addPlayerTasks(TitanomachPlayer tPlayer) {
+    private void addPlayerTasks() {
         Role role = RoleManager.getPlayerRole(tPlayer);
         TaskManager taskManager = Titanomach.TITANOMACH_CONFIG.getTaskManager();
         Task currentTask = taskManager.getTaskFromPlayer(tPlayer);
@@ -152,26 +154,26 @@ public class TaskMenu extends Menu {
             MenuClickAction clickAction = MenuClickAction.NO_ACTION;
             if (i < tasks.size()) {
                 TaskInfo taskInfo = tasks.get(i);
-                Task task = taskInfo.createTask(tPlayer.getPlayerId());
+                Task possibleTask = taskInfo.createTask(tPlayer.getPlayerId());
                 boolean thisTaskSelected = playerHasTask && taskInfo.equals(currentTask);
 
                 // add title
                 String activeModifier = thisTaskSelected ? " §8(Active)" : "";
-                taskIconBuilder.setName(task.getFormattedName() + activeModifier);
+                taskIconBuilder.setName(possibleTask.getFormattedName() + activeModifier);
 
                 // add pp reward
                 taskIconBuilder.addLoreLine("§7Grants §e" + taskInfo.progressPointReward + " §aPP");
 
                 // add click tooltip if no task is selected
                 if (!playerHasTask) {
-                    if (!taskManager.completedPlayerTasks.contains(task.name)) {
+                    if (!taskManager.completedPlayerTasks.contains(possibleTask.name)) {
                         taskIconBuilder.addLoreMultiline("\n§9Click to select this task!");
                         // select event
                         clickAction = (player, slot, menuContext) -> {
                             String playerID = tPlayer.getPlayerId();
-                            taskManager.addTask(task, playerID);
-                            addPlayerTasks(tPlayer);
+                            taskManager.addTask(possibleTask, playerID);
                             player.playSoundToPlayer(SoundEvents.BLOCK_NOTE_BLOCK_PLING.value(), SoundCategory.UI, 1.0f, 1.0f);
+                            refreshUI();
                         };
                     }
                     else {
@@ -181,23 +183,12 @@ public class TaskMenu extends Menu {
                     if (thisTaskSelected) {
                         taskIconBuilder.setItem("minecraft:filled_map");
                         taskIconBuilder.setEnchanted(true);
+                        taskIconBuilder.addLoreMultiline("\n" + getProgressString(currentTask));
 
-                        taskIconBuilder.addLoreMultiline("\n§e" + currentTask.progress + "§6/§e" + currentTask.maxProgress + " §7" + task.getTargetDisplayName() + " " + TaskType.pastVerb(taskInfo.taskType));
-
-                        if (currentTask instanceof CollectionTask collectionTask) {
-                            taskIconBuilder.addLoreLine(TextUtils.progressBarWithOptimisticProgress(16, (float) currentTask.progress / currentTask.maxProgress, true, (float) (collectionTask.getInventoryCount((ServerPlayerEntity) tPlayer.getPlayerEntity()) + currentTask.progress) / currentTask.maxProgress));
-                        }
-                        else {
-                            taskIconBuilder.addLoreLine(TextUtils.progressBar(16, (float) currentTask.progress / currentTask.maxProgress, true));
-                        }
-
-                        // String submitText = currentTask.progress == currentTask.maxProgress ? "§9Click to submit task" : "§c§oNot enough items to complete task!";
                         if (currentTask.progress >= currentTask.maxProgress) {
                             taskIconBuilder.addLoreMultiline("\n§9Click to submit task");
-                        } else if (currentTask instanceof CollectionTask collectionTask) {
-                            if (collectionTask.getInventoryCount((ServerPlayerEntity) tPlayer.getPlayerEntity()) > 0) {
-                                taskIconBuilder.addLoreMultiline("\n§9Click to submit current items");
-                            }
+                        } else if (currentTask instanceof CollectionTask collectionTask && collectionTask.getInventoryCount((ServerPlayerEntity) player) > 0) {
+                            taskIconBuilder.addLoreMultiline("\n§9Click to submit current items");
                         }
                         clickAction = (player, slot, menuContext) -> {
                             SubmitStatus status = taskManager.submitTask(currentTask.name, (ServerPlayerEntity) player);
@@ -207,7 +198,7 @@ public class TaskMenu extends Menu {
                                 case FAIL -> SoundEvents.BLOCK_ANVIL_PLACE;
                             };
                             player.playSoundToPlayer(sound, SoundCategory.UI, 1.0f, 1.0f);
-                            refreshUI(tPlayer);
+                            refreshUI();
                         };
                     } else {
                         taskIconBuilder.addLoreMultiline("\n§c§oYou have already selected another task!");
@@ -222,7 +213,7 @@ public class TaskMenu extends Menu {
         }
     }
 
-    public void addGlobalTasks(TitanomachPlayer tPlayer) {
+    public void addGlobalTasks() {
         List<GlobalTask> tasks = RoleManager.getPlayerRole(tPlayer).getGlobalTasks();
         TaskManager taskManager = Titanomach.TITANOMACH_CONFIG.getTaskManager();
 
@@ -231,26 +222,26 @@ public class TaskMenu extends Menu {
             MenuClickAction clickAction = MenuClickAction.NO_ACTION;
             if (i < tasks.size()) {
                 GlobalTask task = tasks.get(i);
-                TaskType taskType = TaskType.get(task);
 
                 // add title
                 taskIconBuilder.setName(task.getFormattedName() + " §7(§d§lGLOBAL \uD83C\uDF0E§7)");
-
                 // add pp reward
                 taskIconBuilder.addLoreLine("§7Grants §e" + task.progressPointReward + " §aPP" + "§7 across all contributors");
-
-                taskIconBuilder.addLoreMultiline("\n§e" + task.progress + "§6/§e" + task.maxProgress + " §7" + task.getTargetDisplayName() + " " + TaskType.pastVerb(taskType));
-                taskIconBuilder.addLoreLine(TextUtils.progressBar(16, task.getPercentageProgress(), true));
+                // add progress bar
+                taskIconBuilder.addLoreLine("\n" + getProgressString(task));
 
                 boolean completed = taskManager.completedGlobalTasks.contains(task.name);
                 if (!completed) {
                     taskIconBuilder.setEnchanted(true);
+                    taskIconBuilder.addLoreMultiline("\n§7You have contributed §e" + task.getPlayerContribution(tPlayer.getPlayerId()) + " §7" + task.getTargetDisplayName());
+                    taskIconBuilder.addLoreLine("§7You will receive §e" + task.getPlayerContributionAsProgressPoints(tPlayer.getPlayerId()) + " §aPP §7upon completion");
                     taskIconBuilder.addLoreMultiline("\n§9Click to contribute items");
+
                     clickAction = (player, slot, menuContext) -> {
                         SubmitStatus status = taskManager.submitTask(task.name, (ServerPlayerEntity) player);;
                         if (status == SubmitStatus.PARTIAL || status == SubmitStatus.COMPLETED) {
                             player.playSoundToPlayer(SoundEvents.BLOCK_NOTE_BLOCK_PLING.value(), SoundCategory.UI, 1.0f, 1.0f);
-                            refreshUI(tPlayer);
+                            refreshUI();
                         } else {
                             player.playSoundToPlayer(SoundEvents.BLOCK_ANVIL_PLACE, SoundCategory.UI, 1.0f, 1.0f);
                         }
@@ -260,9 +251,26 @@ public class TaskMenu extends Menu {
                 }
             }
             else {
-                taskIconBuilder.setName("Empty Task");
+                taskIconBuilder.setName("§fEmpty Task");
             }
             setClickableItem(21 + i, taskIconBuilder.create(), clickAction);
         }
+    }
+
+    private String getProgressString(Task task) {
+        String result = "§e" + task.progress + "§6/§e" + task.maxProgress + " §7" + task.getTargetDisplayName() + " " + TaskType.pastVerb(TaskType.get(task));
+
+        if (task instanceof CollectionTask collectionTask) {
+            result += "\n" + TextUtils.progressBarWithOptimisticProgress(
+                    16,
+                    task.getPercentageProgress(),
+                    true,
+                    collectionTask.getOptimisticPercentageProgress((ServerPlayerEntity) player)
+            );
+        }
+        else {
+            result += "\n" + TextUtils.progressBar(16, task.getPercentageProgress(),true);
+        }
+        return result;
     }
 }

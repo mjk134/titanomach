@@ -1,6 +1,8 @@
 package io.github.mjk134.titanomach.server.tasks;
 
+import io.github.mjk134.titanomach.Titanomach;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 
 import java.util.HashMap;
 
@@ -29,13 +31,21 @@ public abstract class GlobalTask extends Task {
     public HashMap<String, Integer> getPlayerContributionsAsProgressPoints() {
         HashMap<String, Integer> map = new HashMap<>();
         for (String key : playerContributions.keySet()) {
-            int contribution = playerContributions.get(key);
-            double percentageContribution = (double) contribution / maxProgress;
-            // Give minimum points
-            int playerPpReward = (int) Math.floor(percentageContribution * progressPointReward);
-            map.put(key, playerPpReward);
+            map.put(key, getPlayerContributionAsProgressPoints(key));
         }
         return map;
+    }
+
+    public int getPlayerContributionAsProgressPoints(String uuid) {
+        // If player hasn't contributed any, give 0 pp
+        int contribution = getPlayerContribution(uuid);
+        double percentageContribution = (double) contribution / maxProgress;
+        // Give minimum points
+        return (int) Math.floor(percentageContribution * progressPointReward);
+    }
+
+    public int getPlayerContribution(String uuid) {
+        return playerContributions.getOrDefault(uuid, 0);
     }
 
     public void taskComplete() {
@@ -46,6 +56,21 @@ public abstract class GlobalTask extends Task {
             TITANOMACH_CONFIG.getPlayerConfig(playerId).addProgressPoints(map.get(playerId));
         });
 
+        // Loop through each online player and send the completion message
+        for (ServerPlayerEntity player : Titanomach.SERVER_INSTANCE.getPlayerManager().getPlayerList()) {
+            this.sendMessage(player);
+        }
+
         TITANOMACH_CONFIG.dump();
+    }
+
+    @Override
+    public void sendMessage(ServerPlayerEntity player) {
+        String uuid = player.getUuidAsString();
+        player.sendMessage(Text.of("§7§l────────────────────────"));
+        player.sendMessage(Text.of("§d§lGLOBAL§r§e task completed!"));
+        player.sendMessage(Text.of(getFormattedName() + " §r§a§l✓"));
+        player.sendMessage(Text.of("§7You contributed " + getPlayerContribution(uuid) + " " + getTargetDisplayName() + "§7 and earned §e" + getPlayerContributionAsProgressPoints(uuid) + " §aPP"));
+        player.sendMessage(Text.of("§7§l────────────────────────"));
     }
 }

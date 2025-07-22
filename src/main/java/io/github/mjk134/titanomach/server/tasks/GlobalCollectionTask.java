@@ -29,7 +29,6 @@ public class GlobalCollectionTask extends GlobalTask {
                 else  {
                     itemStack.setCount(itemStack.getCount() - (maxProgress-progress));
                     progress = maxProgress;
-                    taskComplete();
                     status = SubmitStatus.COMPLETED;
                 }
             }

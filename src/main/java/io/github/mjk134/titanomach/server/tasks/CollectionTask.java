@@ -60,4 +60,9 @@ public class CollectionTask extends Task{
     public String getTargetDisplayName() {
         return TextUtils.itemIDtoName(targetID);
     }
+
+    public float getOptimisticPercentageProgress(ServerPlayerEntity player) {
+        int numInInventory = this.getInventoryCount(player);
+        return (float) (numInInventory + this.progress) / this.maxProgress;
+    }
 }

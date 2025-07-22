@@ -30,7 +30,7 @@ public class Task {
     public void sendMessage(ServerPlayerEntity player) {
         if (!messageSent) {
             player.sendMessage(Text.of("§7§l────────────────────────"));
-            player.sendMessage(Text.of("§eTask completed !"));
+            player.sendMessage(Text.of("§eTask completed!"));
             player.sendMessage(Text.of(getFormattedName() + " §r§a§l✓"));
             player.sendMessage(Text.literal("§9§l[CLICK HERE] §r§eto submit").setStyle(Style.EMPTY.withClickEvent(new ClickEvent.RunCommand("/tasks")).withHoverEvent(new HoverEvent.ShowText(Text.of("§eClick to open the §6§ltasks §r§emenu")))));
             player.sendMessage(Text.of("§7§l────────────────────────"));

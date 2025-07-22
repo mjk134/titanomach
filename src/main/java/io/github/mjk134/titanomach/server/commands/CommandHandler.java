@@ -45,6 +45,7 @@ public class CommandHandler {
         );
 
         dispatcher.register(PPCommands.get());
+        dispatcher.register(literal("resetglobaltasks").requires(source -> source.hasPermissionLevel(4)).executes(ResetGlobalsCommand::run));
     }
 
 }

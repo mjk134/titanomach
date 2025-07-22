@@ -1,6 +1,8 @@
 package io.github.mjk134.titanomach.server.tasks;
 
 import io.github.mjk134.titanomach.server.TitanomachPlayer;
+import io.github.mjk134.titanomach.server.roles.Role;
+import io.github.mjk134.titanomach.server.roles.RoleManager;
 import io.github.mjk134.titanomach.utils.TextUtils;
 import net.minecraft.entity.boss.BossBar;
 import net.minecraft.entity.boss.ServerBossBar;
@@ -111,7 +113,8 @@ public class TaskManager {
             tasks.remove(taskID);
             playerTaskIdMap.remove(player.getUuidAsString());
 
-            if (task instanceof GlobalTask) {
+            if (task instanceof GlobalTask globalTask) {
+                globalTask.taskComplete();
                 completedGlobalTasks.add(taskID);
             }
             else if (task instanceof AdvancementTask) {
@@ -124,5 +127,12 @@ public class TaskManager {
 
     public void resetGlobalTasks() {
         completedGlobalTasks.clear();
+        for (Role role : RoleManager.getAllRoles()) {
+            for (GlobalTask task : role.getGlobalTasks()) {
+                task.progress = 0;
+                task.playerContributions.clear();
+                tasks.put(task.name, task);
+            }
+        }
     }
 }

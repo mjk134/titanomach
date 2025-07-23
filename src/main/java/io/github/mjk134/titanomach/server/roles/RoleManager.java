@@ -11,6 +11,8 @@ import java.util.List;
 public class RoleManager {
     public final static int EFFECT_INTERVAL_TICKS = 100;
     public final static String DEFAULT_ROLE_NAME = "Peasant";
+    public final static int PLAYER_TASKS_PER_ROLE = 14;
+    public final static int GLOBAL_TASKS_PER_ROLE = 3;
     private static int effectIntervalCounter = 0;
     private static final HashMap<String, Role> roles = new HashMap<>();
     private static final ArrayList<Role> rolesOrdered = new ArrayList<>();
@@ -52,6 +54,12 @@ public class RoleManager {
     private static void addRole(Role role) {
         roles.put(role.name, role);
         rolesOrdered.add(role);
+        int numPlayerTasks = role.getPlayerTaskPool().size();
+        int numGlobalTasks = role.getGlobalTasks().size();
+        if (numPlayerTasks != PLAYER_TASKS_PER_ROLE)
+            Titanomach.MOD_LOGGER.warn("[{}] has {} player tasks registered (Expected {})", role.name, numPlayerTasks, PLAYER_TASKS_PER_ROLE);
+        if (numGlobalTasks != GLOBAL_TASKS_PER_ROLE)
+            Titanomach.MOD_LOGGER.warn("[{}] has {} global tasks registered (Expected {})", role.name, numGlobalTasks, GLOBAL_TASKS_PER_ROLE);
     }
 
     /// Get a Role from its string name

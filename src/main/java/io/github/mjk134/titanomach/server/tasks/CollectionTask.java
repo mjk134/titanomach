@@ -61,6 +61,7 @@ public class CollectionTask extends Task{
         return TextUtils.itemIDtoName(targetID);
     }
 
+    @Override
     public float getOptimisticPercentageProgress(ServerPlayerEntity player) {
         int numInInventory = this.getInventoryCount(player);
         return (float) (numInInventory + this.progress) / this.maxProgress;

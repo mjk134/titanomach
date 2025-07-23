@@ -105,6 +105,10 @@ public class TaskManager {
         return getTask(taskId);
     }
 
+    public boolean isTaskCompleted(Task task) {
+        return completedGlobalTasks.contains(task.name) || completedPlayerTasks.contains(task.name);
+    }
+
     public SubmitStatus submitTask(String taskID, ServerPlayerEntity player) {
         Task task = tasks.get(taskID);
         SubmitStatus status = task.submitTask(player);

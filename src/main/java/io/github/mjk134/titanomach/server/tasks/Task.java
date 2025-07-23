@@ -51,4 +51,8 @@ public class Task {
     public float getPercentageProgress() {
         return (float) progress / maxProgress;
     }
+
+    public float getOptimisticPercentageProgress(ServerPlayerEntity player) {
+        return getPercentageProgress();
+    }
 }

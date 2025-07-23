@@ -24,21 +24,25 @@ import java.util.List;
 public class TaskMenu extends Menu {
     private final ServerPlayerEntity player;
     private final TitanomachPlayer tPlayer;
+    private final TaskManager taskManager;
 
     public TaskMenu(PlayerEntity player) {
         super("Tasks");
         this.player = (ServerPlayerEntity) player;
         this.tPlayer = Titanomach.TITANOMACH_CONFIG.getPlayerConfig((ServerPlayerEntity) player);
+        this.taskManager = Titanomach.TITANOMACH_CONFIG.getTaskManager();
         refreshUI();
-        fillEmptyWithGlass();
     }
 
     private void refreshUI() {
+        clear();
         addRoles();
         addProgressBar();
         addPlayerHead();
         addPlayerTasks();
         addGlobalTasks();
+        addCancelButton();
+        fillEmptyWithGlass();
     }
 
     private void addRoles() {
@@ -144,7 +148,6 @@ public class TaskMenu extends Menu {
 
     private void addPlayerTasks() {
         Role role = RoleManager.getPlayerRole(tPlayer);
-        TaskManager taskManager = Titanomach.TITANOMACH_CONFIG.getTaskManager();
         Task currentTask = taskManager.getTaskFromPlayer(tPlayer);
         boolean playerHasTask = currentTask != null;
 
@@ -214,7 +217,6 @@ public class TaskMenu extends Menu {
 
     private void addGlobalTasks() {
         List<GlobalTask> tasks = RoleManager.getPlayerRole(tPlayer).getGlobalTasks();
-        TaskManager taskManager = Titanomach.TITANOMACH_CONFIG.getTaskManager();
 
         for (int i = 0; i < RoleManager.GLOBAL_TASKS_PER_ROLE; i++) {
             ItemBuilder taskIconBuilder = new ItemBuilder("minecraft:painting");
@@ -237,7 +239,7 @@ public class TaskMenu extends Menu {
                     taskIconBuilder.addLoreMultiline("\n§9Click to contribute items");
 
                     clickAction = (player, slot, menuContext) -> {
-                        SubmitStatus status = taskManager.submitTask(task.name, (ServerPlayerEntity) player);;
+                        SubmitStatus status = taskManager.submitTask(task.name, (ServerPlayerEntity) player);
                         if (status == SubmitStatus.PARTIAL || status == SubmitStatus.COMPLETED) {
                             player.playSoundToPlayer(SoundEvents.BLOCK_NOTE_BLOCK_PLING.value(), SoundCategory.UI, 1.0f, 1.0f);
                             refreshUI();
@@ -261,5 +263,25 @@ public class TaskMenu extends Menu {
         String result = "§e" + task.progress + "§6/§e" + task.maxProgress + " §7" + task.getTargetDisplayName() + " " + TaskType.pastVerb(TaskType.get(task)) + "\n";
         result += TextUtils.progressBarWithOptimisticProgress(16, task.getPercentageProgress(), true, task.getOptimisticPercentageProgress(player));
         return result;
+    }
+
+    private void addCancelButton() {
+        if (taskManager.getTaskFromPlayer(tPlayer) == null) return;
+        ItemBuilder cancelBuilder = new ItemBuilder("minecraft:red_stained_glass")
+                .setName("§c§lCANCEL TASK")
+                .addLoreMultiline("§7Clicking this will cancel the current task\n\n§7Your current progress towards the task §nwill not be saved");
+
+        setClickableItem(45, cancelBuilder.create(), (player, slot, menuContext) -> {
+            // first click action brings up confirm button
+            player.playSoundToPlayer(SoundEvents.BLOCK_NOTE_BLOCK_HAT.value(), SoundCategory.UI, 1.0f, 0.5f);
+
+            ItemBuilder confirmBuilder = new ItemBuilder("minecraft:red_concrete").setName("§c§lCLICK AGAIN TO CONFIRM");
+            setClickableItem(45, confirmBuilder.create(), (player2, slot2, menuContext2) -> {
+                // on confirm click, cancel the task
+                taskManager.cancelPlayerTask(player.getUuidAsString());
+                player.playSoundToPlayer(SoundEvents.ITEM_TOTEM_USE, SoundCategory.UI, 1.0f, 1.0f);
+                refreshUI();
+            });
+        });
     }
 }

@@ -3,7 +3,6 @@ package io.github.mjk134.titanomach.server.tasks;
 import io.github.mjk134.titanomach.server.TitanomachPlayer;
 import io.github.mjk134.titanomach.server.roles.Role;
 import io.github.mjk134.titanomach.server.roles.RoleManager;
-import io.github.mjk134.titanomach.utils.TextUtils;
 import net.minecraft.entity.boss.BossBar;
 import net.minecraft.entity.boss.ServerBossBar;
 import net.minecraft.server.MinecraftServer;
@@ -62,7 +61,7 @@ public class TaskManager {
                 // If player is not in the boss bar, add it (fixes boss bar not showing on reconnect)
                 if (!bossBar.getPlayers().contains(player)) {
                     bossBar.addPlayer(player);
-                };
+                }
 
                 float percentageProgress = task.getPercentageProgress();
                 if (percentageProgress > 1) {
@@ -105,6 +104,15 @@ public class TaskManager {
         return getTask(taskId);
     }
 
+    public void cancelPlayerTask(String playerID) {
+        String taskID = playerTaskIdMap.get(playerID);
+        if (taskID == null) return; // no player task was selected
+
+        playerTaskIdMap.remove(playerID);
+        tasks.remove(taskID);
+        TITANOMACH_CONFIG.dump();
+    }
+
     public boolean isTaskCompleted(Task task) {
         return completedGlobalTasks.contains(task.name) || completedPlayerTasks.contains(task.name);
     }
@@ -138,5 +146,6 @@ public class TaskManager {
                 tasks.put(task.name, task);
             }
         }
+        TITANOMACH_CONFIG.dump();
     }
 }

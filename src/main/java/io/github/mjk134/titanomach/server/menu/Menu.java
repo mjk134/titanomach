@@ -102,4 +102,11 @@ public class Menu {
     public void displayTo(PlayerEntity player) {
         player.openHandledScreen(new MenuScreenHandlerFactory(this));
     }
+
+    /// Clear the menu, removing all items and click actions
+    public void clear() {
+        this.slotActionMap.clear();
+        this.inventory.clear();
+        this.inventoryClickAction = null;
+    }
 }

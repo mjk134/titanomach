@@ -44,6 +44,10 @@ public class MenuScreenHandler extends GenericContainerScreenHandler {
         return this.menu;
     }
 
+    public void close(PlayerEntity player) {
+        ((ServerPlayerEntity) player).closeHandledScreen();
+    }
+
     @Override
     public ItemStack quickMove(PlayerEntity player, int slot) {
         return ItemStack.EMPTY;

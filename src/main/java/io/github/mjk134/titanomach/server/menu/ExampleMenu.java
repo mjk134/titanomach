@@ -4,7 +4,6 @@ import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
@@ -45,12 +44,13 @@ public class ExampleMenu extends Menu {
     }
 
     // this menu is nested in the first one so that this example is all in one file
-    class ExampleMenu2 extends Menu {
+    // - you can separate into multiple files if needed
+    static class ExampleMenu2 extends Menu {
         public ExampleMenu2() {
             super("Example Menu 2");
 
             MenuClickAction closeAction = (player, slot, menuContext) -> {
-                ((ServerPlayerEntity)player).closeHandledScreen();
+                menuContext.close(player);
             };
 
             ItemStack closeIcon = new ItemStack(Registries.ITEM.get(Identifier.of("minecraft:barrier")));

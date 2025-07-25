@@ -3,6 +3,7 @@ package io.github.mjk134.titanomach.server.tasks;
 import io.github.mjk134.titanomach.server.TitanomachPlayer;
 import io.github.mjk134.titanomach.server.roles.Role;
 import io.github.mjk134.titanomach.server.roles.RoleManager;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.boss.BossBar;
 import net.minecraft.entity.boss.ServerBossBar;
 import net.minecraft.server.MinecraftServer;
@@ -139,13 +140,32 @@ public class TaskManager {
 
     public void resetGlobalTasks() {
         completedGlobalTasks.clear();
-        for (Role role : RoleManager.getAllRoles()) {
-            for (GlobalTask task : role.getGlobalTasks()) {
-                task.progress = 0;
-                task.playerContributions.clear();
-                tasks.put(task.name, task);
-            }
+        for (GlobalTask task : getAllGlobalTasks()) {
+            task.progress = 0;
+            task.playerContributions.clear();
+            tasks.put(task.name, task);
         }
         TITANOMACH_CONFIG.dump();
+    }
+
+    public List<GlobalTask> getAllGlobalTasks() {
+        List<GlobalTask> globalTasks = new ArrayList<>();
+        for (Role role : RoleManager.getAllRoles()) {
+            globalTasks.addAll(role.getGlobalTasks());
+        }
+        return globalTasks;
+    }
+
+    public void handleEntityKill(ServerPlayerEntity player, LivingEntity victim) {
+        Task playerTask = getTaskFromPlayer(player);
+        if (playerTask instanceof SlayerTask slayerTask) {
+            slayerTask.onEntityKill(player, victim);
+        }
+
+        for (GlobalTask task : getAllGlobalTasks()) {
+            if (task instanceof GlobalSlayerTask globalSlayerTask && !isTaskCompleted(task)) {
+                globalSlayerTask.onEntityKill(player, victim);
+            }
+        }
     }
 }

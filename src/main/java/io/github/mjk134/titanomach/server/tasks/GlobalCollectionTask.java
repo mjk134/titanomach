@@ -13,7 +13,6 @@ public class GlobalCollectionTask extends GlobalTask {
     }
 
     @Override
-    // returns whether the task can be submitted
     public SubmitStatus submitTask(ServerPlayerEntity player) {
         SubmitStatus status = SubmitStatus.FAIL;
         PlayerInventory inventory = player.getInventory();
@@ -34,7 +33,7 @@ public class GlobalCollectionTask extends GlobalTask {
             }
         }
 
-        updatePlayerContributions(player, progress - prevProgress);
+        updatePlayerContribution(player, progress - prevProgress);
         TITANOMACH_CONFIG.dump();
         return status;
     }

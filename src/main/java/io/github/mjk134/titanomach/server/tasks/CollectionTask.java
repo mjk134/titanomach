@@ -3,13 +3,11 @@ package io.github.mjk134.titanomach.server.tasks;
 import io.github.mjk134.titanomach.utils.TextUtils;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 import static io.github.mjk134.titanomach.Titanomach.TITANOMACH_CONFIG;
 
 public class CollectionTask extends Task{
-    private NamedScreenHandlerFactory screen;
 
     public CollectionTask(String name, int maxProgress, int progressPointReward, String targetItem) {
         super(name, maxProgress, progressPointReward, targetItem);

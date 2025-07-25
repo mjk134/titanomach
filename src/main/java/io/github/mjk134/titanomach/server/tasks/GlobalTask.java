@@ -20,7 +20,7 @@ public abstract class GlobalTask extends Task {
     }
 
     /// Add an amount of contribution to the specified player
-    public void updatePlayerContributions(ServerPlayerEntity player, int amount) {
+    public void updatePlayerContribution(ServerPlayerEntity player, int amount) {
         String uuid = player.getUuidAsString();
         if (!playerContributions.containsKey(uuid)) {
             addPlayerToTask(player);

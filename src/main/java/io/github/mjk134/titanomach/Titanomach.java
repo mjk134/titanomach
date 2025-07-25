@@ -7,7 +7,6 @@ import io.github.mjk134.titanomach.server.commands.CommandHandler;
 import io.github.mjk134.titanomach.server.config.TitanomachConfig;
 import io.github.mjk134.titanomach.server.entity.ServerTitanomachPlayer;
 import io.github.mjk134.titanomach.server.roles.RoleManager;
-import io.github.mjk134.titanomach.server.tasks.SlayerTask;
 import io.github.mjk134.titanomach.server.tasks.TaskManager;
 import io.github.mjk134.titanomach.server.vote.VoteManager;
 import io.github.mjk134.titanomach.utils.Skin;
@@ -17,17 +16,13 @@ import net.fabricmc.fabric.api.entity.event.v1.ServerEntityCombatEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
-import net.minecraft.advancement.Advancement;
-import net.minecraft.advancement.AdvancementManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -86,9 +81,8 @@ public class Titanomach implements ModInitializer {
         ServerEntityCombatEvents.AFTER_KILLED_OTHER_ENTITY.register((handler, sender, entity) -> {
             if (sender instanceof ServerPlayerEntity player) {
                 TaskManager taskManager = TITANOMACH_CONFIG.getTaskManager();
-                if (taskManager.getTaskFromPlayer(player) instanceof SlayerTask task) {
-                    task.onEntityKill(player, entity);
-                }
+                taskManager.handleEntityKill(player, entity);
+
                 if (entity instanceof ServerPlayerEntity victim) {
                     // entity/player is killed by sender so we have to mark them as hostile
                     // check if notoriety level is 0
@@ -136,7 +130,7 @@ public class Titanomach implements ModInitializer {
             }
         });
 
-        ServerLifecycleEvents.SERVER_STARTING.register((server) -> {SERVER_INSTANCE = server;});
+        ServerLifecycleEvents.SERVER_STARTING.register((server) -> SERVER_INSTANCE = server);
 
         CommandRegistrationCallback.EVENT.register((dispatcher, dedicated, registrationEnvironment) -> {
             MOD_LOGGER.info("Command dispatcher has been initialized!");

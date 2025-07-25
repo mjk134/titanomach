@@ -23,7 +23,12 @@ public class Task {
     }
 
 
-    public SubmitStatus submitTask(ServerPlayerEntity player) {return SubmitStatus.FAIL;}
+    public SubmitStatus submitTask(ServerPlayerEntity player) {
+        if (canSubmit(player)) {
+            return SubmitStatus.COMPLETED;
+        }
+        return SubmitStatus.FAIL;
+    }
 
     public boolean canSubmit(ServerPlayerEntity player) {return progress >= maxProgress;}
 

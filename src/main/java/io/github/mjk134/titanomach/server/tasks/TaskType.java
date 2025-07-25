@@ -1,5 +1,7 @@
 package io.github.mjk134.titanomach.server.tasks;
 
+import static io.github.mjk134.titanomach.Titanomach.MOD_LOGGER;
+
 public enum TaskType {
     COLLECTION,
     ADVANCEMENT,
@@ -31,8 +33,9 @@ public enum TaskType {
 
     public static TaskType get(Task task) {
         if (task instanceof CollectionTask || task instanceof GlobalCollectionTask) return COLLECTION;
-        if (task instanceof SlayerTask) return SLAYER;
+        if (task instanceof SlayerTask || task instanceof GlobalSlayerTask) return SLAYER;
         if (task instanceof AdvancementTask) return ADVANCEMENT;
+        MOD_LOGGER.error("Invalid task type");
         throw new IllegalArgumentException("Invalid task type");
     }
 }

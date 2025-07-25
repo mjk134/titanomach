@@ -173,7 +173,7 @@ public class TaskMenu extends Menu {
                     taskIconBuilder.setEnchanted(true);
                     taskIconBuilder.addLoreMultiline("\n" + getProgressString(currentTask));
 
-                    if (currentTask.progress >= currentTask.maxProgress) {
+                    if (currentTask.getOptimisticPercentageProgress(player) >= 1.0f) {
                         taskIconBuilder.addLoreMultiline("\n§9Click to submit task");
                     } else if (currentTask instanceof CollectionTask collectionTask && collectionTask.getInventoryCount(player) > 0) {
                         taskIconBuilder.addLoreMultiline("\n§9Click to submit current items");
@@ -236,17 +236,20 @@ public class TaskMenu extends Menu {
                     taskIconBuilder.setEnchanted(true);
                     taskIconBuilder.addLoreMultiline("\n§7You have contributed §e" + task.getPlayerContribution(tPlayer.getPlayerId()) + " §7" + task.getTargetDisplayName());
                     taskIconBuilder.addLoreLine("§7You will receive §e" + task.getPlayerContributionAsProgressPoints(tPlayer.getPlayerId()) + " §aPP §7upon completion");
-                    taskIconBuilder.addLoreMultiline("\n§9Click to contribute items");
 
-                    clickAction = (player, slot, menuContext) -> {
-                        SubmitStatus status = taskManager.submitTask(task.name, (ServerPlayerEntity) player);
-                        if (status == SubmitStatus.PARTIAL || status == SubmitStatus.COMPLETED) {
-                            player.playSoundToPlayer(SoundEvents.BLOCK_NOTE_BLOCK_PLING.value(), SoundCategory.UI, 1.0f, 1.0f);
-                            refreshUI();
-                        } else {
-                            player.playSoundToPlayer(SoundEvents.BLOCK_ANVIL_PLACE, SoundCategory.UI, 1.0f, 1.0f);
-                        }
-                    };
+                    if (task instanceof GlobalCollectionTask) {
+                        taskIconBuilder.addLoreMultiline("\n§9Click to contribute");
+
+                        clickAction = (player, slot, menuContext) -> {
+                            SubmitStatus status = taskManager.submitTask(task.name, (ServerPlayerEntity) player);
+                            if (status == SubmitStatus.PARTIAL || status == SubmitStatus.COMPLETED) {
+                                player.playSoundToPlayer(SoundEvents.BLOCK_NOTE_BLOCK_PLING.value(), SoundCategory.UI, 1.0f, 1.0f);
+                                refreshUI();
+                            } else {
+                                player.playSoundToPlayer(SoundEvents.BLOCK_ANVIL_PLACE, SoundCategory.UI, 1.0f, 1.0f);
+                            }
+                        };
+                    }
                 }
                 else {
                     taskIconBuilder.addLoreMultiline("\n§c§oThis task has already been completed!");

@@ -5,7 +5,6 @@ import io.github.mjk134.titanomach.server.tasks.GlobalTask;
 import io.github.mjk134.titanomach.server.tasks.TaskInfo;
 import io.github.mjk134.titanomach.utils.TextUtils;
 import it.unimi.dsi.fastutil.ints.IntList;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.FireworkExplosionComponent;
@@ -18,7 +17,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
@@ -68,7 +66,6 @@ public abstract class Role {
         for (ItemStack rankUpReward : this.rankUpRewards) {
             player.giveItemStack(rankUpReward.copy());
         }
-
         // send chat message
         ServerPlayerEntity serverPlayer =  (ServerPlayerEntity) player;
         Role prevRole = RoleManager.getPreviousRoles(this).getLast();
@@ -77,9 +74,12 @@ public abstract class Role {
         serverPlayer.sendMessage(Text.of(prevRole.titleFormat + "§l" + prevRole.name + " §r§7→ " + this.titleFormat + "§l" + this.name));
         serverPlayer.sendMessage(Text.of(TextUtils.SECTION_BREAK));
 
-        boolean canSpawnFirework = true;
+        // cancel the current player task if there is one
+        Titanomach.TITANOMACH_CONFIG.getTaskManager().cancelPlayerTask(player.getUuidAsString());
+
         // check there are no blocks blocking the firework within an area
         // such that the player could get damaged
+        boolean canSpawnFirework = true;
         World world = player.getWorld();
         BlockPos playerPos = player.getBlockPos();
         for (int dy = 0; dy < 7; dy++) {
@@ -89,7 +89,7 @@ public abstract class Role {
                 break;
             }
         }
-        if (!canSpawnFirework) return;
+        if (!canSpawnFirework) return; // if area is blocked, don't fire the firework
 
         ItemStack fireworkItem = new ItemStack(Items.FIREWORK_ROCKET);
         fireworkItem.set(

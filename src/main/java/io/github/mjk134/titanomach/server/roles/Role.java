@@ -1,9 +1,7 @@
 package io.github.mjk134.titanomach.server.roles;
 
 import io.github.mjk134.titanomach.Titanomach;
-import io.github.mjk134.titanomach.server.tasks.GlobalCollectionTask;
 import io.github.mjk134.titanomach.server.tasks.GlobalTask;
-import io.github.mjk134.titanomach.server.tasks.Task;
 import io.github.mjk134.titanomach.server.tasks.TaskInfo;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.component.DataComponentTypes;
@@ -22,7 +20,6 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public abstract class Role {
@@ -121,6 +118,10 @@ public abstract class Role {
 
     public List<TaskInfo> getPlayerTaskPool() {
         return this.playerTaskPool;
+    }
+
+    public boolean equals(Role other) {
+        return other.name.equals(this.name);
     }
 }
 

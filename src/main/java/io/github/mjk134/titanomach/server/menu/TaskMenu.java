@@ -37,7 +37,6 @@ public class TaskMenu extends Menu {
     private void refreshUI() {
         clear();
         addRoles();
-        addProgressBar();
         addPlayerHead();
         addPlayerTasks();
         addGlobalTasks();
@@ -46,13 +45,12 @@ public class TaskMenu extends Menu {
     }
 
     private void addRoles() {
-        Role playerRole = RoleManager.getPlayerRole(tPlayer);
-        addRoleIcon(RoleManager.getRole("Peasant"), 1, playerRole.name);
-        addRoleIcon(RoleManager.getRole("Freeman"), 2, playerRole.name);
-        addRoleIcon(RoleManager.getRole("Knight"), 3, playerRole.name);
-        addRoleIcon(RoleManager.getRole("Noble"), 5, playerRole.name);
-        addRoleIcon(RoleManager.getRole("King"), 6, playerRole.name);
-        addRoleIcon(RoleManager.getRole("God"), 7, playerRole.name);
+        addRoleIcon(RoleManager.getRole("Peasant"), 1);
+        addRoleIcon(RoleManager.getRole("Freeman"), 2);
+        addRoleIcon(RoleManager.getRole("Knight"), 3);
+        addRoleIcon(RoleManager.getRole("Noble"), 5);
+        addRoleIcon(RoleManager.getRole("King"), 6);
+        addRoleIcon(RoleManager.getRole("God"), 7);
     }
 
     private void addPlayerHead() {
@@ -69,56 +67,7 @@ public class TaskMenu extends Menu {
         setItem(53, playerHead);
     }
 
-    private void addProgressBar() {
-        float progress = RoleManager.getPercentageProgressToNextRole(tPlayer);
-        int numberOfGreen = (int) (progress * 7);
-        Role currentRole =  RoleManager.getPlayerRole(tPlayer);
-        Role nextRole = RoleManager.getNextRole(currentRole);
-        for (int i = 0; i < 7; i++) {
-            String itemID;
-            if (i < numberOfGreen) {
-                itemID = "minecraft:lime_stained_glass_pane";
-            }
-            else if (i == numberOfGreen) {
-                itemID = "minecraft:yellow_stained_glass_pane";
-            }
-            else {
-                itemID = "minecraft:red_stained_glass_pane";
-            }
-
-            ItemStack itemIcon;
-            if (nextRole != null) {
-                int progressIntoRank = tPlayer.getProgressPoints() - currentRole.pointRequirement;
-                int totalNeeded = nextRole.pointRequirement - currentRole.pointRequirement;
-                ItemBuilder builder = new ItemBuilder(itemID)
-                        .setName("§cProgress to " + nextRole.titleFormat + "§l" + nextRole.name)
-                        .addLoreLine("§e" + progressIntoRank + "§6/§e" + totalNeeded + " §aPP")
-                        .addLoreLine("");
-
-                // add effect info
-                generateEffectInfo(builder, nextRole);
-
-                // add rank-up reward info
-                builder.addLoreMultiline("\n§9Rewards");
-                for (ItemStack itemStack : nextRole.getRankUpRewards()) {
-                    String qtyText = itemStack.getCount() > 1 ? " §7x" +  itemStack.getCount() : "";
-                    String itemName = itemStack.getName().getString();
-                    itemName = TextUtils.removeFormatting(itemName);
-                    builder.addLoreLine("§7• " + itemName + qtyText);
-                }
-
-                itemIcon = builder.create();
-            } else {
-                itemIcon = new ItemBuilder(itemID)
-                        .setName("§c§lMAX ROLE")
-                        .create();
-            }
-
-            this.setItem(10 + i, itemIcon);
-        }
-    }
-
-    private void generateEffectInfo(ItemBuilder builder, Role role) {
+    private void generateRoleInfo(ItemBuilder builder, Role role) {
         builder.addLoreMultiline("§9Effects");
         for (StatusEffectInstance effect : role.getEffects()) {
             String level = TextUtils.toRomanNumerals(effect.getAmplifier() + 1);
@@ -128,22 +77,56 @@ public class TaskMenu extends Menu {
         if (!(role.name.equals("Freeman")||role.name.equals("Peasant"))) {
             builder.addLoreLine("§7+ Effects from previous roles");
         }
+
+        List<ItemStack> rewards = role.getRankUpRewards();
+        if (rewards.isEmpty()) return;
+
+        builder.addLoreMultiline("\n§9Rewards");
+        for (ItemStack itemStack : rewards) {
+            String qtyText = itemStack.getCount() > 1 ? " §7x" +  itemStack.getCount() : "";
+            String itemName = itemStack.getName().getString();
+            itemName = TextUtils.removeFormatting(itemName);
+            builder.addLoreLine("§7• " + itemName + qtyText);
+        }
     }
 
-    private void addRoleIcon(Role role, int slot, String playerRole) {
+    private void addRoleIcon(Role role, int slot) {
+        Role playerRole = RoleManager.getPlayerRole(tPlayer);
         ItemBuilder roleIconBuilder = new ItemBuilder(role.itemIcon)
                 .setName(role.titleFormat + "§l" + role.name)
                 .removeAdditionalTooltips()
                 .addLoreMultiline(role.description)
                 .addLoreLine("");
 
-        generateEffectInfo(roleIconBuilder, role);
+        generateRoleInfo(roleIconBuilder, role);
         ItemStack roleIcon = roleIconBuilder.create();
 
-        if (role.name.equals(playerRole)) {
+        if (role.equals(playerRole)) {
             roleIcon.set(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, true);
         }
         this.setItem(slot, roleIcon);
+
+        Role nextRole = RoleManager.getNextRole(playerRole);
+        // add glass pane indicator
+        ItemBuilder paneBuilder = new ItemBuilder("minecraft:red_stained_glass_pane")
+            .setName("§cProgress to " + role.titleFormat + "§l" + role.name);
+
+        if (nextRole == null || RoleManager.getPreviousRoles(nextRole).contains(role)) { // already achieved
+            paneBuilder.setItem("minecraft:lime_stained_glass_pane");
+            paneBuilder.addLoreLine("§cYou have already reached this role!");
+        }
+        else if (role.equals(nextRole)) { // next role
+            paneBuilder.setItem("minecraft:yellow_stained_glass_pane");
+            int progressIntoRank = tPlayer.getProgressPoints() - playerRole.pointRequirement;
+            int totalNeeded = role.pointRequirement - playerRole.pointRequirement;
+            paneBuilder.addLoreMultiline("§e" + progressIntoRank + "§6/§e" + totalNeeded + " §aPP\n");
+            generateRoleInfo(paneBuilder, role);
+        }
+        else { // future role
+            paneBuilder.addLoreLine("§cReach the previous role first!");
+        }
+
+        setItem(slot + 9, paneBuilder.create());
     }
 
     private void addPlayerTasks() {

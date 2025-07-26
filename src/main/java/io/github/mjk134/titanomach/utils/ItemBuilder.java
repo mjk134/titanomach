@@ -1,8 +1,6 @@
 package io.github.mjk134.titanomach.utils;
 
-import io.github.mjk134.titanomach.Titanomach;
 import it.unimi.dsi.fastutil.objects.ReferenceSortedSets;
-import net.minecraft.component.ComponentMap;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.LoreComponent;
 import net.minecraft.component.type.TooltipDisplayComponent;
@@ -15,7 +13,7 @@ import net.minecraft.util.Identifier;
 import java.util.ArrayList;
 
 public class ItemBuilder {
-    private ItemStack item;
+    private final ItemStack item;
     private final ArrayList<Text> lore;
 
     public ItemBuilder(Item item) {
@@ -70,9 +68,9 @@ public class ItemBuilder {
     }
 
     public ItemBuilder addLoreMultiline(String lines) {
-        for (String line : lines.split("\n")) {
+        for (String line : lines.split("\n", -1)) { // use a limit of -1 to keep trailing empty strings
             addLoreLine(line);
-        };
+        }
         return this;
     }
 

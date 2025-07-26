@@ -66,4 +66,6 @@ public class TextUtils {
     public static String capitalize(String text) {
         return text.substring(0, 1).toUpperCase() + text.substring(1);
     }
+
+    public static final String SECTION_BREAK = "§7§m" + "─".repeat(24);
 }

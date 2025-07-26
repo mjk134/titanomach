@@ -3,7 +3,10 @@ package io.github.mjk134.titanomach.server.roles;
 import io.github.mjk134.titanomach.Titanomach;
 import io.github.mjk134.titanomach.server.tasks.GlobalTask;
 import io.github.mjk134.titanomach.server.tasks.TaskInfo;
+import io.github.mjk134.titanomach.utils.TextUtils;
 import it.unimi.dsi.fastutil.ints.IntList;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.FireworkExplosionComponent;
 import net.minecraft.component.type.FireworksComponent;
@@ -14,10 +17,14 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,13 +60,37 @@ public abstract class Role {
         }
     }
 
-    /// Called when this role is first reached
+    /// Called when this role is completed
     public void onRankUp(PlayerEntity player) {
+        // play audio effect
+        player.playSoundToPlayer(SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundCategory.UI, 1.0f, 1.0f);
+        // give rewards
         for (ItemStack rankUpReward : this.rankUpRewards) {
-            player.giveItemStack(rankUpReward);
+            player.giveItemStack(rankUpReward.copy());
         }
 
-        ServerWorld world = (ServerWorld) player.getWorld();
+        // send chat message
+        ServerPlayerEntity serverPlayer =  (ServerPlayerEntity) player;
+        Role prevRole = RoleManager.getPreviousRoles(this).getLast();
+        serverPlayer.sendMessage(Text.of(TextUtils.SECTION_BREAK));
+        serverPlayer.sendMessage(Text.of("§a§lRANK UP!"));
+        serverPlayer.sendMessage(Text.of(prevRole.titleFormat + "§l" + prevRole.name + " §r§7→ " + this.titleFormat + "§l" + this.name));
+        serverPlayer.sendMessage(Text.of(TextUtils.SECTION_BREAK));
+
+        boolean canSpawnFirework = true;
+        // check there are no blocks blocking the firework within an area
+        // such that the player could get damaged
+        World world = player.getWorld();
+        BlockPos playerPos = player.getBlockPos();
+        for (int dy = 0; dy < 7; dy++) {
+            BlockState blockState = world.getBlockState(new BlockPos(playerPos.getX(),  playerPos.getY() + dy, playerPos.getZ()));
+            if (!blockState.isAir()) {
+                canSpawnFirework = false;
+                break;
+            }
+        }
+        if (!canSpawnFirework) return;
+
         ItemStack fireworkItem = new ItemStack(Items.FIREWORK_ROCKET);
         fireworkItem.set(
                 DataComponentTypes.FIREWORKS,
@@ -72,8 +103,6 @@ public abstract class Role {
 
         FireworkRocketEntity firework = new FireworkRocketEntity(world, player.getX(), player.getY(), player.getZ(), fireworkItem);
         world.spawnEntity(firework);
-
-        player.playSoundToPlayer(SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundCategory.UI, 1.0f, 1.0f);
     }
 
     public void addRankUpReward(String itemID, int amount) {

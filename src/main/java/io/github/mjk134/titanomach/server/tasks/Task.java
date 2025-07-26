@@ -1,5 +1,6 @@
 package io.github.mjk134.titanomach.server.tasks;
 
+import io.github.mjk134.titanomach.utils.TextUtils;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
@@ -34,11 +35,11 @@ public class Task {
 
     public void sendMessage(ServerPlayerEntity player) {
         if (!messageSent) {
-            player.sendMessage(Text.of("§7§l────────────────────────"));
+            player.sendMessage(Text.of(TextUtils.SECTION_BREAK));
             player.sendMessage(Text.of("§eTask completed!"));
             player.sendMessage(Text.of(getFormattedName() + " §r§a§l✓"));
-            player.sendMessage(Text.literal("§9§l[CLICK HERE] §r§eto submit").setStyle(Style.EMPTY.withClickEvent(new ClickEvent.RunCommand("/tasks")).withHoverEvent(new HoverEvent.ShowText(Text.of("§eClick to open the §6§ltasks §r§emenu")))));
-            player.sendMessage(Text.of("§7§l────────────────────────"));
+            player.sendMessage(Text.literal("§9§l[CLICK HERE] §r§eto submit").setStyle(Style.EMPTY.withClickEvent(new ClickEvent.RunCommand("/tasks")).withHoverEvent(new HoverEvent.ShowText(Text.of("§eClick to open the §9/tasks §r§emenu")))));
+            player.sendMessage(Text.of(TextUtils.SECTION_BREAK));
             messageSent = true;
         }
     }

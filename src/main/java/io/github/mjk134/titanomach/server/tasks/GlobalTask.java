@@ -1,6 +1,7 @@
 package io.github.mjk134.titanomach.server.tasks;
 
 import io.github.mjk134.titanomach.Titanomach;
+import io.github.mjk134.titanomach.utils.TextUtils;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 
@@ -67,10 +68,10 @@ public abstract class GlobalTask extends Task {
     @Override
     public void sendMessage(ServerPlayerEntity player) {
         String uuid = player.getUuidAsString();
-        player.sendMessage(Text.of("§7§l────────────────────────"));
+        player.sendMessage(Text.of(TextUtils.SECTION_BREAK));
         player.sendMessage(Text.of("§d§lGLOBAL§r§e task completed!"));
         player.sendMessage(Text.of(getFormattedName() + " §r§a§l✓"));
         player.sendMessage(Text.of("§7You contributed " + getPlayerContribution(uuid) + " " + getTargetDisplayName() + "§7 and earned §e" + getPlayerContributionAsProgressPoints(uuid) + " §aPP"));
-        player.sendMessage(Text.of("§7§l────────────────────────"));
+        player.sendMessage(Text.of(TextUtils.SECTION_BREAK));
     }
 }

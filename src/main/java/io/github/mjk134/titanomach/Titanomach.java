@@ -38,16 +38,6 @@ public class Titanomach implements ModInitializer {
     public void onInitialize() {
         MOD_LOGGER.info(MOD_ID + " is initializing.");
 
-        ServerPlayConnectionEvents.INIT.register((handler, server) -> {
-            ServerPlayerEntity player = handler.getPlayer();
-
-            THREADPOOL.submit(() -> {
-                // TODO: REFACTOR THIS TO MAKE IT CLEANER
-                Property property = TITANOMACH_CONFIG.getSkinProperty(TITANOMACH_CONFIG.getPlayerConfig(player).getRandomIdentity().getSkinId());
-                ((ServerTitanomachPlayer) player).titanomach$setSkin(property, true);
-            });
-        });
-
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
             ServerPlayerEntity player = handler.getPlayer();
             VoteManager.resumeStopwatch(player);
@@ -69,6 +59,12 @@ public class Titanomach implements ModInitializer {
                     titanomachPlayer.setHasJoined(true);
                     TITANOMACH_CONFIG.dump();
                 }
+
+                THREADPOOL.submit(() -> {
+                    // TODO: REFACTOR THIS TO MAKE IT CLEANER
+                    Property property = TITANOMACH_CONFIG.getSkinProperty(TITANOMACH_CONFIG.getPlayerConfig(player).getRandomIdentity().getSkinId());
+                    ((ServerTitanomachPlayer) player).titanomach$setSkin(property, true);
+                });
             }
         });
 

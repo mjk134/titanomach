@@ -13,6 +13,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.Objects;
+
 import static io.github.mjk134.titanomach.Titanomach.TITANOMACH_CONFIG;
 
 @Mixin(PlayerEntity.class)
@@ -29,7 +31,7 @@ public abstract class PlayerEntityMixin extends LivingEntity {
             if (TITANOMACH_CONFIG.isEnabled()) {
                 if (player instanceof ServerPlayerEntity serverPlayer) {
                     String playerId = serverPlayer.getUuid().toString();
-                    return Text.literal(TITANOMACH_CONFIG.getPlayerConfig(playerId).getRandomIdentity().getPlayerName());
+                    if (Objects.nonNull(TITANOMACH_CONFIG.getPlayerConfig(playerId))) return Text.literal(TITANOMACH_CONFIG.getPlayerConfig(playerId).getRandomIdentity().getPlayerName());
                 }
             }
         }

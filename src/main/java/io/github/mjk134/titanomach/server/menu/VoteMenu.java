@@ -9,9 +9,13 @@ import io.github.mjk134.titanomach.server.vote.VoteManager;
 import io.github.mjk134.titanomach.utils.ItemBuilder;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.ProfileComponent;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
@@ -19,6 +23,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static io.github.mjk134.titanomach.Titanomach.MOD_LOGGER;
+import static io.github.mjk134.titanomach.Titanomach.TITANOMACH_CONFIG;
 
 public class VoteMenu extends Menu {
     public VoteMenu(ServerPlayerEntity player) {
@@ -53,10 +58,7 @@ public class VoteMenu extends Menu {
                 .create();
 
         setClickableItem(24, pinkWool, (_player, _slot, menuContext) -> {
-            // select item in hand
-            MOD_LOGGER.info(player.getMainHandStack().getName().getString());
-
-            ConfirmItemSacrificeMenu menu = new ConfirmItemSacrificeMenu(player.getMainHandStack());
+            ConfirmItemSacrificeMenu menu = new ConfirmItemSacrificeMenu();
             menu.displayTo(player);
         });
 
@@ -112,10 +114,9 @@ public class VoteMenu extends Menu {
     }
 
     static class ConfirmItemSacrificeMenu extends Menu {
-        public ConfirmItemSacrificeMenu(ItemStack itemStack) {
+        public static final int ITEM_SLOT = 22;
+        public ConfirmItemSacrificeMenu() {
             super("Confirm item sacrifice");
-
-            setItem(22, itemStack);
 
             setClickableItem(20,
                     new ItemBuilder("minecraft:green_wool")
@@ -137,13 +138,33 @@ public class VoteMenu extends Menu {
 
             });
 
-            setInventoryAction((_p, _s, _mctx) -> {
-
+            setInventoryAction((_player, _slot, _ctx) -> {
+                Inventory inv = this.getInventory();
+                ItemStack clickedStack = _player.getInventory().getStack(_slot);
+                if (inv.getStack(ITEM_SLOT).isEmpty() && !clickedStack.isEmpty()) {
+                    setItem(ITEM_SLOT, clickedStack.copyWithCount(1));
+                    clickedStack.decrement(1);
+                    _player.playSoundToPlayer(SoundEvents.BLOCK_NOTE_BLOCK_PLING.value(), SoundCategory.UI, 1.0f, 1.0f);
+                }
             });
 
             setItem(40, new ItemBuilder("minecraft:filled_map").create());
 
             fillEmptyWithGlass();
+            setClickableItem(ITEM_SLOT, ItemStack.EMPTY, (_player, _slot, _ctx) -> {
+                Inventory inv = this.getInventory();
+                if (!inv.getStack(ITEM_SLOT).isEmpty()) {
+                    _ctx.quickMove(_player, _slot);
+                    _player.playSoundToPlayer(SoundEvents.BLOCK_NOTE_BLOCK_PLING.value(), SoundCategory.UI, 1.0f, 0.1f);
+                }
+            });
+        }
+        public void onClose(PlayerEntity player, MenuScreenHandler ctx) {
+            Inventory inv = this.getInventory();
+            if (!inv.getStack(ITEM_SLOT).isEmpty()) {
+                // setting the stack ensures the item will either end up in the player's inv or on the ground
+                ctx.setCursorStack(inv.getStack(ITEM_SLOT));
+            }
         }
     }
 

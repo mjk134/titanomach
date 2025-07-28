@@ -1,5 +1,6 @@
 package io.github.mjk134.titanomach.server.menu;
 
+import io.github.mjk134.titanomach.Titanomach;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
@@ -40,21 +41,17 @@ public class MenuScreenHandler extends GenericContainerScreenHandler {
         serverPlayerEntity.networkHandler.sendPacket(new SetPlayerInventoryS2CPacket(40, playerOffhandItem));
     }
 
+    @Override
+    public void onClosed(PlayerEntity player) {
+        this.menu.onClose(player, this);
+        super.onClosed(player);
+    }
+
     public Menu getMenu() {
         return this.menu;
     }
 
     public void close(PlayerEntity player) {
         ((ServerPlayerEntity) player).closeHandledScreen();
-    }
-
-    @Override
-    public ItemStack quickMove(PlayerEntity player, int slot) {
-        return ItemStack.EMPTY;
-    }
-
-    @Override
-    public boolean canInsertIntoSlot(ItemStack stack, Slot slot) {
-        return false;
     }
 }

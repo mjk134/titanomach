@@ -17,8 +17,7 @@ public class Menu {
     private Inventory inventory;
     private String name;
     private final HashMap<Integer, MenuClickAction> slotActionMap;
-    @Nullable
-    private MenuClickAction inventoryClickAction;
+    @Nullable private MenuClickAction inventoryClickAction;
     public boolean keepDefaultInventoryBehaviour = false;
 
     public Menu(String name) {
@@ -96,7 +95,11 @@ public class Menu {
     }
 
     public void setInventoryAction(MenuClickAction action) {
-        this.inventoryClickAction = action;
+        // set the inventory click action with slot - 54 to calculate correct player slot
+        this.inventoryClickAction = (player, slot, ctx) -> {
+            int invSlot = slot >= 81 ? slot - 81 : slot - 45;
+            action.onClick(player, invSlot, ctx);
+        };
     }
 
     public void displayTo(PlayerEntity player) {
@@ -108,5 +111,10 @@ public class Menu {
         this.slotActionMap.clear();
         this.inventory.clear();
         this.inventoryClickAction = null;
+    }
+
+    /// Called whenever the menu is closed
+    public void onClose(PlayerEntity player, MenuScreenHandler context) {
+
     }
 }

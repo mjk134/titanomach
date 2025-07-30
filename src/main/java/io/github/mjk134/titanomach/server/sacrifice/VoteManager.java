@@ -1,27 +1,24 @@
-package io.github.mjk134.titanomach.server.vote;
+package io.github.mjk134.titanomach.server.sacrifice;
 
 import com.google.common.base.Stopwatch;
 import com.mojang.datafixers.util.Pair;
-import io.github.mjk134.titanomach.Titanomach;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 import java.time.Duration;
 import java.util.*;
 
-import static io.github.mjk134.titanomach.Titanomach.MOD_LOGGER;
-
 /**
  * Handles voting - is only static because it is session based
  */
 public class VoteManager {
-    // 5 players must be online for it to go forward
+    /// 5 players must be online for it to go forward
     public static boolean isOngoing = false;
     public static HashMap<UUID, UUID> playerVoteMap = new HashMap<>();
     private static final Random random = new Random();
-    // Basically they need to be online for at least 5 minutes for their vote to count -> otherwise they can get excluded
+    /// Basically they need to be online for at least 5 minutes for their vote to count -> otherwise they can get excluded
     public static HashMap<UUID, Stopwatch> playerVoteStopwatches = new HashMap<>();
-    // Some players may choose to sacrifice an item to be excluded from the vote -> this can be done by gui
+    /// Some players may choose to sacrifice an item to be excluded from the vote -> this can be done by gui
     public static List<UUID> sacrificedItemPlayers = new ArrayList<>();
 
     public static boolean meetsRequirements(PlayerManager playerManager) {
@@ -30,6 +27,7 @@ public class VoteManager {
         return VoteManager.isOngoing;
     }
 
+    /// I was gonna use this but i forgot where
     public static boolean meetsRequirements() {
         return isOngoing;
     }
@@ -47,7 +45,7 @@ public class VoteManager {
         }
     }
 
-    private static boolean isPlayerExempt(UUID uuid) {
+    public static boolean isPlayerExempt(UUID uuid) {
         if (sacrificedItemPlayers.contains(uuid)) {
             return true;
         } else if (playerVoteStopwatches.containsKey(uuid)) {
@@ -72,11 +70,12 @@ public class VoteManager {
             if (!voteCount.containsKey(uuid)) {
                 voteCount.put(uuid, 1);
             } else {
-                int currentCount = voteCount.get(uuid);
-                currentCount++;
-                voteCount.put(uuid, currentCount);
+                int newCount = voteCount.get(uuid) + 1;
+                voteCount.put(uuid, newCount);
             }
         }
+
+
         List<Pair<UUID, Integer>> highestVoteCounts = new ArrayList<>();
         for (UUID key : voteCount.keySet()) {
             int voteAmount = voteCount.get(key);
@@ -103,5 +102,27 @@ public class VoteManager {
         // Pick a random UUID from the list
         int randomIndex = random.nextInt(highestVoteCounts.size());
         return highestVoteCounts.get(randomIndex).getFirst();
+    }
+
+    public static boolean isVotePossible() {
+       // Check if at least 5 people have logged on for at least 5 minutes
+        int loggedOnCount = 0;
+        for (Stopwatch stopwatch: playerVoteStopwatches.values()) {
+            if (stopwatch.elapsed().getSeconds() > 300) loggedOnCount++;
+        }
+        return loggedOnCount >= 5;
+    }
+
+    public static ArrayList<UUID> getPenalizedPlayersUUID() {
+        // Check if they are exempt, if they are not, and they are not in the vote map penalise them
+        ArrayList<UUID> penalized = new ArrayList<>();
+
+        for (UUID uuid : playerVoteStopwatches.keySet()){
+            if (!isPlayerExempt(uuid)) {
+                penalized.add(uuid);
+            }
+        }
+
+        return penalized;
     }
 }

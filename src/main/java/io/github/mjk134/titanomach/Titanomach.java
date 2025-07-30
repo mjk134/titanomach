@@ -7,8 +7,9 @@ import io.github.mjk134.titanomach.server.commands.CommandHandler;
 import io.github.mjk134.titanomach.server.config.TitanomachConfig;
 import io.github.mjk134.titanomach.server.entity.ServerTitanomachPlayer;
 import io.github.mjk134.titanomach.server.roles.RoleManager;
+import io.github.mjk134.titanomach.server.sacrifice.SacrificeManager;
 import io.github.mjk134.titanomach.server.tasks.TaskManager;
-import io.github.mjk134.titanomach.server.vote.VoteManager;
+import io.github.mjk134.titanomach.server.sacrifice.VoteManager;
 import io.github.mjk134.titanomach.utils.Skin;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -65,6 +66,8 @@ public class Titanomach implements ModInitializer {
                     Property property = TITANOMACH_CONFIG.getSkinProperty(TITANOMACH_CONFIG.getPlayerConfig(player).getRandomIdentity().getSkinId());
                     ((ServerTitanomachPlayer) player).titanomach$setSkin(property, true);
                 });
+
+                SacrificeManager.reduceHearts(player);
             }
         });
 
@@ -123,6 +126,7 @@ public class Titanomach implements ModInitializer {
             if (TITANOMACH_CONFIG.isEnabled()) {
                 TITANOMACH_CONFIG.getTaskManager().tick(server);
                 RoleManager.tick(server);
+                SacrificeManager.applyDebuffsOnTick(server);
             }
         });
 

@@ -14,6 +14,7 @@
     "network.EntityPassengersSetS2CPacketMixin",
     "network.SerializableTeamMixin",
     "network.ServerCommonNetworkHandlerMixin",
+    "server.MinecraftServerMixin",
     "world.EntityTrackerAccessor",
     "world.ServerChunkLoadingManagerAccessor"
   ],

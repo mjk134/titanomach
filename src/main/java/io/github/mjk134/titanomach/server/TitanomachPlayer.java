@@ -20,8 +20,10 @@ public class TitanomachPlayer {
     private int progressPoints;
     private int notorietyLevel = 0;
     public float progressPointMultiplier = 1;
-    // In terms of number of sessions
+    /// In terms of number of sessions
     public int multiplierDuration;
+    /// This has a max of 5. 0 -> 5 represent the severity of bad effects. Also incremented when a players miss a vote whilst
+    public int sacrificeLevel = 0;
 
     public TitanomachPlayer(ServerPlayerEntity player) {
         this.playerId = player.getUuid().toString();

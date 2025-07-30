@@ -5,7 +5,7 @@ import io.github.mjk134.titanomach.Titanomach;
 import io.github.mjk134.titanomach.server.TitanomachPlayer;
 import io.github.mjk134.titanomach.server.roles.Role;
 import io.github.mjk134.titanomach.server.roles.RoleManager;
-import io.github.mjk134.titanomach.server.vote.VoteManager;
+import io.github.mjk134.titanomach.server.sacrifice.VoteManager;
 import io.github.mjk134.titanomach.utils.ItemBuilder;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.ProfileComponent;
@@ -18,12 +18,9 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Rarity;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import static io.github.mjk134.titanomach.Titanomach.MOD_LOGGER;
-import static io.github.mjk134.titanomach.Titanomach.TITANOMACH_CONFIG;
 
 public class VoteMenu extends Menu {
     public VoteMenu(ServerPlayerEntity player) {
@@ -46,9 +43,6 @@ public class VoteMenu extends Menu {
         ItemStack pinkWool = new ItemBuilder("minecraft:pink_wool")
                 .addLoreLine(Text.of("§r§eYou can sacrifice an item to become"))
                 .addLoreLine(Text.of("§r§eexempt from the vote entirely."))
-                .addLoreLine("")
-                .addLoreLine("This selects the item in your main hand")
-                .addLoreLine("as the sacrifice item.")
                 .setName(Text.literal("Sacrifice an ")
                             .formatted(Formatting.GOLD, Formatting.BOLD)
                             .append(Text.literal("EPIC").formatted(Formatting.DARK_PURPLE, Formatting.BOLD))
@@ -61,13 +55,9 @@ public class VoteMenu extends Menu {
             ConfirmItemSacrificeMenu menu = new ConfirmItemSacrificeMenu();
             menu.displayTo(player);
         });
-
-
     }
 
-
     static class PlayerVotingMenu extends Menu {
-
         public PlayerVotingMenu(ServerPlayerEntity player) {
             super("Vote for a player");
             MinecraftServer server = player.getServer();
@@ -87,6 +77,7 @@ public class VoteMenu extends Menu {
                     ServerPlayerEntity votedForPlayer = playersToVoteFor.get(playerIndex);
                     setClickableItem(slot, getPlayerHead(votedForPlayer), (_player, _s, context) -> {
                         VoteManager.putVote(player, votedForPlayer);
+                        player.closeHandledScreen();
                     });
                     playerIndex++;
                 }
@@ -115,56 +106,98 @@ public class VoteMenu extends Menu {
 
     static class ConfirmItemSacrificeMenu extends Menu {
         public static final int ITEM_SLOT = 22;
+
         public ConfirmItemSacrificeMenu() {
             super("Confirm item sacrifice");
 
+            setNonEpicSubmitButton();
+
+            setInventoryAction((player, slot, _ctx) -> {
+                Inventory inv = this.getInventory();
+                ItemStack clickedStack = player.getInventory().getStack(slot);
+                if (inv.getStack(ITEM_SLOT).isEmpty() && !clickedStack.isEmpty()) {
+                    setItem(ITEM_SLOT, clickedStack.copyWithCount(1));
+                    clickedStack.decrement(1);
+                    player.playSoundToPlayer(SoundEvents.BLOCK_NOTE_BLOCK_PLING.value(), SoundCategory.UI, 1.0f, 1.0f);
+                    if (this.isSelectedEpic()) {
+                        setEpicSubmitButton();
+                    } else {
+                        setNonEpicSubmitButton();
+                    }
+                }
+            });
+
+            setClickableItem(24, new ItemBuilder("minecraft:red_wool")
+                    .addLoreLine(Text.literal("If you don't submit an item").formatted(Formatting.YELLOW))
+                    .addLoreLine(Text.literal("you won't be exempt from the vote.").formatted(Formatting.YELLOW))
+                    .setName(Text.literal("CANCEL").formatted(Formatting.BOLD, Formatting.RED))
+                    .create(),
+                    (player, _slot, _ctx) -> ((ServerPlayerEntity) player).closeHandledScreen()
+            );
+
+            setItem(40, new ItemBuilder("minecraft:filled_map")
+                    .addLoreLine("Click on an item to move it to the selected slot!")
+                    .create());
+
+            fillEmptyWithGlass();
+
+            setClickableItem(ITEM_SLOT, ItemStack.EMPTY, (player, slot, ctx) -> {
+                Inventory inv = this.getInventory();
+                if (!inv.getStack(ITEM_SLOT).isEmpty()) {
+                    ctx.quickMove(player, slot);
+                    player.playSoundToPlayer(SoundEvents.BLOCK_NOTE_BLOCK_PLING.value(), SoundCategory.UI, 1.0f, 0.1f);
+                    setNonEpicSubmitButton();
+                }
+            });
+        }
+
+        private void setEpicSubmitButton() {
             setClickableItem(20,
                     new ItemBuilder("minecraft:green_wool")
                             .addLoreLine(
                                     Text.literal("Submitting this item gets rid of it")
-                                    .formatted(Formatting.YELLOW)
-                                    .append(Text.literal(" permanently.")
-                                            .formatted(Formatting.BOLD, Formatting.YELLOW)
-                                    )
+                                            .formatted(Formatting.YELLOW)
+                                            .append(Text.literal(" permanently.")
+                                                    .formatted(Formatting.BOLD, Formatting.YELLOW)
+                                            )
                             )
                             .setName(Text.literal("SUBMIT")
                                     .formatted(Formatting.GREEN, Formatting.BOLD))
                             .create(),
-                    (_player, _slot, _ctx) -> {
-
+                    (player, _s, ctx) -> {
+                        if (this.isSelectedEpic()) {
+                            VoteManager.sacrificedItemPlayers.add(player.getUuid());
+                            player.playSoundToPlayer(SoundEvents.BLOCK_NOTE_BLOCK_PLING.value(), SoundCategory.UI, 1.0f, 0.1f);
+                            setItem(ITEM_SLOT, ItemStack.EMPTY);
+                            ((ServerPlayerEntity) player).closeHandledScreen();
+                        }
                     });
-
-            setClickableItem(24, new ItemBuilder("minecraft:red_wool").create(), (_player, _slot, _ctx) -> {
-
-            });
-
-            setInventoryAction((_player, _slot, _ctx) -> {
-                Inventory inv = this.getInventory();
-                ItemStack clickedStack = _player.getInventory().getStack(_slot);
-                if (inv.getStack(ITEM_SLOT).isEmpty() && !clickedStack.isEmpty()) {
-                    setItem(ITEM_SLOT, clickedStack.copyWithCount(1));
-                    clickedStack.decrement(1);
-                    _player.playSoundToPlayer(SoundEvents.BLOCK_NOTE_BLOCK_PLING.value(), SoundCategory.UI, 1.0f, 1.0f);
-                }
-            });
-
-            setItem(40, new ItemBuilder("minecraft:filled_map").create());
-
-            fillEmptyWithGlass();
-            setClickableItem(ITEM_SLOT, ItemStack.EMPTY, (_player, _slot, _ctx) -> {
-                Inventory inv = this.getInventory();
-                if (!inv.getStack(ITEM_SLOT).isEmpty()) {
-                    _ctx.quickMove(_player, _slot);
-                    _player.playSoundToPlayer(SoundEvents.BLOCK_NOTE_BLOCK_PLING.value(), SoundCategory.UI, 1.0f, 0.1f);
-                }
-            });
         }
+
+        private void setNonEpicSubmitButton() {
+            setItem(20, new ItemBuilder("minecraft:green_wool")
+                    .addLoreLine(
+                            Text.literal("The selected item is not")
+                                    .formatted(Formatting.YELLOW)
+                                    .append(Text.literal(" EPIC.")
+                                            .formatted(Formatting.DARK_PURPLE, Formatting.ITALIC, Formatting.BOLD)
+                                    )
+                    )
+                    .setName(Text.literal("SUBMIT")
+                            .formatted(Formatting.DARK_RED, Formatting.BOLD))
+                    .create());
+        }
+
         public void onClose(PlayerEntity player, MenuScreenHandler ctx) {
             Inventory inv = this.getInventory();
             if (!inv.getStack(ITEM_SLOT).isEmpty()) {
                 // setting the stack ensures the item will either end up in the player's inv or on the ground
                 ctx.setCursorStack(inv.getStack(ITEM_SLOT));
             }
+        }
+
+        public boolean isSelectedEpic() {
+            return this.getInventory().getStack(ITEM_SLOT).getRarity() == Rarity.EPIC;
         }
     }
 

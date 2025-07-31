@@ -2,11 +2,14 @@ package io.github.mjk134.titanomach.server.sacrifice;
 
 import com.google.common.base.Stopwatch;
 import com.mojang.datafixers.util.Pair;
+import io.github.mjk134.titanomach.server.TitanomachPlayer;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 import java.time.Duration;
 import java.util.*;
+
+import static io.github.mjk134.titanomach.Titanomach.CONFIG;
 
 /**
  * Handles voting - is only static because it is session based
@@ -124,5 +127,12 @@ public class VoteManager {
         }
 
         return penalized;
+    }
+
+    public static void reduceSacrificeLevels() {
+        for (TitanomachPlayer p : CONFIG.getPlayers()) {
+            if (p.sacrificeLevel == 0) continue;
+            p.sacrificeLevel--;
+        }
     }
 }

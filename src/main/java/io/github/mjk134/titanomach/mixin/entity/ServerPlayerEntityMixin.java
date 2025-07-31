@@ -42,7 +42,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.*;
 
 import static io.github.mjk134.titanomach.Titanomach.MOD_LOGGER;
-import static io.github.mjk134.titanomach.Titanomach.TITANOMACH_CONFIG;
+import static io.github.mjk134.titanomach.Titanomach.CONFIG;
 import static io.github.mjk134.titanomach.mixin.entity.PlayerEntityAccessor.getPLAYER_MODEL_PARTS;
 
 
@@ -360,7 +360,7 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements Fa
 
     @Inject(method = "setClientOptions", at = @At("TAIL"))
     private void disableCapeIfNeeded(SyncedClientOptions clientSkinPrefs, CallbackInfo ci) {
-        if (TITANOMACH_CONFIG.isEnabled()) {
+        if (CONFIG.isEnabled()) {
             byte playerModel = (byte) clientSkinPrefs.playerModelParts();
 
             // Fake cape rule to be off

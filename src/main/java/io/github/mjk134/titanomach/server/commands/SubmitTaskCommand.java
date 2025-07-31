@@ -4,7 +4,7 @@ import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 
-import static io.github.mjk134.titanomach.Titanomach.TITANOMACH_CONFIG;
+import static io.github.mjk134.titanomach.Titanomach.CONFIG;
 
 public class SubmitTaskCommand {
     public static int run(CommandContext<ServerCommandSource> context) {
@@ -12,7 +12,7 @@ public class SubmitTaskCommand {
         if (player == null) {
             return -1;
         }
-        TITANOMACH_CONFIG.getTaskManager().submitTask("test", player);
+        CONFIG.getTaskManager().submitTask("test", player);
         return 0;
     }
 }

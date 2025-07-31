@@ -7,7 +7,7 @@ import net.minecraft.text.Text;
 
 import java.util.HashMap;
 
-import static io.github.mjk134.titanomach.Titanomach.TITANOMACH_CONFIG;
+import static io.github.mjk134.titanomach.Titanomach.CONFIG;
 
 public abstract class GlobalTask extends Task {
     public HashMap<String, Integer> playerContributions = new HashMap<>();
@@ -54,7 +54,7 @@ public abstract class GlobalTask extends Task {
         HashMap<String, Integer> map = getPlayerContributionsAsProgressPoints();
         map.keySet().forEach((playerId) -> {
             // Get the player from the config
-            TITANOMACH_CONFIG.getPlayerConfig(playerId).addProgressPoints(map.get(playerId));
+            CONFIG.getPlayerConfig(playerId).addProgressPoints(map.get(playerId));
         });
 
         // Loop through each online player and send the completion message
@@ -62,7 +62,7 @@ public abstract class GlobalTask extends Task {
             this.sendMessage(player);
         }
 
-        TITANOMACH_CONFIG.dump();
+        CONFIG.dump();
     }
 
     @Override

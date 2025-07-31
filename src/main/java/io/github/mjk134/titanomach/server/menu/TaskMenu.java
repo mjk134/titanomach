@@ -29,8 +29,8 @@ public class TaskMenu extends Menu {
     public TaskMenu(PlayerEntity player) {
         super("Tasks");
         this.player = (ServerPlayerEntity) player;
-        this.tPlayer = Titanomach.TITANOMACH_CONFIG.getPlayerConfig((ServerPlayerEntity) player);
-        this.taskManager = Titanomach.TITANOMACH_CONFIG.getTaskManager();
+        this.tPlayer = Titanomach.CONFIG.getPlayerConfig((ServerPlayerEntity) player);
+        this.taskManager = Titanomach.CONFIG.getTaskManager();
         refreshUI();
     }
 

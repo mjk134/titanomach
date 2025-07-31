@@ -11,7 +11,7 @@ import net.minecraft.util.Identifier;
 
 
 import static io.github.mjk134.titanomach.Titanomach.MOD_LOGGER;
-import static io.github.mjk134.titanomach.Titanomach.TITANOMACH_CONFIG;
+import static io.github.mjk134.titanomach.Titanomach.CONFIG;
 
 public class SacrificeManager {
     private static final int EFFECT_INTERVAL_TICK = 50;
@@ -26,7 +26,7 @@ public class SacrificeManager {
         effectIntervalCounter++;
         if (effectIntervalCounter == EFFECT_INTERVAL_TICK) {
             server.getPlayerManager().getPlayerList().forEach(player -> {
-                TitanomachPlayer titanomachPlayer = TITANOMACH_CONFIG.getPlayerConfig(player);
+                TitanomachPlayer titanomachPlayer = CONFIG.getPlayerConfig(player);
                 //  Apply status effects
                 if (titanomachPlayer.sacrificeLevel > 0) {
                     for (StatusEffectInstance effect : EFFECTS) {
@@ -40,7 +40,7 @@ public class SacrificeManager {
 
     public static void reduceHearts(ServerPlayerEntity player) {
         EntityAttributeInstance maxHealthAttribute = player.getAttributeInstance(EntityAttributes.MAX_HEALTH);
-        TitanomachPlayer titanomachPlayer = TITANOMACH_CONFIG.getPlayerConfig(player);
+        TitanomachPlayer titanomachPlayer = CONFIG.getPlayerConfig(player);
         double maxHealth = 20.0 - titanomachPlayer.sacrificeLevel;
         if (maxHealthAttribute != null) {
             if (maxHealthAttribute.getBaseValue() != maxHealth) {

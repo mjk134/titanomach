@@ -7,7 +7,7 @@ import io.github.mjk134.titanomach.server.entity.ServerTitanomachPlayer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 
-import static io.github.mjk134.titanomach.Titanomach.TITANOMACH_CONFIG;
+import static io.github.mjk134.titanomach.Titanomach.CONFIG;
 
 public class SetSkinCommand {
     public static int run(CommandContext<ServerCommandSource> context) {
@@ -16,9 +16,9 @@ public class SetSkinCommand {
         if (skinId == null) {
             return 1;
         }
-        Property skinProperty = TITANOMACH_CONFIG.getSkinProperty(skinId);
+        Property skinProperty = CONFIG.getSkinProperty(skinId);
         assert player != null;
-        TITANOMACH_CONFIG.getPlayerConfig(player.getUuidAsString()).setSkinId(skinId);
+        CONFIG.getPlayerConfig(player.getUuidAsString()).setSkinId(skinId);
         if (skinProperty == null && player == null) return 1;
         ((ServerTitanomachPlayer) player).titanomach$setSkin(skinProperty, true);
         return 0;

@@ -4,7 +4,7 @@ import io.github.mjk134.titanomach.utils.TextUtils;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 
-import static io.github.mjk134.titanomach.Titanomach.TITANOMACH_CONFIG;
+import static io.github.mjk134.titanomach.Titanomach.CONFIG;
 
 public class SlayerTask extends Task {
     public SlayerTask(String name, int maxProgress, int progressPointReward, String targetMob) {
@@ -15,7 +15,7 @@ public class SlayerTask extends Task {
         String entityID = "minecraft:" + other.getType().getUntranslatedName();
         if (entityID.equals(targetID)) {
             progress++;
-            TITANOMACH_CONFIG.dump();
+            CONFIG.dump();
         }
     }
 

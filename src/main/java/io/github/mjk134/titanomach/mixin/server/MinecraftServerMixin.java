@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Objects;
 import java.util.UUID;
 
-import static io.github.mjk134.titanomach.Titanomach.TITANOMACH_CONFIG;
+import static io.github.mjk134.titanomach.Titanomach.CONFIG;
 
 @Mixin(MinecraftServer.class)
 public class MinecraftServerMixin {
@@ -24,18 +24,18 @@ public class MinecraftServerMixin {
             UUID playerUuid = VoteManager.getSacrificalPlayerUUID();
 
             if (!Objects.isNull(playerUuid)) {
-                TITANOMACH_CONFIG.getPlayerConfig(playerUuid.toString()).sacrificeLevel++;
+                CONFIG.getPlayerConfig(playerUuid.toString()).sacrificeLevel++;
             }
 
             ArrayList<UUID> penalized = VoteManager.getPenalizedPlayersUUID();
             penalized.forEach(id -> {
-                TITANOMACH_CONFIG.getPlayerConfig(id.toString()).sacrificeLevel++;
+                CONFIG.getPlayerConfig(id.toString()).sacrificeLevel++;
             });
 
         }
         // Other logic?
 
-        TITANOMACH_CONFIG.dump();
+        CONFIG.dump();
     }
 
 }

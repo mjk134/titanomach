@@ -4,7 +4,7 @@ import io.github.mjk134.titanomach.utils.TextUtils;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 
-import static io.github.mjk134.titanomach.Titanomach.TITANOMACH_CONFIG;
+import static io.github.mjk134.titanomach.Titanomach.CONFIG;
 
 public class GlobalSlayerTask extends GlobalTask {
 
@@ -19,10 +19,10 @@ public class GlobalSlayerTask extends GlobalTask {
             progress++;
 
             if (canSubmit(player)) {
-                TITANOMACH_CONFIG.getTaskManager().submitTask(name, player);
+                CONFIG.getTaskManager().submitTask(name, player);
             }
 
-            TITANOMACH_CONFIG.dump();
+            CONFIG.dump();
         }
     }
 

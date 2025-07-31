@@ -31,7 +31,7 @@ public class Titanomach implements ModInitializer {
 
     public static final String MOD_ID = "titanomach";
     public static final Logger MOD_LOGGER = LoggerFactory.getLogger(MOD_ID);
-    public static final TitanomachConfig TITANOMACH_CONFIG = TitanomachConfig.load();
+    public static final TitanomachConfig CONFIG = TitanomachConfig.load();
     public static final ExecutorService THREADPOOL = Executors.newCachedThreadPool();
     public static MinecraftServer SERVER_INSTANCE;
 
@@ -43,27 +43,27 @@ public class Titanomach implements ModInitializer {
             ServerPlayerEntity player = handler.getPlayer();
             VoteManager.resumeStopwatch(player);
             player.sendMessage(Text.literal("Welcome to Titanomach!"), true);
-            Boolean isInConfig = TITANOMACH_CONFIG.isPlayerInConfig(player.getUuidAsString());
+            Boolean isInConfig = CONFIG.isPlayerInConfig(player.getUuidAsString());
             // Initialise player here
             if (!isInConfig) {
-                TITANOMACH_CONFIG.addPlayerConfig(player.getUuidAsString(), new TitanomachPlayer(player));
+                CONFIG.addPlayerConfig(player.getUuidAsString(), new TitanomachPlayer(player));
                 PropertyMap propertyMap = player.getGameProfile().getProperties();
                 // Probably always a property IDK
                 Property skinProperty = (Property) propertyMap.get("textures").toArray()[0];
-                if (skinProperty.hasSignature()) TITANOMACH_CONFIG.addToSkinPool(new Skin(skinProperty.value(), skinProperty.signature(), player.getUuidAsString()));
+                if (skinProperty.hasSignature()) CONFIG.addToSkinPool(new Skin(skinProperty.value(), skinProperty.signature(), player.getUuidAsString()));
             }
 
-            if (TITANOMACH_CONFIG.isStarted()) {
-                TitanomachPlayer titanomachPlayer = TITANOMACH_CONFIG.getPlayerConfig(player);
+            if (CONFIG.isStarted()) {
+                TitanomachPlayer titanomachPlayer = CONFIG.getPlayerConfig(player);
                 if (!titanomachPlayer.getHasJoined()) {
                     // TODO: IMPLEMENT JOIN LOGIC I.E. BROADCAST MESSAGES ADD BOOK AND QUILL ETC
                     titanomachPlayer.setHasJoined(true);
-                    TITANOMACH_CONFIG.dump();
+                    CONFIG.dump();
                 }
 
                 THREADPOOL.submit(() -> {
                     // TODO: REFACTOR THIS TO MAKE IT CLEANER
-                    Property property = TITANOMACH_CONFIG.getSkinProperty(TITANOMACH_CONFIG.getPlayerConfig(player).getRandomIdentity().getSkinId());
+                    Property property = CONFIG.getSkinProperty(CONFIG.getPlayerConfig(player).getRandomIdentity().getSkinId());
                     ((ServerTitanomachPlayer) player).titanomach$setSkin(property, true);
                 });
 
@@ -79,14 +79,14 @@ public class Titanomach implements ModInitializer {
 
         ServerEntityCombatEvents.AFTER_KILLED_OTHER_ENTITY.register((handler, sender, entity) -> {
             if (sender instanceof ServerPlayerEntity player) {
-                TaskManager taskManager = TITANOMACH_CONFIG.getTaskManager();
+                TaskManager taskManager = CONFIG.getTaskManager();
                 taskManager.handleEntityKill(player, entity);
 
                 if (entity instanceof ServerPlayerEntity victim) {
                     // entity/player is killed by sender so we have to mark them as hostile
                     // check if notoriety level is 0
-                    TitanomachPlayer titanomachPlayer = TITANOMACH_CONFIG.getPlayerConfig(player);
-                    TitanomachPlayer victimPlayer = TITANOMACH_CONFIG.getPlayerConfig(victim);
+                    TitanomachPlayer titanomachPlayer = CONFIG.getPlayerConfig(player);
+                    TitanomachPlayer victimPlayer = CONFIG.getPlayerConfig(victim);
                     int murdererLevel = titanomachPlayer.getNotorietyLevel();
                     int victimLevel = victimPlayer.getNotorietyLevel();
                     PlayerManager playerManager = handler.getServer().getPlayerManager();
@@ -117,14 +117,14 @@ public class Titanomach implements ModInitializer {
                         titanomachPlayer.incrementNotorietyLevel();
                         titanomachPlayer.progressPointMultiplier = titanomachPlayer.progressPointMultiplier + 1;
                     }
-                    TITANOMACH_CONFIG.dump();
+                    CONFIG.dump();
                 }
             }
         });
 
         ServerTickEvents.END_SERVER_TICK.register((server) -> {
-            if (TITANOMACH_CONFIG.isEnabled()) {
-                TITANOMACH_CONFIG.getTaskManager().tick(server);
+            if (CONFIG.isEnabled()) {
+                CONFIG.getTaskManager().tick(server);
                 RoleManager.tick(server);
                 SacrificeManager.applyDebuffsOnTick(server);
             }

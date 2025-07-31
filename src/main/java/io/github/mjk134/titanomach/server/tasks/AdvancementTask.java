@@ -1,12 +1,9 @@
 package io.github.mjk134.titanomach.server.tasks;
 
 import io.github.mjk134.titanomach.utils.TextUtils;
-import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementEntry;
 import net.minecraft.advancement.AdvancementManager;
-import net.minecraft.advancement.AdvancementProgress;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 import java.util.Objects;
@@ -26,7 +23,7 @@ public class AdvancementTask extends Task{
         if(player.getAdvancementTracker().getProgress(advancement).isDone()) {
             if (advancement.id().toString().equals(targetID)) {
                 progress = 1;
-                TITANOMACH_CONFIG.dump();
+                CONFIG.dump();
             }
         }
     }

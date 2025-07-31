@@ -10,13 +10,13 @@ import net.minecraft.text.Text;
 
 import java.util.Objects;
 
-import static io.github.mjk134.titanomach.Titanomach.TITANOMACH_CONFIG;
+import static io.github.mjk134.titanomach.Titanomach.CONFIG;
 
 public class EnableCommand {
     public static int run(CommandContext<ServerCommandSource> context) {
         ServerPlayerEntity sourcePlayer = context.getSource().getPlayer();
-        Boolean isEnabled = TITANOMACH_CONFIG.isEnabled();
-        Boolean hasStarted = TITANOMACH_CONFIG.isStarted();
+        Boolean isEnabled = CONFIG.isEnabled();
+        Boolean hasStarted = CONFIG.isStarted();
         assert sourcePlayer != null;
         if (!hasStarted) {
             sourcePlayer.sendMessage(Text.literal("[Titanomach] You must start it first!"));
@@ -28,7 +28,7 @@ public class EnableCommand {
         }
         PlayerManager playerManager = Objects.requireNonNull(sourcePlayer.getServer()).getPlayerManager();
 
-        TITANOMACH_CONFIG.setEnabled(true);
+        CONFIG.setEnabled(true);
 
         for (ServerPlayerEntity serverPlayer : playerManager.getPlayerList()) {
             serverPlayer.networkHandler.sendPacket(new PlayerListS2CPacket(PlayerListS2CPacket.Action.UPDATE_DISPLAY_NAME, serverPlayer));

@@ -75,7 +75,7 @@ public abstract class Role {
         serverPlayer.sendMessage(Text.of(TextUtils.SECTION_BREAK));
 
         // cancel the current player task if there is one
-        Titanomach.TITANOMACH_CONFIG.getTaskManager().cancelPlayerTask(player.getUuidAsString());
+        Titanomach.CONFIG.getTaskManager().cancelPlayerTask(player.getUuidAsString());
 
         // check there are no blocks blocking the firework within an area
         // such that the player could get damaged
@@ -138,7 +138,7 @@ public abstract class Role {
 
     public void addGlobalTask(GlobalTask task) {
         this.globalTaskPool.add(task);
-        Titanomach.TITANOMACH_CONFIG.getTaskManager().tasks.put(task.name, task);
+        Titanomach.CONFIG.getTaskManager().tasks.put(task.name, task);
     }
 
     public List<GlobalTask> getGlobalTasks() {

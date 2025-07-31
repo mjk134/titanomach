@@ -38,7 +38,7 @@ public class RoleManager {
         // iterate through each online player
         server.getPlayerManager().getPlayerList().forEach(player -> {
             String uuid = player.getUuidAsString();
-            TitanomachPlayer titanomachPlayer = Titanomach.TITANOMACH_CONFIG.getPlayerConfig(uuid);
+            TitanomachPlayer titanomachPlayer = Titanomach.CONFIG.getPlayerConfig(uuid);
 
             Role role = getPlayerRole(titanomachPlayer);
             if (role != null) {

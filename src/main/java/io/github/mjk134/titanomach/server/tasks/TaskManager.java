@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import static io.github.mjk134.titanomach.Titanomach.TITANOMACH_CONFIG;
+import static io.github.mjk134.titanomach.Titanomach.CONFIG;
 
 public class TaskManager {
     /// Name of the task, Task
@@ -92,7 +92,7 @@ public class TaskManager {
     public void addTask(Task task, String playerId) {
         tasks.put(task.name, task);
         playerTaskIdMap.put(playerId, task.name);
-        TITANOMACH_CONFIG.dump();
+        CONFIG.dump();
     }
 
     public Task getTaskFromPlayer(ServerPlayerEntity player) {
@@ -111,7 +111,7 @@ public class TaskManager {
 
         playerTaskIdMap.remove(playerID);
         tasks.remove(taskID);
-        TITANOMACH_CONFIG.dump();
+        CONFIG.dump();
     }
 
     public boolean isTaskCompleted(Task task) {
@@ -122,7 +122,7 @@ public class TaskManager {
         Task task = tasks.get(taskID);
         SubmitStatus status = task.submitTask(player);
         if (status == SubmitStatus.COMPLETED) {
-            TITANOMACH_CONFIG.getPlayerConfig(player).addProgressPoints(task.progressPointReward);
+            CONFIG.getPlayerConfig(player).addProgressPoints(task.progressPointReward);
             tasks.remove(taskID);
             playerTaskIdMap.remove(player.getUuidAsString());
 
@@ -134,7 +134,7 @@ public class TaskManager {
                 completedPlayerTasks.add(taskID);
             }
         }
-        TITANOMACH_CONFIG.dump();
+        CONFIG.dump();
         return status;
     }
 
@@ -145,7 +145,7 @@ public class TaskManager {
             task.playerContributions.clear();
             tasks.put(task.name, task);
         }
-        TITANOMACH_CONFIG.dump();
+        CONFIG.dump();
     }
 
     public List<GlobalTask> getAllGlobalTasks() {

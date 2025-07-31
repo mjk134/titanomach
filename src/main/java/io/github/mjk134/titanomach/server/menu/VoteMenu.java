@@ -90,7 +90,7 @@ public class VoteMenu extends Menu {
         }
 
         private ItemStack getPlayerHead(ServerPlayerEntity player) {
-            TitanomachPlayer tPlayer = Titanomach.TITANOMACH_CONFIG.getPlayerConfig(player);
+            TitanomachPlayer tPlayer = Titanomach.CONFIG.getPlayerConfig(player);
             Role playerRole = RoleManager.getPlayerRole(tPlayer);
             GameProfile gameProfile = player.getGameProfile();
 

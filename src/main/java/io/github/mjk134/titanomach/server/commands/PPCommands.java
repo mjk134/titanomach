@@ -15,7 +15,7 @@ public class PPCommands {
                 .then(literal("set")
                         .then(argument("amount", IntegerArgumentType.integer())
                                 .executes((context) -> {
-                                    Titanomach.TITANOMACH_CONFIG.getPlayerConfig(context.getSource().getPlayer()).setProgressPoints(IntegerArgumentType.getInteger(context, "amount"));
+                                    Titanomach.CONFIG.getPlayerConfig(context.getSource().getPlayer()).setProgressPoints(IntegerArgumentType.getInteger(context, "amount"));
                                     return 0;
                                 })
                         )
@@ -23,7 +23,7 @@ public class PPCommands {
                 .then(literal("add")
                         .then(argument("amount", IntegerArgumentType.integer())
                                 .executes((context) -> {
-                                    Titanomach.TITANOMACH_CONFIG.getPlayerConfig(context.getSource().getPlayer()).addProgressPoints(IntegerArgumentType.getInteger(context, "amount"));
+                                    Titanomach.CONFIG.getPlayerConfig(context.getSource().getPlayer()).addProgressPoints(IntegerArgumentType.getInteger(context, "amount"));
                                     return 0;
                                 })
                         )

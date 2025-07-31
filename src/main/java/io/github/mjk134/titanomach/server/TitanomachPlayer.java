@@ -10,7 +10,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 
 import java.util.UUID;
 
-import static io.github.mjk134.titanomach.Titanomach.TITANOMACH_CONFIG;
+import static io.github.mjk134.titanomach.Titanomach.CONFIG;
 
 
 public class TitanomachPlayer {
@@ -45,7 +45,7 @@ public class TitanomachPlayer {
 
     public void setProgressPoints(int amount) {
         this.progressPoints = amount;
-        TITANOMACH_CONFIG.dump();
+        CONFIG.dump();
     }
 
     public int getProgressPoints() { return this.progressPoints; }
@@ -57,7 +57,7 @@ public class TitanomachPlayer {
         if (prevRole != nextRole) {
             nextRole.onRankUp(getPlayerEntity());
         }
-        TITANOMACH_CONFIG.dump();
+        CONFIG.dump();
     }
 
     public void setHasJoined(Boolean hasJoined) {

@@ -1,7 +1,6 @@
 package io.github.mjk134.titanomach.mixin.advancement;
 
 import io.github.mjk134.titanomach.server.tasks.AdvancementTask;
-import io.github.mjk134.titanomach.server.tasks.SlayerTask;
 import io.github.mjk134.titanomach.server.tasks.TaskManager;
 import net.minecraft.advancement.AdvancementEntry;
 import net.minecraft.advancement.AdvancementFrame;
@@ -12,15 +11,14 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import static io.github.mjk134.titanomach.Titanomach.MOD_LOGGER;
-import static io.github.mjk134.titanomach.Titanomach.TITANOMACH_CONFIG;
+import static io.github.mjk134.titanomach.Titanomach.CONFIG;
 
 @Mixin(AdvancementFrame.class)
 public class AdvancementFrameMixin {
 
     @Inject(method = "getChatAnnouncementText", at = @At("HEAD"))
     private void completeAdvancement(AdvancementEntry advancement, ServerPlayerEntity player, CallbackInfoReturnable<MutableText> cir) {
-        TaskManager taskManager = TITANOMACH_CONFIG.getTaskManager();
+        TaskManager taskManager = CONFIG.getTaskManager();
         if (taskManager.getTaskFromPlayer(player) instanceof AdvancementTask task) {
             task.onAdvancementComplete(advancement, player);
         }

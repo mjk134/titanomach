@@ -10,19 +10,19 @@ import net.minecraft.text.Text;
 
 import java.util.Objects;
 
-import static io.github.mjk134.titanomach.Titanomach.TITANOMACH_CONFIG;
+import static io.github.mjk134.titanomach.Titanomach.CONFIG;
 
 public class DisableCommand {
     public static int run(CommandContext<ServerCommandSource> context) {
         ServerPlayerEntity sourcePlayer = context.getSource().getPlayer();
-        Boolean isEnabled = TITANOMACH_CONFIG.isEnabled();
+        Boolean isEnabled = CONFIG.isEnabled();
         assert sourcePlayer != null;
 
         if (!isEnabled) {
             sourcePlayer.sendMessage(Text.literal("Titanomach has already been disabled."));
             return 0;
         }
-        TITANOMACH_CONFIG.setEnabled(false);
+        CONFIG.setEnabled(false);
         PlayerManager playerManager = Objects.requireNonNull(sourcePlayer.getServer()).getPlayerManager();
         for (ServerPlayerEntity serverPlayer : playerManager.getPlayerList()) {
             serverPlayer.networkHandler.sendPacket(new PlayerListS2CPacket(PlayerListS2CPacket.Action.UPDATE_DISPLAY_NAME, serverPlayer));

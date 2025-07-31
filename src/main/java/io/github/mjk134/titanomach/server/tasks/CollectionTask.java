@@ -5,7 +5,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 
-import static io.github.mjk134.titanomach.Titanomach.TITANOMACH_CONFIG;
+import static io.github.mjk134.titanomach.Titanomach.CONFIG;
 
 public class CollectionTask extends Task{
 
@@ -33,7 +33,7 @@ public class CollectionTask extends Task{
                 }
             }
         }
-        TITANOMACH_CONFIG.dump();
+        CONFIG.dump();
         return status;
     }
 

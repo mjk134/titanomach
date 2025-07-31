@@ -5,7 +5,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 
-import static io.github.mjk134.titanomach.Titanomach.TITANOMACH_CONFIG;
+import static io.github.mjk134.titanomach.Titanomach.CONFIG;
 
 public class GlobalCollectionTask extends GlobalTask {
     public GlobalCollectionTask(String name, int maxProgress, int progressPointReward, String targetItem) {
@@ -34,7 +34,7 @@ public class GlobalCollectionTask extends GlobalTask {
         }
 
         updatePlayerContribution(player, progress - prevProgress);
-        TITANOMACH_CONFIG.dump();
+        CONFIG.dump();
         return status;
     }
 

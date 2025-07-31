@@ -14,12 +14,12 @@ import net.minecraft.util.math.Vec3d;
 import java.util.Objects;
 
 import static io.github.mjk134.titanomach.Titanomach.MOD_LOGGER;
-import static io.github.mjk134.titanomach.Titanomach.TITANOMACH_CONFIG;
+import static io.github.mjk134.titanomach.Titanomach.CONFIG;
 
 public class StartCommand {
     public static int run(CommandContext<ServerCommandSource> context) {
         ServerPlayerEntity sourcePlayer = context.getSource().getPlayer();
-        Boolean hasStarted = TITANOMACH_CONFIG.isStarted();
+        Boolean hasStarted = CONFIG.isStarted();
 
         assert sourcePlayer != null;
 
@@ -52,8 +52,8 @@ public class StartCommand {
                 MOD_LOGGER.error(e.getMessage());
             }
         }
-        TITANOMACH_CONFIG.setEnabled(true);
-        TITANOMACH_CONFIG.start();
+        CONFIG.setEnabled(true);
+        CONFIG.start();
         for (ServerPlayerEntity player : context.getSource().getServer().getPlayerManager().getPlayerList()) {
             player.networkHandler.disconnect(Text.literal("The Titanomachy has begun."));
         }

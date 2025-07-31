@@ -131,10 +131,12 @@ public class TitanomachConfig {
         this.dump();
     }
 
+    @Nullable
     public TitanomachPlayer getPlayerConfig(String playerId) {
         return playerConfigs.get(playerId);
     }
 
+    @Nullable
     public TitanomachPlayer getPlayerConfig(ServerPlayerEntity player) {
         return getPlayerConfig(player.getUuidAsString());
     }

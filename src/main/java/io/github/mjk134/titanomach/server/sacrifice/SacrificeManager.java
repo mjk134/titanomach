@@ -43,7 +43,6 @@ public class SacrificeManager {
         TitanomachPlayer titanomachPlayer = TITANOMACH_CONFIG.getPlayerConfig(player);
         double maxHealth = 20.0 - titanomachPlayer.sacrificeLevel;
         if (maxHealthAttribute != null) {
-            // Check if the health is not already our target value to avoid unnecessary updates
             if (maxHealthAttribute.getBaseValue() != maxHealth) {
                 maxHealthAttribute.setBaseValue(maxHealth);
                 player.setHealth(player.getMaxHealth());

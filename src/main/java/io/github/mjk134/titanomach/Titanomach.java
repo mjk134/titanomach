@@ -21,6 +21,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,9 +94,12 @@ public class Titanomach implements ModInitializer {
 
                     if (murdererLevel == 0 && victimLevel == 0) {
                         // send message to all players
-                        for (ServerPlayerEntity serverPlayer : playerManager.getPlayerList()) {
-                            serverPlayer.sendMessage(Text.literal(player.getStyledDisplayName().getString() + " is now §c§l HOSTILE!"));
-                        }
+                        playerManager.broadcast(
+                                Text.literal(player.getStyledDisplayName().getString() + " is now ")
+                                        .append(Text.literal("HOSTILE!")
+                                                .formatted(Formatting.BOLD, Formatting.RED)),
+                                false
+                        );
                         titanomachPlayer.incrementNotorietyLevel();
                         titanomachPlayer.progressPointMultiplier += 1;
                     } else if (victimLevel != 0 && murdererLevel == 0) {
@@ -103,9 +107,13 @@ public class Titanomach implements ModInitializer {
                         victimPlayer.resetNotorietyLevel();
                         titanomachPlayer.progressPointMultiplier += 3;
                         titanomachPlayer.multiplierDuration = 2;
-                        for (ServerPlayerEntity serverPlayer : playerManager.getPlayerList()) {
-                            serverPlayer.sendMessage(Text.literal(player.getStyledDisplayName().getString() + " is now §c§l MERCENARY!"));
-                        }
+                        playerManager.broadcast(
+                                    Text.literal(player.getStyledDisplayName().getString() + " is now ")
+                                            .append(Text.literal("MERCENARY!")
+                                                    .formatted(Formatting.BOLD, Formatting.GREEN)
+                                            ),
+                                    false
+                        );
                     } else if (victimLevel != 0) {
                         // A hostile killed another hostile -> neutralise the victim but no mercenary effect is awarded
                         victimPlayer.resetNotorietyLevel();

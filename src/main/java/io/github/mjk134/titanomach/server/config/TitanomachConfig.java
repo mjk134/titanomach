@@ -28,11 +28,11 @@ public class TitanomachConfig {
     private Boolean enabled = false;
     private Boolean started = false;
     /**
-     * Stores all the data about the players. UUID, Data
+     * Stores all the data about the players. UUID.toString(), T...Player
      */
     private HashMap<String, TitanomachPlayer> playerConfigs = new HashMap<>();
     // Add skin pool here - make it a map for the skin id
-    private HashMap<String, Skin> skinPool = new HashMap<String, Skin>();
+    private HashMap<String, Skin> skinPool = new HashMap<>();
     private static final RuntimeTypeAdapterFactory<Task> taskAdapterFactory = RuntimeTypeAdapterFactory
             .of(Task.class, "type")
             .registerSubtype(CollectionTask.class, "collection")
@@ -48,13 +48,7 @@ public class TitanomachConfig {
 
     @Nullable
     private Date lastSessionDate;
-    private static final Date initialisedCurrentDate = new Date();
-    private boolean hasVoteOccurred = false;
-    private boolean fivePlayersActive = false;
     private TaskManager taskManager =  new TaskManager();
-
-    @Nullable
-    private TitanomachPlayer sacrificialPlayer;
 
     public TitanomachConfig() {}
 
@@ -80,9 +74,6 @@ public class TitanomachConfig {
         }
         if (this.lastSessionDate.before(new Date())) {
             this.lastSessionDate = new Date();
-            if (!hasVoteOccurred && fivePlayersActive) {
-                // do no vote penalty on all players
-            }
             // Loop over players and reduce their PP session duration
             for (TitanomachPlayer player : playerConfigs.values()) {
                 if (player.multiplierDuration > 0) {
@@ -224,6 +215,10 @@ public class TitanomachConfig {
 
     public TaskManager getTaskManager() {
         return taskManager;
+    }
+
+    public Collection<TitanomachPlayer> getPlayers() {
+        return playerConfigs.values();
     }
 
 }

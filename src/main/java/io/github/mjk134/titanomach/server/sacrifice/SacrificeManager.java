@@ -17,7 +17,7 @@ public class SacrificeManager {
     private static final int EFFECT_INTERVAL_TICK = 50;
     private static int effectIntervalCounter = 0;
     private static final StatusEffectInstance[] EFFECTS = {
-            SacrificeManager.getEffect("minecraft:bad_luck", 1),
+            SacrificeManager.getEffect("minecraft:unluck", 1),
             SacrificeManager.getEffect("minecraft:weakness", 1),
             SacrificeManager.getEffect("minecraft:infested", 1),
     };

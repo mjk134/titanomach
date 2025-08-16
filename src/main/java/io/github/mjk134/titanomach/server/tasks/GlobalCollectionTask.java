@@ -7,6 +7,8 @@ import net.minecraft.server.network.ServerPlayerEntity;
 
 import static io.github.mjk134.titanomach.Titanomach.CONFIG;
 
+
+/// After completion pps are rewarded
 public class GlobalCollectionTask extends GlobalTask {
     public GlobalCollectionTask(String name, int maxProgress, int progressPointReward, String targetItem) {
         super(name, maxProgress, progressPointReward, targetItem);

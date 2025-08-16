@@ -6,6 +6,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 
 import static io.github.mjk134.titanomach.Titanomach.CONFIG;
 
+/// On kill the pp is rewarded
 public class GlobalSlayerTask extends GlobalTask {
 
     public GlobalSlayerTask(String name, int maxProgress, int progressPointReward, String targetMob) {

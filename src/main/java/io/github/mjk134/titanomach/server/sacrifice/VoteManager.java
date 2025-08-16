@@ -14,7 +14,7 @@ import static io.github.mjk134.titanomach.Titanomach.CONFIG;
 /**
  * Handles voting - is only static because it is session based
  */
-public class VoteManager {
+public final class VoteManager {
     /// 5 players must be online for it to go forward
     public static boolean isOngoing = false;
     public static HashMap<UUID, UUID> playerVoteMap = new HashMap<>();

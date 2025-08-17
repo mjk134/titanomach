@@ -23,7 +23,7 @@ public class SpawnSacrificialCircleCommand {
     public static int run(CommandContext<ServerCommandSource> context) {
         ServerCommandSource source = context.getSource();
         Gson gson = new Gson();
-        try (FileReader reader = new FileReader(SpawnSacrificialCircleCommand.class.getResource("/SacCircleParticles.json").getPath())) {
+        try (FileReader reader = new FileReader(SpawnSacrificialCircleCommand.class.getResource("/innercircle.json").getPath())) {
 
             // convert the JSON data to a Java object
             Particles particles = gson.fromJson(reader, Particles.class);
@@ -41,6 +41,22 @@ public class SpawnSacrificialCircleCommand {
                 source.getPlayer().kill(SERVER_INSTANCE.getOverworld());
             });
 
+            ParticleManager.addParticleEffect(particleEffect);
+
+
+        } catch (IOException e) {
+            MOD_LOGGER.info(e.getMessage());
+            throw new RuntimeException(e);
+        }
+
+        try (FileReader reader = new FileReader(SpawnSacrificialCircleCommand.class.getResource("/outercircle.json").getPath())) {
+
+            // convert the JSON data to a Java object
+            Particles particles = gson.fromJson(reader, Particles.class);
+            ParticleEffect particleEffect = new ParticleEffect(particles, source.getPosition().x, source.getPosition().y, source.getPosition().z, 120);
+            particleEffect.setRotation(-0.03f);
+            particleEffect.setCallback(() -> {
+            });
             ParticleManager.addParticleEffect(particleEffect);
 
 

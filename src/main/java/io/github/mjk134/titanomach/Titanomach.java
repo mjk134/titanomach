@@ -6,6 +6,7 @@ import io.github.mjk134.titanomach.server.TitanomachPlayer;
 import io.github.mjk134.titanomach.server.commands.CommandHandler;
 import io.github.mjk134.titanomach.server.config.TitanomachConfig;
 import io.github.mjk134.titanomach.server.entity.ServerTitanomachPlayer;
+import io.github.mjk134.titanomach.server.particles.ParticleManager;
 import io.github.mjk134.titanomach.server.roles.RoleManager;
 import io.github.mjk134.titanomach.server.sacrifice.SacrificeManager;
 import io.github.mjk134.titanomach.server.tasks.TaskManager;
@@ -35,6 +36,7 @@ public class Titanomach implements ModInitializer {
     public static final TitanomachConfig CONFIG = TitanomachConfig.load();
     public static final ExecutorService THREADPOOL = Executors.newCachedThreadPool();
     public static MinecraftServer SERVER_INSTANCE;
+    public static ParticleManager PARTICLEMANAGER_INSTANCE;
 
     @Override
     public void onInitialize() {
@@ -135,6 +137,7 @@ public class Titanomach implements ModInitializer {
                 CONFIG.getTaskManager().tick(server);
                 RoleManager.tick(server);
                 SacrificeManager.applyDebuffsOnTick(server);
+                ParticleManager.onTick();
             }
         });
 

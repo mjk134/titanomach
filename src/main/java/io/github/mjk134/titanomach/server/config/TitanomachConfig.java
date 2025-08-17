@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.mojang.authlib.properties.Property;
 import io.github.mjk134.titanomach.server.TitanomachPlayer;
+import io.github.mjk134.titanomach.server.particles.ParticleManager;
 import io.github.mjk134.titanomach.server.tasks.*;
 import io.github.mjk134.titanomach.utils.RuntimeTypeAdapterFactory;
 import io.github.mjk134.titanomach.utils.Skin;
@@ -131,6 +132,7 @@ public class TitanomachConfig {
     public TitanomachPlayer getPlayerConfig(ServerPlayerEntity player) {
         return getPlayerConfig(player.getUuidAsString());
     }
+
 
     public Boolean isPlayerInConfig(String playerId) {
         return playerConfigs.containsKey(playerId);

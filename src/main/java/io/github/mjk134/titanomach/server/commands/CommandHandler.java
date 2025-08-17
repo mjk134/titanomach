@@ -44,6 +44,11 @@ public class CommandHandler {
                         .executes(VoteCommand::run)
         );
 
+        dispatcher.register(
+                literal("sac")
+                        .executes(SpawnSacrificialCircleCommand::run)
+        );
+
         dispatcher.register(PPCommands.get());
         dispatcher.register(literal("resetglobaltasks").requires(source -> source.hasPermissionLevel(4)).executes(ResetGlobalsCommand::run));
     }

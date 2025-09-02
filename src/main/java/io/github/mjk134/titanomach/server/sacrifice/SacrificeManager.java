@@ -41,6 +41,7 @@ public class SacrificeManager {
     public static void reduceHearts(ServerPlayerEntity player) {
         EntityAttributeInstance maxHealthAttribute = player.getAttributeInstance(EntityAttributes.MAX_HEALTH);
         TitanomachPlayer titanomachPlayer = CONFIG.getPlayerConfig(player);
+        assert titanomachPlayer != null;
         double maxHealth = 20.0 - titanomachPlayer.sacrificeLevel;
         if (maxHealthAttribute != null) {
             if (maxHealthAttribute.getBaseValue() != maxHealth) {

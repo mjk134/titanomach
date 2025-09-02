@@ -55,11 +55,8 @@ public class SpawnSacrificialCircleCommand {
             Particles particles = gson.fromJson(reader, Particles.class);
             ParticleEffect particleEffect = new ParticleEffect(particles, source.getPosition().x, source.getPosition().y, source.getPosition().z, 120);
             particleEffect.setRotation(-0.03f);
-            particleEffect.setCallback(() -> {
-            });
+            particleEffect.setCallback(() -> {});
             ParticleManager.addParticleEffect(particleEffect);
-
-
         } catch (IOException e) {
             MOD_LOGGER.info(e.getMessage());
             throw new RuntimeException(e);

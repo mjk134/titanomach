@@ -95,7 +95,6 @@ public class TaskMenu extends Menu {
         ItemBuilder roleIconBuilder = new ItemBuilder(role.itemIcon)
                 .setName(role.titleFormat + "§l" + role.name)
                 .removeAdditionalTooltips()
-                .addLoreMultiline(role.description)
                 .addLoreLine("");
 
         generateRoleInfo(roleIconBuilder, role);

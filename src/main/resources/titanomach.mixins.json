@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_21",
   "mixins": [
     "advancement.AdvancementFrameMixin",
+    "authlib.GameProfileMixin",
     "entity.DisplayEntityAccessor",
     "entity.DisplayEntityAccessor$TextDisplayEntityAccessor",
     "entity.EntityAccessor",

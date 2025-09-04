@@ -96,7 +96,6 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements Fa
 
 
 
-
     public ServerPlayerEntityMixin(World world, GameProfile profile) {
         super(world, profile);
     }

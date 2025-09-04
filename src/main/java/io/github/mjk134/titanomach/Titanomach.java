@@ -26,6 +26,8 @@ import net.minecraft.util.Formatting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -37,6 +39,7 @@ public class Titanomach implements ModInitializer {
     public static final ExecutorService THREADPOOL = Executors.newCachedThreadPool();
     public static MinecraftServer SERVER_INSTANCE;
     public static ParticleManager PARTICLEMANAGER_INSTANCE;
+    public static HashMap<String, Integer> VICTIM_POOL = new HashMap<>();
 
     @Override
     public void onInitialize() {
@@ -84,17 +87,34 @@ public class Titanomach implements ModInitializer {
             if (sender instanceof ServerPlayerEntity player) {
                 TaskManager taskManager = CONFIG.getTaskManager();
                 taskManager.handleEntityKill(player, entity);
-
                 if (entity instanceof ServerPlayerEntity victim) {
                     // entity/player is killed by sender so we have to mark them as hostile
                     // check if notoriety level is 0
                     TitanomachPlayer titanomachPlayer = CONFIG.getPlayerConfig(player);
                     TitanomachPlayer victimPlayer = CONFIG.getPlayerConfig(victim);
+                    if (Objects.equals(victimPlayer.getPlayerId(), titanomachPlayer.getPlayerId())) {
+                        return;
+                    }
+                    if (VICTIM_POOL.containsKey(victimPlayer.getPlayerId())) {
+                        VICTIM_POOL.put(victim.getUuidAsString(), VICTIM_POOL.get(victim.getUuidAsString()) + 1);
+                    } else {
+                        VICTIM_POOL.put(victim.getUuidAsString(), 1);
+                    }
+
+                    if (VICTIM_POOL.get(victim.getUuidAsString()) == 3) {
+                        return;
+                    }
+
+
                     int murdererLevel = titanomachPlayer.getNotorietyLevel();
                     int victimLevel = victimPlayer.getNotorietyLevel();
                     PlayerManager playerManager = handler.getServer().getPlayerManager();
 
                     if (murdererLevel == 0 && victimLevel == 0) {
+                        VICTIM_POOL.putIfAbsent(victimPlayer.getPlayerId(), 1);
+                        if (VICTIM_POOL.get(victim.getUuidAsString()) == 3) {
+                            return;
+                        }
                         // send message to all players
                         playerManager.broadcast(
                                 Text.literal(player.getStyledDisplayName().getString() + " is now ")
@@ -103,12 +123,11 @@ public class Titanomach implements ModInitializer {
                                 false
                         );
                         titanomachPlayer.incrementNotorietyLevel();
-                        titanomachPlayer.progressPointMultiplier += 1;
                     } else if (victimLevel != 0 && murdererLevel == 0) {
                         // Declare murderer as mercenary -> gain 3x rewards for the next 2 sessions
                         victimPlayer.resetNotorietyLevel();
                         titanomachPlayer.progressPointMultiplier += 3;
-                        titanomachPlayer.multiplierDuration = 2;
+                        titanomachPlayer.multiplierDuration = 1;
                         playerManager.broadcast(
                                     Text.literal(player.getStyledDisplayName().getString() + " is now ")
                                             .append(Text.literal("MERCENARY!")
@@ -121,11 +140,9 @@ public class Titanomach implements ModInitializer {
                         victimPlayer.resetNotorietyLevel();
                         // Give the hostile a further boost in PP so add 1 to the multiplier
                         titanomachPlayer.incrementNotorietyLevel();
-                        titanomachPlayer.progressPointMultiplier = titanomachPlayer.progressPointMultiplier + 1;
                     } else {
                         // Hostile kills a victim, increase the hostile's multiplier
                         titanomachPlayer.incrementNotorietyLevel();
-                        titanomachPlayer.progressPointMultiplier = titanomachPlayer.progressPointMultiplier + 1;
                     }
                     CONFIG.dump();
                 }

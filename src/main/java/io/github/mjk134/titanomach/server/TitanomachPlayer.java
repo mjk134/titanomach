@@ -73,11 +73,16 @@ public class TitanomachPlayer {
     }
 
     public void incrementNotorietyLevel() {
+        if (notorietyLevel == 4) {
+            return;
+        }
         this.notorietyLevel++;
+        this.progressPointMultiplier++;
     }
 
     public void resetNotorietyLevel() {
         this.notorietyLevel = 0;
+        this.progressPointMultiplier = 1;
     }
 
     public boolean isHostile() {

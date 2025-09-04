@@ -20,6 +20,7 @@ public class CommandHandler {
                     .then(literal("addTask").executes(AddTaskCommand::run))
                     .then(literal("submitTask").executes(SubmitTaskCommand::run))
                     .then(literal("debugstart").executes(DebugStartCommand::run))
+                    .then(literal("dosac").executes(DoSacrificeCommand::run))
                     .then(literal("addskin")
                             .then(argument("skinId", StringArgumentType.string())
                                     .then(argument("texture", StringArgumentType.string())
@@ -40,12 +41,18 @@ public class CommandHandler {
         );
 
         dispatcher.register(
+                literal("refreshskin")
+                        .executes(RefreshSkinCommand::run)
+        );
+
+        dispatcher.register(
                 literal("vote")
                         .executes(VoteCommand::run)
         );
 
         dispatcher.register(
                 literal("sac")
+                        .requires(source -> source.hasPermissionLevel(4))
                         .executes(SpawnSacrificialCircleCommand::run)
         );
 

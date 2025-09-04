@@ -193,7 +193,6 @@ public class TitanomachConfig {
                     boolean isInUse = false;
                     for (TitanomachPlayer checkedPlayer : this.playerConfigs.values()) {
                         if (checkedPlayer.getRandomIdentity().getSkinId().equals(id)) {
-
                             isInUse = true;
                             break;
                         }
@@ -213,6 +212,14 @@ public class TitanomachConfig {
             }
         }
         this.dump();
+    }
+
+    public Skin getRandomSkin() {
+        List<String> keys = this.skinPool.keySet().stream().toList();
+        int keysSize = keys.size();
+        int randomNum = (int)(Math.random() * keysSize);
+        String id = keys.get(randomNum);
+        return skinPool.get(id);
     }
 
     public TaskManager getTaskManager() {

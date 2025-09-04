@@ -20,19 +20,19 @@ public class MinecraftServerMixin {
     @Inject(method = "shutdown", at = @At("HEAD"))
     private void onServerShutDown(CallbackInfo ci) {
         // Handle sacrificing logic
-        VoteManager.reduceSacrificeLevels();
-        if (VoteManager.isVotePossible()) {
-            UUID playerUuid = VoteManager.getSacrificalPlayerUUID();
-            if (!Objects.isNull(playerUuid)) {
-                CONFIG.getPlayerConfig(playerUuid.toString()).sacrificeLevel++;
-            }
-            ArrayList<UUID> penalized = VoteManager.getPenalizedPlayersUUID();
-            penalized.forEach(id -> {
-                CONFIG.getPlayerConfig(id.toString()).sacrificeLevel++;
-            });
-        }
-        // Other logic?
-        CONFIG.dump();
+//        VoteManager.reduceSacrificeLevels();
+//        if (VoteManager.isVotePossible()) {
+//            UUID playerUuid = VoteManager.getSacrificalPlayerUUID();
+//            if (!Objects.isNull(playerUuid)) {
+//                CONFIG.getPlayerConfig(playerUuid.toString()).sacrificeLevel++;
+//            }
+//            ArrayList<UUID> penalized = VoteManager.getPenalizedPlayersUUID();
+//            penalized.forEach(id -> {
+//                CONFIG.getPlayerConfig(id.toString()).sacrificeLevel++;
+//            });
+//        }
+//        // Other logic?
+//        CONFIG.dump();
     }
 
 }

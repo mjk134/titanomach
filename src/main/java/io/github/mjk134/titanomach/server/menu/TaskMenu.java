@@ -60,6 +60,7 @@ public class TaskMenu extends Menu {
         ItemBuilder playerHeadBuilder = new ItemBuilder("minecraft:player_head")
                 .setName("§d" + gameProfile.getName())
                 .addLoreLine("§7Rank: " + playerRole.titleFormat + "§l" + playerRole.name)
+                .addLoreLine("§7PP Multiplier: §e" + tPlayer.progressPointMultiplier + "x")
                 .addLoreLine("§7Total §aPP: §e" + tPlayer.getProgressPoints());
 
         ItemStack playerHead = playerHeadBuilder.create();
